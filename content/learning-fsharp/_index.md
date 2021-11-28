@@ -78,7 +78,7 @@ F# позволяет использование нефункциональны�
 
 >So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 
-Так что, пожалуйста, прочтите и перечитайте серию ["думать функционально (в функциональном стиле)"](/series/thinking-functionally.html) and ["понимание F# типов"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с идеями прежде чем приступать к серьёзному (настоящему) кодингу. 
+Так что, пожалуйста, прочтите и перечитайте серию ["думать функционально"](/series/thinking-functionally.html) and ["понимание F# типов"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с идеями прежде чем приступать к серьёзному кодированию. 
 
 >If you don't understand how functions and types work, then you will have a hard time being productive.
 
@@ -97,7 +97,7 @@ F# позволяет использование нефункциональны�
 
 >* Don't use the `mutable` keyword **at all** as a beginner. 
 
-* Не используйте ключевое слово `mutable` **совсем** на начальном этапе . 
+* Не используйте ключевое слово `mutable` **совсем** на начальном этапе.
 
 >Coding complex functions without the crutch of mutable state will really force you to understand the functional paradigm.
 
