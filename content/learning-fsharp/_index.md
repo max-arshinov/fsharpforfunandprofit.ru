@@ -13,7 +13,7 @@ date: 2015-01-01
 
 >This page offers some tips on how to learn F# effectively.
 
-Эта страница предлагает небольшие подсказки, как учить F# эффективно.
+Эта страница предлагает несколько подсказок, как эффективно учить F#.
 
 >## Approach learning F# as a beginner ##
 ## Подходите к изучению F# как новичок ##
@@ -24,11 +24,11 @@ date: 2015-01-01
 
 >This is because all imperative languages use the same way of thinking, and experience in one language can be easily transferred to another.
 
-Это потому, что все императивные языки используют одинаковый способ мышления, и опыт использования одного языка может быть легко перенесён на другой язык.
+Это потому, что все императивные языки предполагают одинаковый способ мышления, и опыт использования одного языка может быть легко перенесён на другой язык.
 
 >If you are like many people, your standard approach to learning a new programming language is to find out how to implement concepts you are already familiar with.
 
-Если вы как большинство людей, ваш стандартный подход к изучению нового языка программирования заключается в поиске способов реализации концепций, которые вам близки.
+Если вы как большинство людей, ваш стандартный подход к изучению нового языка программирования заключается в поиске способов реализации концепций, которые вам уже знакомы.
 
 >You might ask "how do I assign a variable?" or "how do I do a loop?", and with these answers be able to do some basic programming quite quickly.
 
@@ -36,11 +36,11 @@ date: 2015-01-01
 
 >When learning F#, **you should not try to bring your old imperative concepts with you**. 
 
-Изучая F#, **вам не стоит нести с собой ваши старые императивные концепции с собой**. 
+Изучая F#, **вам не стоит нести с собой ваши старые императивные концепции**. 
 
 >In a pure functional language there are no variables, there are no loops, and there are no objects!
 
-В чистых функциональных языках нет переменных, нет циклов, и даже нет объектов!
+В чистых функциональных языках нет переменных, нет циклов, и нет объектов!
 
 >Yes, F# is a hybrid language and does support these concepts. 
 
