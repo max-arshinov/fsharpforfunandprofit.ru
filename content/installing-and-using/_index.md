@@ -1,7 +1,9 @@
 ---
 layout: page
-title: "Installing and using F#"
-description: "Instructions for downloading, installing and using F# with Visual Studio, SharpDevelop and MonoDevelop"
+# title: "Installing and using F#"
+title: "Установка и использование F#"
+# description: "Instructions for downloading, installing and using F# with Visual Studio, SharpDevelop and MonoDevelop"
+description: "Инструкции по загрузке, установке и использованию F# в Visual Studio, SharpDevelop и MonoDevelop"
 nav:
 hasComments: 1
 image: "/installing-and-using/fsharp_eval2.png"
@@ -9,27 +11,42 @@ date: 2014-01-01
 ---
 
 > The F# compiler is a free and open source tool which is available for Windows, Mac and Linux (via Mono).
+Компилятор F# это свободный инструмент с открытым исходным кодом, который доступен для Windows, Max и Linux (благодаря Mono).
 > Find out more about F# and how to install it at the [F# Foundation](http://fsharp.org/).
+Узнайте больше о F# и о том, как его установить в [Фонде F#](http://fsharp.org/).
+
 
 > You can use it with an IDE (Visual Studio, MonoDevelop), or with your favorite editor (VS Code and Atom have especially good F# support using [Ionide](http://ionide.io/)), or simply as a standalone command line compiler.
+Мы можете использовать его в интегрированных средах разработки (IDE — Visual Studio, MonoDevelop), или в вашем любимом редакторе (VS Code и Atom имеют особенно хорошую поддержку F# благодаря [Ionid](http://ionide.io)), или просто как самостоятельный компилятор командной строки.
 
 > If you don't want to install anything, you can try the [.NET Fiddle](https://dotnetfiddle.net/) site, which is an interactive environment where you can explore F# in your web browser.
+Если вы не хотите ничего устанавливать, вы можете попробовать [эмулятор .NET](https://dotnetfiddle.net/), сайт, который предоставляет интерактивную среду, где вы можете исследовать F# в вашем браузере.
 > You should be able to run most of the code on this site there.
+Там вы сможете запустить большую часть кода с этого сайта.
 
 > ## Working with the code examples ##
+> ## Как работать с примерами кода ##
 
 > Once you have F# installed and running, you can follow along with the code samples.
+Как только вы установили и запустили F#, вы можете самостоятельно изучать примеры кода.
 
 > The best way to run the code examples on this site is to type the code into an `.FSX` script file, which you can then send to the F# interactive window for evaluation.
+Лушчий способ запускть примеры с этого сайта это вводить код в файл сценария `.FSX`, который вы затем можете отправить в окно F# Interactive для выполнения.
 > Alternatively you can type the examples directly into the F# interactive console window.
+Либо вы можете вводить примеры непосредственно в консольное окно F# Interactive.
 > I would recommend the script file approach for anything other than one or two lines.
+Я бы рекомендовал подход с файлом сценария для всего, что больше одной или двух строк кода.
 
 > For the longer examples, the code is downloadable from this website -- the links will be in the post.
+Код больших примеров доступен для загрузки с этого сайта — ссылка должна быть в тексте поста.
 
 > Finally, I would encourage you to play with and modify the examples.
+Наконец, я бы предложил вам поиграть с примерами и вносить в них изменения.
 > If you then get compiler errors, do check out the ["troubleshooting F#"](/troubleshooting-fsharp/) page, which explains the most common problems, and how to fix them.
+Если вы получите ошибку компилятора, проверьте страницу ["Исправление проблем F#"](/troubleshooting-fsharp/), которая объясняет наиболее общие проблемы, и как их исправить.
 
 > ### Contents ###
+> ### Содержание ###
 
 > * [Installing F#](#installing-fsharp)
 > * Using F# with various tools
@@ -42,9 +59,20 @@ date: 2014-01-01
 > * [Projects and Solutions](#projects-solutions)
 > * [Using F# for shell scripts](#shell-scripts)
 
+> * [Установка F#](#installing-fsharp)
+> * Использование F# с различными инструментами
+>   * [Использование F# с Visual Studio](#visual-studio)
+>   * [Использование F# с Mono на Linux и Mac](#mono-develop)
+>   * [Попробуйте F# прямо в вашем браузере](#browser)
+>   * [Использование F# в командной строке FSI Interactive](#interactive-shell)
+>   * [Использование F# in SharpDevelop](#sharp-develop)
+> * [Ошибки компиляции](#compilation-errors)
+> * [Проекты и решения](#projects-solutions)
+> * [Использование F# в сценариях командной строки](#shell-scripts)
+
 {{< linktarget "installing-fsharp" >}}
 
-> ## Installing F# ##
+> ## Установка F# ##
 
 > You can [get F# for multiple platforms here](http://fsxplat.codeplex.com/).
 > Once you have downloaded and installed F#, you might also consider installing the [F# power pack](http://fsharppowerpack.codeplex.com), which provides a number of nice extras, some of which will be referred to in this site.
