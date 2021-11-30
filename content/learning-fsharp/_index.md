@@ -134,7 +134,7 @@ F# позволяет использовать нефункциональные 
 
 >See [this post for details](/posts/type-extensions/#downsides-of-methods).
 
-Посмотри [этот пост для подробностей](/posts/type-extensions/#downsides-of-methods).
+Посмотрите [этот пост для подробностей](/posts/type-extensions/#downsides-of-methods).
 
 >* As a corollary, don't create classes.
 
