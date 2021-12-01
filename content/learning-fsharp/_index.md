@@ -194,7 +194,7 @@ F# позволяет использовать нефункциональные 
 
 >Recursion can be error prone, and it can be hard to make sure that it is properly tail-recursive.
 
-Рекурсия может быть склонна ошибкам, и может быть сложно удостовериться что она является хвостовой рекурсией.
+В рекурсивном коде легче допустить ошибку, и может быть сложно удостовериться, что она является хвостовой рекурсией.
 
 >When you use `List.fold`, you can never have that problem.
 
