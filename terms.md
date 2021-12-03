@@ -28,6 +28,7 @@
 | pipeline | конвейер | | |
 | pipeline operator | конвейерный оператор | | |
 | plugin | плагин | | |
+| post | пост | | |
 | project | проект | | |
 | records   | записи  | | |
 | script   | скрипт  | | |
