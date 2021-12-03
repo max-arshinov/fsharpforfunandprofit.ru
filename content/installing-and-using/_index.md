@@ -284,15 +284,15 @@ let downloadUriToFile url targetfile =
     let path = sprintf "%s.%s.html" targetfile timestamp
     use writer = new IO.StreamWriter(path)
     writer.Write(reader.ReadToEnd())
-    printfn "finished downloading %s to %s" url path
+    printfn "Скачивание %s в %s завершено" url path
 
 // При запуске из FSI сначала идёт имя сценария, а затем уже другие аргументы командной строки
 match fsi.CommandLineArgs with
     | [| scriptName; url; targetfile |] ->
-        printfn "running script: %s" scriptName
+        printfn "Запуск скрипта: %s" scriptName
         downloadUriToFile url targetfile
     | _ ->
-        printfn "USAGE: [url] [targetfile]"
+        printfn "ИСПОЛЬЗОВАНИЕ: [url] [имя файла]"
 ```
 
 > Don't worry about how the code works right now.
