@@ -4,7 +4,7 @@
 
 ## Список статей для перевода
 
-Списоб был составлен в рамках работы над Issue #3.
+Списоб был составлен в рамках работы [над Issue #3](https://github.com/max-arshinov/fsharpforfunandprofit.ru/issues/3).
 
 https://docs.google.com/spreadsheets/d/1Z82DAou_UDwn1GR5G8G2yS6s92Lojexv-ZsR63N6oPs/edit?usp=sharing
 
