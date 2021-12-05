@@ -2,6 +2,28 @@
 
 Эта статья для тех, кто хочет участвовать в переводе сайта [F# for Fun and Profit](https://fsharpforfunandprofit.com).
 
+## Список статей для перевода
+
+Списоб был составлен в рамках работы над Issue #3.
+
+https://docs.google.com/spreadsheets/d/1Z82DAou_UDwn1GR5G8G2yS6s92Lojexv-ZsR63N6oPs/edit?usp=sharing
+
+Если хотите выбрать статью, напишите сюда, чтобы вас добавили в список.
+
+<details>
+ <summary>Список статей сформирован кодом</summary>
+
+```bash
+i=1
+for f in $(find content -name '*.md' -type f) 
+do 
+    title=$(grep "title:" $f | awk -F : '{print $2'})
+    echo "| $i | [$title](https://github.com/swlaschin/fsharpforfunandprofit.com/blob/master/$f) | $f |"
+    i=$((i+1))
+done
+```
+</details>
+
 ## Процесс
 
 Расскажем о процессе перевода на примере статьи [Why use F#?](https://fsharpforfunandprofit.com/why-use-fsharp/).
