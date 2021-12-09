@@ -156,20 +156,27 @@ allFunctions 5
 >The functional approach is very well suited for this.
 Функциональный подход отлично для этого подходит.
 
-If you need to, you can go the route of having a full "external" DSL with its own lexer, parser, and so on, and there are various toolsets for F# that make this quite straightforward.
+>If you need to, you can go the route of having a full "external" DSL with its own lexer, parser, and so on, and there are various toolsets for F# that make this quite straightforward.
+Если Вам необходимо, Вы можете пройти путем создания полностью "внешнего" предметно-ориентированного языка со своим лексером, парсером, и т.д., и существуют различные наборы инструментов для F#, которые сделают эту задачу достаточно простой.
 
-But in many cases, it is easier to stay within the syntax of F#, and just design a set of "verbs" and "nouns" that encapsulate the behavior we want.
+>But in many cases, it is easier to stay within the syntax of F#, and just design a set of "verbs" and "nouns" that encapsulate the behavior we want.
+Но во многих случаях проще придерживаться синтаксиса F#, и просто спроектировать набор "глаголов" и "существительных", инкапсулирующих нужное нам поведение.
 
-The ability to create new types concisely and then match against them makes it very easy to set up fluent interfaces quickly.
-For example, here is a little function that calculates dates using a simple vocabulary.
-Note that two new enum-style types are defined just for this one function.
+>The ability to create new types concisely and then match against them makes it very easy to set up fluent interfaces quickly.
+Возможность лаконичного создания новых типов и дальнейшего сопостоставления с ними значительно упрощает быстрое создание текучих интерфейсов.
+>For example, here is a little function that calculates dates using a simple vocabulary.
+Например вот небольшая функция, вычисляющая даты используя простой словарь.
+>Note that two new enum-style types are defined just for this one function.
+Обратите внимание что два новых типа в стиле перечислений были определены исключительно для этой функции.
 
 ```fsharp
-// set up the vocabulary
+>// set up the vocabulary
+// задать словаря
 type DateScale = Hour | Hours | Day | Days | Week | Weeks
 type DateDirection = Ago | Hence
 
-// define a function that matches on the vocabulary
+>// define a function that matches on the vocabulary
+// создать функцию, сопоставляющую со словарем
 let getDate interval scale direction =
     let absHours = match scale with
                    | Hour | Hours -> 1 * interval
@@ -180,23 +187,30 @@ let getDate interval scale direction =
                       | Hence ->  absHours
     System.DateTime.Now.AddHours(float signedHours)
 
-// test some examples
+>// test some examples
+// протестировать на нескольких примеров
 let example1 = getDate 5 Days Ago
 let example2 = getDate 1 Hour Hence
 
-// the C# equivalent would probably be more like this:
+>// the C# equivalent would probably be more like this:
+// эквивалент для C# будет выглядеть примерно так:
 // getDate().Interval(5).Days().Ago()
 // getDate().Interval(1).Hour().Hence()
 ```
 
-The example above only has one "verb", using lots of types for the "nouns".
+>The example above only has one "verb", using lots of types for the "nouns".
+В примере выше был только один "глагол", использующий многие типы "существительных".
 
-The following example demonstrates how you might build the functional equivalent of a fluent interface with many "verbs".
+>The following example demonstrates how you might build the functional equivalent of a fluent interface with many "verbs".
+В следующих примерах демонстрируется как Вы можете построить функциональный эквивалент текучего интерфейса со многими "глаголами".
 
-Say that we are creating a drawing program with various shapes.
-Each shape has a color, size, label and action to be performed when clicked, and we want a fluent interface to configure each shape.
+>Say that we are creating a drawing program with various shapes.
+Допустим что мы создаем программу для рисования с различными формами.
+>Each shape has a color, size, label and action to be performed when clicked, and we want a fluent interface to configure each shape.
+У каждой фигуры есть цвет, размер, ярлык и действие, выполняемое по клику, и нам нужен текучий интерфейс для настройки каждой фигуры.
 
-Here is an example of what a simple method chain for a fluent interface in C# might look like:
+>Here is an example of what a simple method chain for a fluent interface in C# might look like:
+Вот пример того, как простая цепочка методов текучего интерфейса может выглядеть на C#:
 
 ```fsharp
 FluentShape.Default
@@ -205,21 +219,27 @@ FluentShape.Default
    .OnClick( s => Console.Write("clicked") );
 ```
 
-Now the concept of "fluent interfaces" and "method chaining" is really only relevant for object-oriented design.
-In a functional language like F#, the nearest equivalent would be the use of the pipeline operator to chain a set of functions together.
+>Now the concept of "fluent interfaces" and "method chaining" is really only relevant for object-oriented design.
+Однако концепт "тукучего интерфейса" и "цепочки методов" имеет смысл только для объектно ориентированного дизайна.
+>In a functional language like F#, the nearest equivalent would be the use of the pipeline operator to chain a set of functions together.
+В функциональном языке как F# ближайшим эквивалентом будет использование конвеерного оператора для создания цепочки функций.
 
-Let's start with the underlying Shape type:
+>Let's start with the underlying Shape type:
+Давайте начнем с базового типа Shape:
 
 ```fsharp
-// create an underlying type
+>// create an underlying type
+// создать базовый тип
 type FluentShape = {
     label : string;
     color : string;
-    onClick : FluentShape->FluentShape // a function type
+>    onClick : FluentShape->FluentShape // a function type
+    onClick : FluentShape->FluentShape // тип функции
     }
 ```
 
-We'll add some basic functions:
+>We'll add some basic functions:
+Добавим некоторые базовые функции:
 
 ```fsharp
 let defaultShape =
@@ -230,13 +250,17 @@ let click shape =
 
 let display shape =
     printfn "My label=%s and my color=%s" shape.label shape.color
-    shape   //return same shape
+>    shape   //return same shape
+    shape   //возвращаем ту же фигуру
 ```
 
-For "method chaining" to work, every function should return an object that can be used next in the chain.
-So you will see that the "`display`" function returns the shape, rather than nothing.
+>For "method chaining" to work, every function should return an object that can be used next in the chain.
+Для работы "цепочки вызовов", каждая функция должна возвращать объект, который можно будет использовать дальше по цепочке.
+>So you will see that the "`display`" function returns the shape, rather than nothing.
+Так что Вы можете видеть, что функция "`display`" возвращает фигуру, вместо ничего.
 
-Next we create some helper functions which we expose as the "mini-language", and will be used as building blocks by the users of the language.
+>Next we create some helper functions which we expose as the "mini-language", and will be used as building blocks by the users of the language.
+Далее мы создадим несколько функций-помощников, которые мы представим как "мини-язык", и которые будут использованы пользователями языка как строительные блоки.
 
 ```fsharp
 let setLabel label shape =
@@ -245,57 +269,77 @@ let setLabel label shape =
 let setColor color shape =
    {shape with FluentShape.color = color}
 
-//add a click action to what is already there
+>//add a click action to what is already there
+//добавить действие по клику к тому, что уже там есть
 let appendClickAction action shape =
    {shape with FluentShape.onClick = shape.onClick >> action}
 ```
 
-Notice that `appendClickAction` takes a function as a parameter and composes it with the existing click action.
-As you start getting deeper into the functional approach to reuse, you start seeing many more "higher order functions" like this, that is, functions that act on other functions.
-Combining functions like this is one of the keys to understanding the functional way of programming.
+>Notice that `appendClickAction` takes a function as a parameter and composes it with the existing click action.
+Обратите внимание на то, что `appendClickAction` принимает функцию в качестве пораметра и комбинирует её с существующим действием по клику.
+>As you start getting deeper into the functional approach to reuse, you start seeing many more "higher order functions" like this, that is, functions that act on other functions.
+По мере того, как Вы будете углубляться в функциональный подход к переиспользованию, Вы начнете замечать намного больше "функций высшего порядка" вроде этой, это функции которые совершают действия над другими функциями.
+>Combining functions like this is one of the keys to understanding the functional way of programming.
+Комбинирование функций таким образом - это ключ к пониманию функционального подхода к программированию.
 
-Now as a user of this "mini-language", I can compose the base helper functions into more complex functions of my own, creating my own function library.
-(In C# this kind of thing might be done using extension methods.)
+>Now as a user of this "mini-language", I can compose the base helper functions into more complex functions of my own, creating my own function library.
+Теперь как пользователь этого "мини-языка", я могу скомбинировать базовые функции-помощники в свои более сложные функции, создавая свою собственную библиотеку функций.
+>(In C# this kind of thing might be done using extension methods.)
+(В C# это то, чего можно добиться с помощью методов расшырений.)
 
 ```fsharp
-// Compose two "base" functions to make a compound function.
+>// Compose two "base" functions to make a compound function.
+// Скомбинировать две "базовые" функции для создания сложной функции
 let setRedBox = setColor "red" >> setLabel "box"
 
-// Create another function by composing with previous function.
-// It overrides the color value but leaves the label alone.
+>// Create another function by composing with previous function.
+// Создать новую функцию скомбинировав с предыдущей функцией
+>// It overrides the color value but leaves the label alone.
+// Она перезаписывает значение цвета, но не трогает ярлык.
 let setBlueBox = setRedBox >> setColor "blue"
 
-// Make a special case of appendClickAction
+>// Make a special case of appendClickAction
+// Создание особого вида appendClickAction
 let changeColorOnClick color = appendClickAction (setColor color)
 ```
 
-I can then combine these functions together to create objects with the desired behavior.
+>I can then combine these functions together to create objects with the desired behavior.
+Далее я могу скомбинировать эти функции вместе чтобы создать объекты с нужным поведением.
 
 ```fsharp
-//setup some test values
+>//setup some test values
+// подготовим несколько тестовых значений
 let redBox = defaultShape |> setRedBox
 let blueBox = defaultShape |> setBlueBox
 
-// create a shape that changes color when clicked
+>// create a shape that changes color when clicked
+// создадим форму, меняющую цвет по клику
 redBox
     |> display
     |> changeColorOnClick "green"
     |> click
-    |> display  // new version after the click
+>   |> display  // new version after the click
+    |> display  // новая версия после клика
 
-// create a shape that changes label and color when clicked
+>// create a shape that changes label and color when clicked
+// создадим фигуру, меняющую ярлык и цвет по клику
 blueBox
     |> display
     |> appendClickAction (setLabel "box2" >> setColor "green")
     |> click
-    |> display  // new version after the click
+>   |> display  // new version after the click
+    |> display  // новая версия после клика
 ```
 
-In the second case, I actually pass two functions to `appendClickAction`, but I compose them into one first.
-This kind of thing is trivial to do with a well structured functional library, but it is quite hard to do in C# without having lambdas within lambdas.
+>In the second case, I actually pass two functions to `appendClickAction`, but I compose them into one first.
+Во втором случае я на самом деле передаю две функции в `appendClickAction`, но я сперва комбинирую их в одну.
+>This kind of thing is trivial to do with a well structured functional library, but it is quite hard to do in C# without having lambdas within lambdas.
+Такие вещи очень просто делать с хорошо структурированной библиотекой функций, но это достаточно тяжело сделать в C# без использования лямбд внутри лямбд.
 
-Here is a more complex example.
-We will create a function "`showRainbow`" that, for each color in the rainbow, sets the color and displays the shape.
+>Here is a more complex example.
+Вот более сложный пример.
+>We will create a function "`showRainbow`" that, for each color in the rainbow, sets the color and displays the shape.
+Мы создадим функцию "`showRainbow`" которая, для каждого цвета радуги задаст цвет и выведет фигуру.
 
 ```fsharp
 let rainbow =
@@ -307,11 +351,16 @@ let showRainbow =
     |> List.map setColorAndDisplay
     |> List.reduce (>>)
 
-// test the showRainbow function
+>// test the showRainbow function
+// тестируем функцию showRainbow
 defaultShape |> showRainbow
 ```
 
-Notice that the functions are getting more complex, but the amount of code is still quite small.
-One reason for this is that the function parameters can often be ignored when doing function composition, which reduces visual clutter.
-For example, the "`showRainbow`" function does take a shape as a parameter, but it is not explicitly shown!
-This elision of parameters is called "point-free" style and will be discussed further in the ["thinking functionally"](/series/thinking-functionally.html) series.
+>Notice that the functions are getting more complex, but the amount of code is still quite small.
+Обратите внимание на то, что функции становятся более сложными, но количество кода все еще маленькое.
+>One reason for this is that the function parameters can often be ignored when doing function composition, which reduces visual clutter.
+Одна из причин для этого - это то, что параметры функций часто могут быть игнорированы во время комбинирования функций, что уменьшает визуальный беспорядок.
+>For example, the "`showRainbow`" function does take a shape as a parameter, but it is not explicitly shown!
+Например функция "`showRainbow`" принимает фигуру в качестве параметра, но это не показано явно!
+>This elision of parameters is called "point-free" style and will be discussed further in the ["thinking functionally"](/series/thinking-functionally.html) series.
+Эта элизия параметров называется программирование, свободное от указателей (Бесточечное программирование) и будет обсуждаться далее в серии ["думай функционально"](/series/thinking-functionally.html).
