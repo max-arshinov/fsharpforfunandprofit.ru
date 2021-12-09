@@ -9,74 +9,102 @@ seriesOrder: 11
 categories: [Conciseness, Functions]
 ---
 
-A well-known principle of good design is to create a set of basic operations and then combine these building blocks in various ways to build up more complex behaviors.
-In object-oriented languages, this goal gives rise to a number of implementation approaches such as "fluent interfaces", "strategy pattern", "decorator pattern", and so on.
-In F#, they are all done the same way, via function composition.
+>A well-known principle of good design is to create a set of basic operations and then combine these building blocks in various ways to build up more complex behaviors.
+Широкоизвестный принцип хорошего дизайна - это создание набора базовых операций и последующее комбинирование этих строительных блоков различными путями для создания более сложных поведений.
+>In object-oriented languages, this goal gives rise to a number of implementation approaches such as "fluent interfaces", "strategy pattern", "decorator pattern", and so on.
+В объектно ориентированных языках эта цель порождает ряд тких подходов к реализации, как "текучий интерфейс", "паттерн стратегия", "паттерн декоратор", и т.д.
+>In F#, they are all done the same way, via function composition.
+В F#, они достигаются теми же путями, с помощью композиции функций.
 
-Let's start with a simple example using integers.
-Say that we have created some basic functions to do arithmetic:
+>Let's start with a simple example using integers.
+Давайте начнем с простого примера с использованием целых чисел.
+>Say that we have created some basic functions to do arithmetic:
+Допустим мы создали несколько базовых функций для выполнения арифметических действий:
 
 ```fsharp
-// building blocks
+>// building blocks
+// строительные блоки
 let add2 x = x + 2
 let mult3 x = x * 3
 let square x = x * x
 
-// test
+>// test
+// тест
 [1..10] |> List.map add2 |> printfn "%A"
 [1..10] |> List.map mult3 |> printfn "%A"
 [1..10] |> List.map square |> printfn "%A"
 ```
 
-Now we want to create new functions that build on these:
+>Now we want to create new functions that build on these:
+Теперь нам нужно создать новые функции, основанные на них
 
 ```fsharp
-// new composed functions
+>// new composed functions
+// новые комбинированные функции
 let add2ThenMult3 = add2 >> mult3
 let mult3ThenSquare = mult3 >> square
 ```
 
-The "`>>`" operator is the composition operator.
-It means: do the first function, and then do the second.
+>The "`>>`" operator is the composition operator.
+Оператор "`>>`" - это оператор композиции.
+>It means: do the first function, and then do the second.
+Это значи: сначала выполни первую функцию, а потом вторую.
 
-Note how concise this way of combining functions is.
-There are no parameters, types or other irrelevant noise.
+>Note how concise this way of combining functions is.
+Обратите внимание это какой лаконичный способ комбинирования функций.
+>There are no parameters, types or other irrelevant noise.
+Нет никаких параметров, типов и другого неуместного шума.
 
-To be sure, the examples could also have been written less concisely and more explicitly as:
+>To be sure, the examples could also have been written less concisely and more explicitly as:
+Для уверенности, можно написать эти примеры менее лаконично и более явно:
 
 ```fsharp
 let add2ThenMult3 x = mult3 (add2 x)
 let mult3ThenSquare x = square (mult3 x)
 ```
 
-But this more explicit style is also a bit more cluttered:
+>But this more explicit style is also a bit more cluttered:
+Но этот более яный способ также более загроможденный:
 
-* In the explicit style, the x parameter and the parentheses must be added, even though they don't add to the meaning of the code.
-* And in the explicit style, the functions are written back-to-front from the order they are applied.
-In my example of `add2ThenMult3` I want to add 2 first, and then multiply.
-The `add2 >> mult3` syntax makes this visually clearer than `mult3(add2 x)`.
+>* In the explicit style, the x parameter and the parentheses must be added, even though they don't add to the meaning of the code.
+* В явном стиле необходимо добавить параметр x и скобки, не смотря на то, что они не добавляют смысла коду.
+>* And in the explicit style, the functions are written back-to-front from the order they are applied.
+>In my example of `add2ThenMult3` I want to add 2 first, and then multiply.
+>The `add2 >> mult3` syntax makes this visually clearer than `mult3(add2 x)`.
+* И в явном стиле функции написаны задом-наперед по отношению к порядку их применения.
+В моем примере функции `add2ThenMult3` я хочу сначала прибавить 2, а потом умножить.
+Синтаксис `add2 >> mult3` делает это визуально более очевидным, чем `mult3(add2 x)`.
 
-Now let's test these compositions:
+>Now let's test these compositions:
+Теперь давайте потестируем эти композиции:
 
 ```fsharp
-// test
+>// test
+// тест
 add2ThenMult3 5
 mult3ThenSquare 5
 [1..10] |> List.map add2ThenMult3 |> printfn "%A"
 [1..10] |> List.map mult3ThenSquare |> printfn "%A"
 ```
 
-## Extending existing functions
+>## Extending existing functions
+## Расширение существующих функций
 
-Now say that we want to decorate these existing functions with some logging behavior.
-We can compose these as well, to make a new function with the logging built in.
+>Now say that we want to decorate these existing functions with some logging behavior.
+Допустим мы хотим декорировать существующие функции логирующим поведением.
+>We can compose these as well, to make a new function with the logging built in.
+Мы можем так же их комбинировать, чтобы создать новые функции, со встроенным логированием.
 
 ```fsharp
-// helper functions;
-let logMsg msg x = printf "%s%i" msg x; x     //without linefeed
-let logMsgN msg x = printfn "%s%i" msg x; x   //with linefeed
+>// helper functions;
+// вспомогательные функции;
+>let logMsg msg x = printf "%s%i" msg x; x     //without linefeed
+let logMsg msg x = printf "%s%i" msg x; x     //без переноса строки
+>let logMsgN msg x = printfn "%s%i" msg x; x   //with linefeed
+let logMsgN msg x = printfn "%s%i" msg x; x   //с переносом строки
 
-// new composed function with new improved logging!
+>// new composed function with new improved logging!
+// нвоые комбинированные функции с улучшенным логированием!
 let mult3ThenSquareLogged =
    logMsg "before="
    >> mult3
@@ -84,17 +112,24 @@ let mult3ThenSquareLogged =
    >> square
    >> logMsgN " result="
 
-// test
+>// test
+// тест
 mult3ThenSquareLogged 5
-[1..10] |> List.map mult3ThenSquareLogged //apply to a whole list
+>[1..10] |> List.map mult3ThenSquareLogged //apply to a whole list
+[1..10] |> List.map mult3ThenSquareLogged //применить ко всему списку
 ```
 
-Our new function, `mult3ThenSquareLogged`, has an ugly name, but it is easy to use and nicely hides the complexity of the functions that went into it.
-You can see that if you define your building block functions well, this composition of functions can be a powerful way to get new functionality.
+>Our new function, `mult3ThenSquareLogged`, has an ugly name, but it is easy to use and nicely hides the complexity of the functions that went into it.
+У нашей новой функции `mult3ThenSquareLogged` ужасное имя, но её легко использовать и она неплохо прячет сложность <!-- комплексность --> фукнций вошедших в её состав.
+>You can see that if you define your building block functions well, this composition of functions can be a powerful way to get new functionality.
+Вы можете видеть, что если вы хорошо опишите свои функции - строительные блоки, эта композиция может быть весьма мощным способом получения новой функциональности.
 
-But wait, there's more!
-Functions are first class entities in F#, and can be acted on by any other F# code.
-Here is an example of using the composition operator to collapse a list of functions into a single operation.
+>But wait, there's more!
+Но подождите, это еще не все!
+>Functions are first class entities in F#, and can be acted on by any other F# code.
+В F# функции - это объекты первого класса, и ими можно манипулировать с помощью другого кода на F#.
+>Here is an example of using the composition operator to collapse a list of functions into a single operation.
+Вот пример использования оператора композиции для схлопывания списка функций в одну операцию.
 
 ```fsharp
 let listOfFunctions = [
@@ -104,17 +139,22 @@ let listOfFunctions = [
    logMsgN "result=";
    ]
 
-// compose all functions in the list into a single one
+>// compose all functions in the list into a single one
+// комбинируем все функции в списке в одну
 let allFunctions = List.reduce (>>) listOfFunctions
 
-//test
+>//test
+//тест
 allFunctions 5
 ```
 
-## Mini languages
+>## Mini languages
+## Мини языки
 
-Domain-specific languages (DSLs) are well recognized as a technique to create more readable and concise code.
-The functional approach is very well suited for this.
+>Domain-specific languages (DSLs) are well recognized as a technique to create more readable and concise code.
+Предметно-ориентированный языки (англ. domain-specific language, DSL) широкоизвестны как технология создания более читаемого и лаконичного кода.
+>The functional approach is very well suited for this.
+Функциональный подход отлично для этого подходит.
 
 If you need to, you can go the route of having a full "external" DSL with its own lexer, parser, and so on, and there are various toolsets for F# that make this quite straightforward.
 
