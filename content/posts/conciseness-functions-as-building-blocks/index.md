@@ -10,16 +10,16 @@ categories: [Conciseness, Functions]
 ---
 
 >A well-known principle of good design is to create a set of basic operations and then combine these building blocks in various ways to build up more complex behaviors.
-Широкоизвестный принцип хорошего дизайна - это создание набора базовых операций и последующее комбинирование этих строительных блоков различными путями для создания более сложных поведений.
+Широко известен такой принцип хорошего дизайна, как определение набора базовых операций и последующее комбинирование этих строительных блоков различными путями для создания более сложных поведений.
 >In object-oriented languages, this goal gives rise to a number of implementation approaches such as "fluent interfaces", "strategy pattern", "decorator pattern", and so on.
-В объектно ориентированных языках эта цель порождает ряд тких подходов к реализации, как "текучий интерфейс", "паттерн стратегия", "паттерн декоратор", и т.д.
+В объектно-ориентированных языках эта цель порождает ряд подходов к реализации, таких как "флюент интерфейс"(англ. fluent interface, рус. "текучий интерфейс"), "паттерн стратегия", "паттерн декоратор", и т.д.
 >In F#, they are all done the same way, via function composition.
 В F#, они достигаются теми же путями, с помощью композиции функций.
 
 >Let's start with a simple example using integers.
 Давайте начнем с простого примера с использованием целых чисел.
 >Say that we have created some basic functions to do arithmetic:
-Допустим мы создали несколько базовых функций для выполнения арифметических действий:
+Допустим, мы создали несколько базовых функций для выполнения арифметических действий:
 
 ```fsharp
 >// building blocks
@@ -36,7 +36,7 @@ let square x = x * x
 ```
 
 >Now we want to create new functions that build on these:
-Теперь нам нужно создать новые функции, основанные на них
+Теперь нам нужно создать новые функции, основанные на них:
 
 ```fsharp
 >// new composed functions
@@ -48,10 +48,10 @@ let mult3ThenSquare = mult3 >> square
 >The "`>>`" operator is the composition operator.
 Оператор "`>>`" - это оператор композиции.
 >It means: do the first function, and then do the second.
-Это значи: сначала выполни первую функцию, а потом вторую.
+Это значит: сначала выполни первую функцию, а потом вторую.
 
 >Note how concise this way of combining functions is.
-Обратите внимание это какой лаконичный способ комбинирования функций.
+Обратите внимание как лаконичен этот способ комбинирования функций.
 >There are no parameters, types or other irrelevant noise.
 Нет никаких параметров, типов и другого неуместного шума.
 
@@ -152,7 +152,7 @@ allFunctions 5
 ## Мини языки
 
 >Domain-specific languages (DSLs) are well recognized as a technique to create more readable and concise code.
-Предметно-ориентированный языки (англ. domain-specific language, DSL) широкоизвестны как технология создания более читаемого и лаконичного кода.
+Предметно-ориентированные языки (англ. domain-specific language, DSL) широкоизвестны как технология создания более читаемого и лаконичного кода.
 >The functional approach is very well suited for this.
 Функциональный подход отлично для этого подходит.
 
@@ -163,7 +163,7 @@ allFunctions 5
 Но во многих случаях проще придерживаться синтаксиса F#, и просто спроектировать набор "глаголов" и "существительных", инкапсулирующих нужное нам поведение.
 
 >The ability to create new types concisely and then match against them makes it very easy to set up fluent interfaces quickly.
-Возможность лаконичного создания новых типов и дальнейшего сопостоставления с ними значительно упрощает быстрое создание текучих интерфейсов.
+Возможность лаконичного создания новых типов и дальнейшего сопостоставления с ними значительно упрощает быстрое создание флюент интерфейсов.
 >For example, here is a little function that calculates dates using a simple vocabulary.
 Например вот небольшая функция, вычисляющая даты используя простой словарь.
 >Note that two new enum-style types are defined just for this one function.
@@ -202,15 +202,15 @@ let example2 = getDate 1 Hour Hence
 В примере выше был только один "глагол", использующий многие типы "существительных".
 
 >The following example demonstrates how you might build the functional equivalent of a fluent interface with many "verbs".
-В следующих примерах демонстрируется как Вы можете построить функциональный эквивалент текучего интерфейса со многими "глаголами".
+В следующих примерах демонстрируется как Вы можете построить функциональный эквивалент флюент интерфейса со многими "глаголами".
 
 >Say that we are creating a drawing program with various shapes.
 Допустим что мы создаем программу для рисования с различными формами.
 >Each shape has a color, size, label and action to be performed when clicked, and we want a fluent interface to configure each shape.
-У каждой фигуры есть цвет, размер, ярлык и действие, выполняемое по клику, и нам нужен текучий интерфейс для настройки каждой фигуры.
+У каждой фигуры есть цвет, размер, ярлык и действие, выполняемое по клику, и нам нужен флюент интерфейс для настройки каждой фигуры.
 
 >Here is an example of what a simple method chain for a fluent interface in C# might look like:
-Вот пример того, как простая цепочка методов текучего интерфейса может выглядеть на C#:
+Вот пример того, как простая цепочка методов флюент интерфейса может выглядеть на C#:
 
 ```fsharp
 FluentShape.Default
@@ -220,7 +220,7 @@ FluentShape.Default
 ```
 
 >Now the concept of "fluent interfaces" and "method chaining" is really only relevant for object-oriented design.
-Однако концепт "тукучего интерфейса" и "цепочки методов" имеет смысл только для объектно ориентированного дизайна.
+Однако концепт "флюент интерфейса" и "цепочки методов" имеет смысл только для объектно ориентированного дизайна.
 >In a functional language like F#, the nearest equivalent would be the use of the pipeline operator to chain a set of functions together.
 В функциональном языке как F# ближайшим эквивалентом будет использование конвеерного оператора для создания цепочки функций.
 
@@ -276,7 +276,7 @@ let appendClickAction action shape =
 ```
 
 >Notice that `appendClickAction` takes a function as a parameter and composes it with the existing click action.
-Обратите внимание на то, что `appendClickAction` принимает функцию в качестве пораметра и комбинирует её с существующим действием по клику.
+Обратите внимание на то, что `appendClickAction` принимает функцию в качестве параметра и комбинирует её с существующим действием по клику.
 >As you start getting deeper into the functional approach to reuse, you start seeing many more "higher order functions" like this, that is, functions that act on other functions.
 По мере того, как Вы будете углубляться в функциональный подход к переиспользованию, Вы начнете замечать намного больше "функций высшего порядка" вроде этой, это функции которые совершают действия над другими функциями.
 >Combining functions like this is one of the keys to understanding the functional way of programming.
@@ -285,7 +285,7 @@ let appendClickAction action shape =
 >Now as a user of this "mini-language", I can compose the base helper functions into more complex functions of my own, creating my own function library.
 Теперь как пользователь этого "мини-языка", я могу скомбинировать базовые функции-помощники в свои более сложные функции, создавая свою собственную библиотеку функций.
 >(In C# this kind of thing might be done using extension methods.)
-(В C# это то, чего можно добиться с помощью методов расшырений.)
+(В C# это то, чего можно добиться с помощью методов расширений.)
 
 ```fsharp
 >// Compose two "base" functions to make a compound function.
