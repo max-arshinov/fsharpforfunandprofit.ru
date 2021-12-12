@@ -1,10 +1,13 @@
 ---
 layout: post
-title: "Using functions as building blocks"
-description: "Function composition and mini-languages make code more readable"
+>title: "Using functions as building blocks"
+title: "Использование функций в качестве строительных блоков"
+>description: "Function composition and mini-languages make code more readable"
+description: "Композиция функций и мини-языки делают код более читаемым"
 date: 2012-04-11
 nav: why-use-fsharp
-seriesId: "Why use F#?"
+>seriesId: "Why use F#?"
+seriesId: "Зачем использовать F#?"
 seriesOrder: 11
 categories: [Conciseness, Functions]
 ---
@@ -93,7 +96,7 @@ mult3ThenSquare 5
 >Now say that we want to decorate these existing functions with some logging behavior.
 Допустим мы хотим декорировать существующие функции логирующим поведением.
 >We can compose these as well, to make a new function with the logging built in.
-Мы можем так же их комбинировать, чтобы создать новые функции, со встроенным логированием.
+Мы можем также их комбинировать, чтобы создать новые функции, со встроенным логированием.
 
 ```fsharp
 >// helper functions;
@@ -120,7 +123,7 @@ mult3ThenSquareLogged 5
 ```
 
 >Our new function, `mult3ThenSquareLogged`, has an ugly name, but it is easy to use and nicely hides the complexity of the functions that went into it.
-У нашей новой функции `mult3ThenSquareLogged` ужасное имя, но её легко использовать и она неплохо прячет сложность <!-- комплексность --> фукнций вошедших в её состав.
+У нашей новой функции `mult3ThenSquareLogged` ужасное имя, но её легко использовать и она неплохо прячет сложность <!-- комплексность --> функций вошедших в её состав.
 >You can see that if you define your building block functions well, this composition of functions can be a powerful way to get new functionality.
 Вы можете видеть, что если вы хорошо опишите свои функции - строительные блоки, эта композиция может быть весьма мощным способом получения новой функциональности.
 
@@ -152,7 +155,7 @@ allFunctions 5
 ## Мини языки
 
 >Domain-specific languages (DSLs) are well recognized as a technique to create more readable and concise code.
-Предметно-ориентированные языки (англ. domain-specific language, DSL) широкоизвестны как технология создания более читаемого и лаконичного кода.
+Предметно-ориентированные языки (англ. domain-specific language, DSL) широко известны как технология создания более читаемого и лаконичного кода.
 >The functional approach is very well suited for this.
 Функциональный подход отлично для этого подходит.
 
@@ -163,7 +166,7 @@ allFunctions 5
 Но во многих случаях проще придерживаться синтаксиса F#, и просто спроектировать набор "глаголов" и "существительных", инкапсулирующих нужное нам поведение.
 
 >The ability to create new types concisely and then match against them makes it very easy to set up fluent interfaces quickly.
-Возможность лаконичного создания новых типов и дальнейшего сопостоставления с ними значительно упрощает быстрое создание флюент интерфейсов.
+Возможность лаконичного создания новых типов и дальнейшего сопоставления с ними значительно упрощает быстрое создание флюент интерфейсов.
 >For example, here is a little function that calculates dates using a simple vocabulary.
 Например вот небольшая функция, вычисляющая даты используя простой словарь.
 >Note that two new enum-style types are defined just for this one function.
@@ -222,7 +225,7 @@ FluentShape.Default
 >Now the concept of "fluent interfaces" and "method chaining" is really only relevant for object-oriented design.
 Однако концепт "флюент интерфейса" и "цепочки методов" имеет смысл только для объектно ориентированного дизайна.
 >In a functional language like F#, the nearest equivalent would be the use of the pipeline operator to chain a set of functions together.
-В функциональном языке как F# ближайшим эквивалентом будет использование конвеерного оператора для создания цепочки функций.
+В функциональном языке как F# ближайшим эквивалентом будет использование конвейерного оператора для создания цепочки функций.
 
 >Let's start with the underlying Shape type:
 Давайте начнем с базового типа Shape:
@@ -339,7 +342,7 @@ blueBox
 >Here is a more complex example.
 Вот более сложный пример.
 >We will create a function "`showRainbow`" that, for each color in the rainbow, sets the color and displays the shape.
-Мы создадим функцию "`showRainbow`" которая, для каждого цвета радуги задаст цвет и выведет фигуру.
+Мы создадим функцию "`showRainbow`" которая, для каждого цвета радуги задаёт цвет и выведет фигуру.
 
 ```fsharp
 let rainbow =
