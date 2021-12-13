@@ -366,4 +366,4 @@ defaultShape |> showRainbow
 >For example, the "`showRainbow`" function does take a shape as a parameter, but it is not explicitly shown!
 Например функция "`showRainbow`" принимает фигуру в качестве параметра, но это не показано явно!
 >This elision of parameters is called "point-free" style and will be discussed further in the ["thinking functionally"](/series/thinking-functionally.html) series.
-Эта элизия параметров называется программирование, свободное от указателей (Бесточечное программирование) и будет обсуждаться далее в серии ["думай функционально"](/series/thinking-functionally.html).
+Эта элизия параметров называется бесточечный стиль(бесточечная нотация, англ. "point-free" style) и будет обсуждаться далее в серии ["думай функционально"](/series/thinking-functionally.html).
