@@ -202,13 +202,13 @@ let example2 = getDate 1 Hour Hence
 ```
 
 >The example above only has one "verb", using lots of types for the "nouns".
-В примере выше был только один "глагол", использующий многие типы "существительных".
+В примере выше был только один "глагол", использующий несколько "существительных".
 
 >The following example demonstrates how you might build the functional equivalent of a fluent interface with many "verbs".
-В следующих примерах демонстрируется как Вы можете построить функциональный эквивалент флюент интерфейса со многими "глаголами".
+В следующих примерах демонстрируется как Вы могли бы построить функциональный эквивалент флюент интерфейса со многими "глаголами".
 
 >Say that we are creating a drawing program with various shapes.
-Допустим что мы создаем программу для рисования с различными формами.
+Допустим что мы создаем программу для рисования с различными фигурами.
 >Each shape has a color, size, label and action to be performed when clicked, and we want a fluent interface to configure each shape.
 У каждой фигуры есть цвет, размер, ярлык и действие, выполняемое по клику, и нам нужен флюент интерфейс для настройки каждой фигуры.
 
