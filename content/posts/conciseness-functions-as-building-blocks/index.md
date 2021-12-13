@@ -17,7 +17,7 @@ categories: [Conciseness, Functions]
 >In object-oriented languages, this goal gives rise to a number of implementation approaches such as "fluent interfaces", "strategy pattern", "decorator pattern", and so on.
 В объектно-ориентированных языках эта цель порождает ряд подходов к реализации, таких как "флюент интерфейс"(англ. fluent interface, рус. "текучий интерфейс"), "паттерн стратегия", "паттерн декоратор", и т.д.
 >In F#, they are all done the same way, via function composition.
-В F#, они достигаются теми же путями, с помощью композиции функций.
+В F# для всех этих вещей используют один подход — композицию функций.
 
 >Let's start with a simple example using integers.
 Давайте начнем с простого примера с использованием целых чисел.
@@ -39,7 +39,7 @@ let square x = x * x
 ```
 
 >Now we want to create new functions that build on these:
-Теперь нам нужно создать новые функции, основанные на них:
+Теперь мы хотим создать новые функции, основанные на них:
 
 ```fsharp
 >// new composed functions
@@ -67,7 +67,7 @@ let mult3ThenSquare x = square (mult3 x)
 ```
 
 >But this more explicit style is also a bit more cluttered:
-Но этот более яный способ также более загроможденный:
+Но этот более яный способ также более громоздкий:
 
 >* In the explicit style, the x parameter and the parentheses must be added, even though they don't add to the meaning of the code.
 * В явном стиле необходимо добавить параметр x и скобки, не смотря на то, что они не добавляют смысла коду.
@@ -123,9 +123,9 @@ mult3ThenSquareLogged 5
 ```
 
 >Our new function, `mult3ThenSquareLogged`, has an ugly name, but it is easy to use and nicely hides the complexity of the functions that went into it.
-У нашей новой функции `mult3ThenSquareLogged` ужасное имя, но её легко использовать и она неплохо прячет сложность <!-- комплексность --> функций вошедших в её состав.
+У нашей новой функции `mult3ThenSquareLogged` ужасное имя, но её легко использовать и она неплохо прячет сложность функций вошедших в её состав.
 >You can see that if you define your building block functions well, this composition of functions can be a powerful way to get new functionality.
-Вы можете видеть, что если вы хорошо опишите свои функции - строительные блоки, эта композиция может быть весьма мощным способом получения новой функциональности.
+Вы можете видеть, что если вы хорошо опишите свои функции - строительные блоки, то такая композиция может быть весьма мощным способом получения новой функциональности.
 
 >But wait, there's more!
 Но подождите, это еще не все!
@@ -155,7 +155,7 @@ allFunctions 5
 ## Мини языки
 
 >Domain-specific languages (DSLs) are well recognized as a technique to create more readable and concise code.
-Предметно-ориентированные языки (англ. domain-specific language, DSL) широко известны как технология создания более читаемого и лаконичного кода.
+Предметно-ориентированные языки (англ. domain-specific language, DSL) широко известны в качестве техники создания более читаемого и лаконичного кода.
 >The functional approach is very well suited for this.
 Функциональный подход отлично для этого подходит.
 
@@ -174,12 +174,12 @@ allFunctions 5
 
 ```fsharp
 >// set up the vocabulary
-// задать словаря
+// задаем словарь
 type DateScale = Hour | Hours | Day | Days | Week | Weeks
 type DateDirection = Ago | Hence
 
 >// define a function that matches on the vocabulary
-// создать функцию, сопоставляющую со словарем
+// создаем функцию, сопоставляющую со словарем
 let getDate interval scale direction =
     let absHours = match scale with
                    | Hour | Hours -> 1 * interval
@@ -191,7 +191,7 @@ let getDate interval scale direction =
     System.DateTime.Now.AddHours(float signedHours)
 
 >// test some examples
-// протестировать на нескольких примеров
+// протестируем на нескольких примерах
 let example1 = getDate 5 Days Ago
 let example2 = getDate 1 Hour Hence
 
@@ -283,7 +283,7 @@ let appendClickAction action shape =
 >As you start getting deeper into the functional approach to reuse, you start seeing many more "higher order functions" like this, that is, functions that act on other functions.
 По мере того, как Вы будете углубляться в функциональный подход к переиспользованию, Вы начнете замечать намного больше "функций высшего порядка" вроде этой, это функции которые совершают действия над другими функциями.
 >Combining functions like this is one of the keys to understanding the functional way of programming.
-Комбинирование функций таким образом - это ключ к пониманию функционального подхода к программированию.
+Комбинирование функций таким образом - это один из ключей к пониманию функционального подхода к программированию.
 
 >Now as a user of this "mini-language", I can compose the base helper functions into more complex functions of my own, creating my own function library.
 Теперь как пользователь этого "мини-языка", я могу скомбинировать базовые функции-помощники в свои более сложные функции, создавая свою собственную библиотеку функций.
@@ -298,7 +298,7 @@ let setRedBox = setColor "red" >> setLabel "box"
 >// Create another function by composing with previous function.
 // Создать новую функцию скомбинировав с предыдущей функцией
 >// It overrides the color value but leaves the label alone.
-// Она перезаписывает значение цвета, но не трогает ярлык.
+// Она переопределяет значение цвета, но не трогает ярлык.
 let setBlueBox = setRedBox >> setColor "blue"
 
 >// Make a special case of appendClickAction
@@ -316,7 +316,7 @@ let redBox = defaultShape |> setRedBox
 let blueBox = defaultShape |> setBlueBox
 
 >// create a shape that changes color when clicked
-// создадим форму, меняющую цвет по клику
+// создадим фигуру, меняющую цвет по клику
 redBox
     |> display
     |> changeColorOnClick "green"
@@ -342,7 +342,7 @@ blueBox
 >Here is a more complex example.
 Вот более сложный пример.
 >We will create a function "`showRainbow`" that, for each color in the rainbow, sets the color and displays the shape.
-Мы создадим функцию "`showRainbow`" которая, для каждого цвета радуги задаёт цвет и выведет фигуру.
+Мы создадим функцию "`showRainbow`" которая, для каждого цвета радуги задаёт цвет и выводит фигуру.
 
 ```fsharp
 let rainbow =
@@ -362,7 +362,7 @@ defaultShape |> showRainbow
 >Notice that the functions are getting more complex, but the amount of code is still quite small.
 Обратите внимание на то, что функции становятся более сложными, но количество кода все еще маленькое.
 >One reason for this is that the function parameters can often be ignored when doing function composition, which reduces visual clutter.
-Одна из причин для этого - это то, что параметры функций часто могут быть игнорированы во время комбинирования функций, что уменьшает визуальный беспорядок.
+Одна из причин - это то, что параметры функций часто могут быть игнорированы во время комбинирования функций, что уменьшает визуальный беспорядок.
 >For example, the "`showRainbow`" function does take a shape as a parameter, but it is not explicitly shown!
 Например функция "`showRainbow`" принимает фигуру в качестве параметра, но это не показано явно!
 >This elision of parameters is called "point-free" style and will be discussed further in the ["thinking functionally"](/series/thinking-functionally.html) series.
