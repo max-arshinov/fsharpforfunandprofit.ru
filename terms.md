@@ -46,10 +46,10 @@
 | tuples                    | кортежи                       |                           |                                                           |
 | type checking             | проверка типа(ов)             |                           |                                                           |
 | type definition           | определение типа              | обозначение типа          |                                                           |
-| type inference            | приведение типов              |                           |                                                           |
-| type inference system     | система приведения типов      |                           |                                                           |
+| type inference            | вывод типов                   |                           |                                                           |
+| type inference system     | система вывода типов          |                           |                                                           |
 | type system               | система типов                 |                           |                                                           |
 | unions                    | объединения                   |                           |                                                           |
 | unit                      | модуль                        |                           |                                                           |
 | unit test                 | модульный тест                |                           |                                                           |
-| unit of measure           | величина измерения            |                           |                                                           |
+| unit of measure           | единица измерения             |                           |                                                           |

@@ -20,28 +20,31 @@ GeekdocAnchor: false
 ## {{<glyphicon glyphicons_030_pencil>}}&nbsp;Выразительность
 
 >F# is not cluttered up with [coding "noise"](/posts/fvsc-sum-of-squares/) such as curly brackets, semicolons and so on.
-F# не захламлён ["шумом" кодирования](/posts/fvsc-sum-of-squares/) таким как круглые скобки, точки с запятой и так далее.
+F# не захламлён [синтаксическим "шумом"](/posts/fvsc-sum-of-squares/) таким как круглые скобки, точки с запятой и так далее.
 <!--Лучше просто использовать "шумом", или уже "ненужными конструкциями"--> 
 
 >You almost never have to specify the type of an object, thanks to a powerful [type inference system](/posts/conciseness-type-inference/).
-Вам практически никогда не стоит указывать тип объекта, благодаря мощной [системе приведения типов](/posts/conciseness-type-inference/).
+Вам практически никогда не стоит указывать тип объекта, благодаря мощному [выводу типов](/posts/conciseness-type-inference/).
 
 >And, compared with C#, it generally takes [fewer lines of code](/posts/fvsc-download/) to solve the same problem.
-И, в сравнении с C#, обычно нужно [меньше строк кода](/posts/fvsc-download/) <!-- для того --> чтобы решить аналогичную проблему.
+И, в сравнении с C#, обычно нужно [меньше строк кода](/posts/fvsc-download/) <!-- для того --> чтобы решить такую же проблему.
 
 ```fsharp
 >// one-liners
 // Запись в одну строку
-<!-- Напрашивается дословный перевод "однострочники" -->
+<!-- Напрашивается дословный перевод "однострочники" или "однострочная запись" -->
 [1..100] |> List.sum |> printfn "sum=%d"
 
 >// no curly braces, semicolons or parentheses
 // Отсутствие фигурных скобок, точек с запятой или круглых скобок
+<!-- Нет необходимости в фигурных скобках, точках с запятой или круглых скобках --> 
+<!-- Нет фигурных скобок, точек с запятой или круглых скобок --> 
 let square x = x * x
 let sq = square 42
 
 >// simple types in one line
-// запись простых типов в одну строку
+// простые типы в одной строке
+<!-- запись простых типов в одну строку -->
 type Person = {First:string; Last:string}
 
 >// complex types in a few lines
@@ -62,15 +65,16 @@ let worker = Worker jdoe
 ## {{<glyphicon glyphicons_343_thumbs_up>}}&nbsp;Удобство
 
 >Many common programming tasks are much simpler in F#.
-Множество привычных задач программирования <!-- выглядят --> значительно проще в F#.
+Множество привычных задач программирования <!-- выглядят/решается --> значительно проще в F#.
 
 >This includes things like creating and using [complex type definitions](/posts/conciseness-type-definitions/), doing [list processing](/posts/conciseness-extracting-boilerplate/), [comparison and equality](/posts/convenience-types/), [state machines](/posts/designing-with-types-representing-states/), and much more.
-Это включает в сябя такие вещи как создание и использование [сложных типов <!--сложных\комплексных определений типов-->](/posts/conciseness-type-definitions/), выполнение [обработок списков](/posts/conciseness-extracting-boilerplate/), [сравнение и проверки на равенство]((/posts/convenience-types/), [конечных автоматов](/posts/designing-with-types-representing-states/), и многое другое.
+Оно включает в себя такие задачи, как создание и использование [сложных типов <!--сложных\комплексных определений типов-->](/posts/conciseness-type-definitions/), выполнение [обработок списков](/posts/conciseness-extracting-boilerplate/), [сравнение и проверки на равенство]((/posts/convenience-types/), [конечных автоматов](/posts/designing-with-types-representing-states/), и многое другое.
 <!--Тут, `state machine` скорее всего используется как `finite state machine`, а это `конечный автомат`. Страница https://docs.microsoft.com/ru-ru/dotnet/framework/windows-workflow-foundation/state-machine-workflows на русском тоже использует `конечный автомат` -->
 
 >And because functions are first class objects, it is very easy to create powerful and reusable code by creating functions that have [other functions as parameters](/posts/conciseness-extracting-boilerplate/), or that [combine existing functions](/posts/conciseness-functions-as-building-blocks/) to create new functionality.
-И, потому что функции являются объектами первого класса, очень легко создать мощный и переиспользуемый код, создавая функции которые имеют [другие функции в качестве входных параметров](/posts/conciseness-extracting-boilerplate/), или таких что [комбинируют существующие функции](/posts/conciseness-functions-as-building-blocks/) для создания новой функциональности.
+И, потому что функции являются полноправными объектами, очень легко писать мощный и переиспользуемый код, создавая функции которые имеют [другие функции в качестве входных параметров](/posts/conciseness-extracting-boilerplate/), или таких что [комбинируют существующие функции](/posts/conciseness-functions-as-building-blocks/) для создания новой функциональности.
 <!-- `powerful` перевёл как `мощный`, но тут бы лучше подошло `многофункциональный`.-->
+<!-- Перевёл `easy to create` как `очень легко писать`, чтобы избежать тавтологии. -->
 
 
 ```fsharp
@@ -98,25 +102,25 @@ let result = add2times3 5
 
 
 >F# has a [powerful type system](/posts/correctness-type-checking/) which prevents many common errors such as [null reference exceptions](/posts/the-option-type/#option-is-not-null).
-F# имеет [мощную систему типов](/posts/correctness-type-checking/) которая предупреждает множество привычных ошибок, например [исключения для ссылок на null](/posts/the-option-type/#option-is-not-null).
+F# имеет [мощную систему типов](/posts/correctness-type-checking/) которая предотвращает множество привычных ошибок, например [исключения для ссылок на null](/posts/the-option-type/#option-is-not-null).
 <!-- `powerful` перевёл как `мощную`, но тут бы лучше подошло `многофункциональный`.-->
 <!-- `null reference exception` - `исключение для ссылок на null`, не думаю что `null` стоит переводить, так как это часть языка F#. В словарь добавил два варианта-->
 
 >Values are [immutable by default](/posts/correctness-immutability/), which prevents a large class of errors.
-Значения является [неизменяемыми по умолчанию](/posts/correctness-immutability/), что предотвращает большой класс ошибок.
+Значения являются [неизменяемыми по умолчанию](/posts/correctness-immutability/), что предотвращает большой пласт ошибок.
 
 >In addition, you can often encode business logic using the [type system](/posts/correctness-exhaustive-pattern-matching/) itself in such a way that it is actually [impossible to write incorrect code](/posts/designing-for-correctness/) or mix up [units of measure](/posts/units-of-measure/), greatly reducing the need for unit tests.
-В добавок, вы часто можете закодировать бизнес логику используя [систему типов](/posts/correctness-exhaustive-pattern-matching/) таким образом, что будет практически [невозможно написать неправильный код](/posts/designing-for-correctness/) или смешать [величины измерения](/posts/units-of-measure/), сильно уменьшая потребность в модульных тестах.
+В добавок, вы часто можете описать бизнес логику используя [систему типов](/posts/correctness-exhaustive-pattern-matching/) таким образом, что будет практически [невозможно написать неправильный код](/posts/designing-for-correctness/) или смешать [величины измерения](/posts/units-of-measure/), сильно уменьшая потребность в модульных тестах.
 <!--`encode` - закодировать, но тут лучше будет `описать`.-->
 
 ```fsharp
 >// strict type checking
 // строгая проверка типов
-printfn "print string %s" 123 //compile error
+printfn "print string %s" 123 // ошибка компиляции
 
 >// all values immutable by default
 // все значения являются неизменяемыми по умолчанию
-person1.First <- "new name"  //assignment error
+person1.First <- "new name"  //о шибка присвоения
 
 >// never have to check for nulls
 // никогда не нужно делать проверку на null
@@ -128,11 +132,11 @@ let makeNewString str =
 
 >// embed business logic into types
 // встраивание бизнес логики в типы
-emptyShoppingCart.remove   // compile error!
+emptyShoppingCart.remove   // ошибка компиляции!
 
 >// units of measure
-// величины измерения
-let distance = 10<m> + 10<ft> // error!
+// единицы измерения
+let distance = 10<m> + 10<ft> // ошибка!
 ```
 
 ----
@@ -142,7 +146,8 @@ let distance = 10<m> + 10<ft> // error!
 ## {{<glyphicon glyphicons_054_clock>}}&nbsp;Параллелизм
 
 >F# has a number of built-in libraries to help when more than one thing at a time is happening. 
-F# содержит число встроенных библиотек для помощи, когда более чем одна вещь происходит одновременно.
+F# содержит множество встроенных библиотек для помощи, когда более чем одна вещь происходит одновременно.
+<!-- number = число\несколько\множество -->
 
 >Asynchronous programming is [very easy](/posts/concurrency-async-and-parallel/), as is parallelism.
 Асинхронное программирование является [очень простым](/posts/concurrency-async-and-parallel/), так же как и параллелизм.
@@ -160,7 +165,7 @@ F# также имеет встроенную [модель акторов](/pos
 let! result = async {something}
 
 >// easy parallelism
-// простая параллелизация
+// простой параллелизм
 Async.Parallel [ for i in 0..40 ->
       async { return fib(i) } ]
 
@@ -174,11 +179,13 @@ MailboxProcessor.Start(fun inbox-> async{
 
 ----
 
+>## {{<glyphicon glyphicons_280_settings>}}&nbsp;Completeness
 ## {{<glyphicon glyphicons_280_settings>}}&nbsp;Полнота
 
 
 >Although it is a functional language at heart, F# does support other styles which are not 100% pure, which makes it much easier to interact with the non-pure world of web sites, databases, other applications, and so on.
 Хотя в глубине души это функциональный язык, F# поддерживает другие стили, которые не на 100% "чистые", что позволяет значительно легче взаимодействовать с "нечистым" миром интернет сайтов, баз данных, других приложений, и так далее.
+<!-- At heart можно перевести как "В основе своей"\"по натуре"\"в душе"\"в глубине души" --> 
 
 >In particular, F# is designed as a hybrid functional/OO language, so it can do [virtually everything that C# can do](/posts/completeness-anything-csharp-can-do/).
 В частности, F# разработан как гибридный функциональный/ОО язык, по этому он может [практически всё, что можно сделать с C#](/posts/completeness-anything-csharp-can-do/). 
@@ -232,6 +239,5 @@ form.Show()
 ## Хотите больше подробностей?
 
 >If you want more information, the ["Why use F#?" series of posts](/series/why-use-fsharp/) covers each of these points in much greater detail.
-Если вы хотите больше информации, [серия постов "Зачем использовать F#?"] намного лучше раскрывает каждый из этих пунктов.
+Если вы хотите больше информации, [серия постов "Зачем использовать F#?"] намного полнее раскрывает каждый из этих пунктов.
 <!-- Если вам нужно/если вы хотите; раскрывает каждый из этих пунктов более детально. -->
-
