@@ -120,7 +120,7 @@ printfn "print string %s" 123 // ошибка компиляции
 
 >// all values immutable by default
 // все значения являются неизменяемыми по умолчанию
-person1.First <- "new name"  //о шибка присвоения
+person1.First <- "new name"  // ошибка присвоения
 
 >// never have to check for nulls
 // никогда не нужно делать проверку на null
