@@ -23,16 +23,20 @@ date: 2020-01-01
 Затем я подробно остановлюсь на сообщениях об ошибках, и покажу, из-за чего они возникают, и как их исправить.
 
 > [(Jump to the error numbers)](#NumericErrors)
+[(Ошибки по номерам)](#NumericErrors)
 
 [(Ошибки по номерам)](#NumericErrors)
 
 > ## General guidelines for troubleshooting ##
+## Общие советы по исправлению ошибок
 
 ## Общие советы по исправлению ошибок
 
 > By far the most important thing you can do is to take the time and effort to understand exactly how F# works, especially the core concepts involving functions and the type system.
 > So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 > If you don't understand how functions and types work, then the compiler errors will not make any sense.
+Безусловно, самое важное, что вы можете сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
+Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с основными идеями, прежде чем приступать к серьёзным вещам.
 
 Безусловно, самое важное, что вы может е сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
 Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с основными идеями, прежде чем приступать к серьёзным вещам.
@@ -140,6 +144,7 @@ type Customer = {Name:string; Address: string}  // правильно
 ```
 
 > ### Don't use ! for not or != for not-equal ###
+
 ### Не используйте ! как логическое отрицание и != как проверку на неравенство
 
 > The exclamation point symbol is not the "NOT" operator.
