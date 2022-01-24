@@ -12,138 +12,205 @@ date: 2020-01-01
 > As the saying goes, "if it compiles, it's correct", but it can be extremely frustrating just trying to get the code to compile at all!
 > So this page is devoted to helping you troubleshoot your F# code.
 
+Говорят, что "если код компилируется, то он правильный", но иногда невероятно сложно заставить код даже компилироваться.
+Так что эта страница написана, чтобы помочь вам справляться с ошибками в вашем F# коде.
+
+
 > I will first present some general advice on troubleshooting and some of the most common errors that beginners make.
 > After that, I will describe each of the common error messages in detail, and give examples of how they can occur and how to correct them.
 
+Сначала я дам несколько универсальных советов по исправлению, и расскажу о самых частых ошибках, которые совершают новички.
+Затем я подробно остановлюсь на сообщениях об ошибках, и покажу, из-за чего они возникают, и как их исправить.
+
 > [(Jump to the error numbers)](#NumericErrors)
+[(Ошибки по номерам)](#NumericErrors)
 
 > ## General guidelines for troubleshooting ##
+## Общие советы по исправлению ошибок
 
 > By far the most important thing you can do is to take the time and effort to understand exactly how F# works, especially the core concepts involving functions and the type system.
 > So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 > If you don't understand how functions and types work, then the compiler errors will not make any sense.
+Безусловно, самое важное, что вы можете сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
+Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с основными идеями, прежде чем приступать к серьёзным вещам.
 
 > If you are coming from an imperative language such as C#, you may have developed some bad habits by relying on the debugger to find and fix incorrect code.
 > In F#, you will probably not get that far, because the compiler is so much stricter in many ways.
 > And of course, there is no tool to "debug" the compiler and step through its processing.
 > The best tool for debugging compiler errors is your brain, and F# forces you to use it!
 
+Если у вас есть опыт императивного программирования, например на C#, вы можете принести с собой вредные привычки, такие как поиск и исправление ошибок с помощью отладчика. В F# вы, вероятно, просто не доберётесь до отладки, поскольку компилятор здесь гораздо строже. И, конечно, не существует никакого средства «отлаживать» компилятор, пошагово проверяя его работу. Лучшее средство для отладки ошибок компиляции — это ваша голова, и F# заставляет её включить!
+
 > Nevertheless, there are a number of extremely common errors that beginners make, and I will quickly go through them.
 
+Впрочем, есть несколько ошибок, которые новички совершают неприлично часто, так что я быстро по ним пробегусь.
+
 > ### Don't use parentheses when calling a function ###
+
+### Не используйте скобки при вызове функций
 
 > In F#, whitespace is the standard separator for function parameters.
 > You will rarely need to use parentheses, and in particular, do not use parentheses when calling a function.
 
+Правильный разделитель параметров функции в F# — это пробел.
+Скобки вам потребуются нечасто, так что не пишите их при вызове функций.
+
 ```fsharp
 let add x y = x + y
-let result = add (1 2)  //wrong
-    // error FS0003: This value is not a function and cannot be applied
-let result = add 1 2    //correct
+let result = add (1 2)  // неправильно
+    // ошибка FS0003: это значение не является функцией и не может быть применено
+let result = add 1 2    // правильно
 ```
 
+<!-- Текст ошибок на русском язык с сайта Microsoft. Конкретно FS0003 — осюда:
+https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/compiler-messages/fs0003 -->
+
 > ### Don't mix up tuples with multiple parameters ###
+### Не путайте кортежи и отдельные параметры функций
 
 > If it has a comma, it is a tuple.
 > And a tuple is one object not two.
 > So you will get errors about passing the wrong type of parameter, or too few parameters.
 
+Запятыми разделяются значения в кортежах.
+И кортеж — это один объект, а не два.
+Так что вы получите ошибку о неверном типе параметров или о том, что параметров слишком мало.
+
 ```fsharp
-addTwoParams (1,2)  // trying to pass a single tuple rather than two args
-   // error FS0001: This expression was expected to have type
-   //               int but here has type 'a * 'b
+addTwoParams (1,2)  // пытаемся передать один кортеж вместо двух параметров
+   // ошибка FS0001: ожидается выражения типа int, обнаружено выражения типа 'a * 'b
 ```
 
 > The compiler treats `(1,2)` as a generic tuple, which it attempts to pass to "`addTwoParams`".
 > Then it complains that the first parameter of `addTwoParams` is an int, and we're trying to pass a tuple.
 
+Компилятор трактует `(1,2)` как кортеж, который он пробует передать в "`addTwoParams`".
+В результате он жалуется, что первым параметром `addTwoParams` должно быть целое число, а мы пытаемся передать кортеж.
+
 > If you attempt to pass *two* arguments to a function expecting *one* tuple, you will get another obscure error.
 
+Если вы попытаетесь передать *два* аргумента в функцию, которая ожидает *один* кортеж, вы получите другое неясное сообщение об ошибке.
+
 ```fsharp
-addTuple 1 2   // trying to pass two args rather than one tuple
-  // error FS0003: This value is not a function and cannot be applied
+addTuple 1 2   // пытаемся передать два аргумента вместо одного кортежа
+  // ошибка FS0003: это значение не является функцией и не может быть применено
 ```
 
 > ### Watch out for too few or too many arguments ###
+### Остерегайтесь неверного числа аргументов 
 
 > The F# compiler will not complain if you pass too few arguments to a function (in fact "partial application" is an important feature), but if you don't understand what is going on, you will often get strange "type mismatch" errors later.
 
+Компилятор F# не считает ошибкой слишком малое число аргументов функции (в конце концов, «частичное применение» — одно из важнейших свойств языка), но если вы не понимаете, что происходит, вы получите странные сообщения о несовпадении типов чуть дальше в программе.
+
 > Similarly the error for having too many arguments is typically "This value is not a function" rather than a more straightforward error.
+
+Сообщение о слишком большом числе аргументов также не очень ясное. Оно звучит как "Значение не является функцией".
 
 > The "printf" family of functions is very strict in this respect.
 > The argument count must be exact.
 
+В этом отношении очень строгим является семейство функций "printf".
+Здесь количество аргументов должно совпадать с точностью.
+
 > This is a very important topic -- it is critical that you understand how partial application works.
 > See the series ["thinking functionally"](/series/thinking-functionally.html) for a more detailed discussion.
 
+Это очень важная тема — критически важно разобраться в том, как работает частичное применение.
+За подробностями обращайтесь к циклу ["мыслить функционально"](/series/thinking-functionally.html).
+
 > ### Use semicolons for list separators ###
+### Используйте точки с запятой, чтобы разделять значения в списках
 
 > In the few places where F# needs an explicit separator character, such as lists and records, the semicolon is used.
 > Commas are never used. (Like a broken record, I will remind you that commas are for tuples).
 
-```fsharp
-let list1 = [1,2,3]    // wrong! This is a ONE-element list containing
-                       // a three-element tuple
-let list1 = [1;2;3]    // correct
+В тех редких случаях, когда F# нуждается в явном символе-разделителе, скажем, в списках и записях, нужно использовать точку с запятой.
 
-type Customer = {Name:string, Address: string}  // wrong
-type Customer = {Name:string; Address: string}  // correct
+```fsharp
+let list1 = [1,2,3]    // неправильно! Это список из ОДНОГО кортежа,
+                       // который содержит три значения
+let list1 = [1;2;3]    // правильно
+
+type Customer = {Name:string, Address: string}  // неправильно
+type Customer = {Name:string; Address: string}  // правильно
 ```
 
 > ### Don't use ! for not or != for not-equal ###
+### Не используйте ! как логическое отрицание и != как оператор не-равно
 
 > The exclamation point symbol is not the "NOT" operator.
-> It is the deferencing operator for mutable references.
+> It is the deferencing operator for mutable references. <!-- dereferencing -->
 > If you use it by mistake, you will get the following error:
+
+Восклицательный знак — это не оператор логического отрицания.
+Это разыменовывающий оператор для изменяемых ссылок.
+Если вы случайно его написали, вы получите такую ошибку:
 
 ```fsharp
 let y = true
 let z = !y
-// => error FS0001: This expression was expected to have
-//    type 'a ref but here has type bool
+// => ошбика FS0001: ожидается выражение типа 'a ref, обнаружено выражение типа bool
 ```
 
 > The correct construction is to use the "not" keyword.
 > Think SQL or VB syntax rather than C syntax.
 
+Вам нужно использовать ключевое слово "not", точно также, как в SQL или VB.
+
 ```fsharp
 let y = true
-let z = not y       //correct
+let z = not y       //правильно
 ```
 
 > And for "not equal", use "<>", again like SQL or VB.
 
+Чтобы написать не-равно, используйте "<>" — снова, как в SQL или VB.
+
 ```fsharp
-let z = 1 <> 2      //correct
+let z = 1 <> 2      //правильно
 ```
 
 > ### Don't use = for assignment ###
+### Не используйте = для присваивания
 
 > If you are using mutable values, the assignment operation is written "`<-`".
 > If you use the equals symbol you might not even get an error, just an unexpected result.
 
+Оператор присваивания для изменяемых значений выглядит как "`<-`".
+Символ равенства может даже не приводить к немедленной ошибке, а просто давать неожиданный результат.
+
 ```fsharp
 let mutable x = 1
-x = x + 1          // returns false. x is not equal to x+1
-x <- x + 1         // assigns x+1 to x
+x = x + 1          // вернёт false. x не равно x+1
+x <- x + 1         // присвоит x+1 переменной x
 ```
 
 > ### Watch out for hidden tab characters ###
+### Остерегайтесь скрытых символов табуляции
 
 > The indenting rules are very straightforward, and it is easy to get the hang of them.
 > But you are not allowed to use tabs, only spaces.
 
+Правила отступов очень просты и их легко запомнить.
+Но вам нельзя использовать табуляции, только пробелы.
+
 ```fsharp
 let add x y =
 {tab}x + y
-// => error FS1161: TABs are not allowed in F# code
+// => ошибка FS1161: нельзя использовать символы табуляции
 ```
 
 > Be sure to set your editor to convert tabs to spaces.
 > And watch out if you are pasting code in from elsewhere.
 > If you do run into persistent problems with a bit of code, try removing the whitespace and re-adding it.
 
+Убедитесь, что ваш редактор преобразует табуляцию в пробелы.
+И проверяйте код, который вы откуда-то вставляете.
+Если какой-то код вызывает у вас проблемы, попробуйте удалить все пробелы, а затем добавить их обратно.
+
 > ### Don't mistake simple values for function values ###
+### Не путайте обычные значения с функциональными значениями
 
 > If you are trying to create a function pointer or delegate, watch out that you don't accidentally create a simple value that has already been evaluated.
 
