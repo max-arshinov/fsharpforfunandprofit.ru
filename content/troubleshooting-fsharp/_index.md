@@ -228,23 +228,7 @@ let add x y =
 
 > If you want a parameterless function that you can reuse, you will need to explicitly pass a unit parameter, or define it as a lambda.
 
-Если вам нужна функция без параметров, которую вы можете вызвать несколько раз, вам надо явно передавать параметр одиночного типа, или определить её как лямбда-функцию.
-
-<!-- 
-
-В [документации MS] (https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/unit-type)
-unit type на русский язык не переводится, записывается, как тип `unit`.
-
-В [вики](https://ru.wikipedia.org/wiki/%D0%A2%D0%B8%D0%BF-%D1%81%D1%83%D0%BC%D0%BC%D0%B0)
-встретил перевод _одиночный тип_.
-
-Также встретил перевод _тип блока_, но, кажется, это автоматический перевод английской википедии и большой веры ему нет. Впрочем, этот перевод встречается, если речь идёт, например, о блоках питания.
-
-Также _unit type_ означает вид воинского подразделения.
-
-Пока самыми адекватными кажутся переводы _одиночный тип_ или _тип `unit`_.
-
--->
+Если вам нужна функция без параметров, которую вы можете вызвать несколько раз, вам надо явно передавать параметр единочного типа `unit`, или определить её как лямбда-функцию.
 
 ```fsharp
 let reader = new System.IO.StringReader("hello")
@@ -487,81 +471,100 @@ let randomFn   =  fun () -> r.Next()  // правильно
 </table>
 {{</rawtable>}}
 
-> ### A. Can't mix ints and floats {#FS0001A}
+> ### A. Can't mix ints and floats
+
+### A. Нельзя смешивать числа с плавающей точкой и целые числа {#FS0001A}
 
 > Unlike C# and most imperative languages, ints and floats cannot be mixed in expressions.
 > You will get a type error if you attempt this:
 
+В отличие от C# и других императивных языков, целые и числа с плавающей точкой нельзя смешивать в выражениях. Вы получите ошибку типа если попытаетесь сделать так:
+
 ```fsharp
-1 + 2.0  //wrong
-   // => error FS0001: The type 'float' does not match the type 'int'
+1 + 2.0  // неправильно
+   // => ошибка FS0001: Тип 'float' не совпадает с типом 'int'
 ```
 
 > The fix is to cast the int into a `float` first:
 
+Чтобы её исправить, сначала приведите целое к типу `float`:
+
 ```fsharp
-float 1 + 2.0  //correct
+float 1 + 2.0  // правильно
 ```
 
 > This issue can also manifest itself in library functions and other places.
 > For example, you cannot do "`average`" on a list of ints.
 
+Эта проблема может проявляться при вызове библиотечных функций и в других случаях. Например, вы не можете вычислить среднее арифметического для списка целых чисел с помощью функции "`average`".
+
 ```fsharp
-[1..10] |> List.average   // wrong
-   // => error FS0001: The type 'int' does not support any
-   //    operators named 'DivideByInt'
+[1..10] |> List.average   // неправильно
+   // => ошибка FS0001: Тип 'int' не поддерживает никаких операторов с именем 'DivideByInt'
 ```
 
 > You must cast each int to a float first, as shown below:
 
+Сначала вы должны привести целые числа к типу `float`, как показано ниже:
+
 ```fsharp
-[1..10] |> List.map float |> List.average  //correct
-[1..10] |> List.averageBy float  //correct (uses averageBy)
+[1..10] |> List.map float |> List.average  // правильно
+[1..10] |> List.averageBy float  // правильно (использует averageBy)
 ```
 
-> ### B. Using the wrong numeric type {#FS0001B}
+> ### B. Using the wrong numeric type
+
+### B. Использование неверного численного типа {#FS0001B}
 
 > You will get a "not compatible" error when a numeric cast failed.
 
+Вы получите ошибку несовместимости типов в случае некорректного приведения численного типа.
+
 ```fsharp
-printfn "hello %i" 1.0  // should be a int not a float
-  // error FS0001: The type 'float' is not compatible
-  //               with any of the types byte,int16,int32...
+printfn "hello %i" 1.0  // число должно быть целым, а не с плавающим
+  // ошибка FS0001: Тип float не совместим с любым из типов byte, int16, int32...
 ```
 
 > One possible fix is to cast it if appropriate.
+
+Одно из решений состоит в том, чтобы привести выражение к нужному типу самостоятельно, если это имеет смысл.
 
 ```fsharp
 printfn "hello %i" (int 1.0)
 ```
 
+> ### C. Passing too many arguments to a function
 
-> ### C. Passing too many arguments to a function  {#FS0001C}
+### C. Слишком много аргументов при вызове функции  {#FS0001C}
+
 
 ```fsharp
 let add x y = x + y
 let result = add 1 2 3
-// ==> error FS0001: The type ''a -> 'b' does not match the type 'int'
+// ==> ошибка FS0001: Тип ''a -> 'b' не совместим с типом 'int'
 ```
 
 > The clue is in the error.
 
+Подсказка в сообщении об ошибке.
+
 > The fix is to remove one of the arguments!
+
+Чтобы её исправить, удалите один из аргументов!
 
 > Similar errors are caused by passing too many arguments to `printf`.
 
+Похожие ошибки возникают, если передать слишком много аргументов в `printf`.
+
 ```fsharp
 printfn "hello" 42
-// ==> error FS0001: This expression was expected to have type 'a -> 'b
-//                   but here has type unit
+// ==> ошибка FS0001: Ожидалось выражение типа 'a -> 'b, обнаружен тип unit
 
 printfn "hello %i" 42 43
-// ==> Error FS0001: Type mismatch. Expecting a 'a -> 'b -> 'c
-//                   but given a 'a -> unit
+// ==> ошибка FS0001: Несовпадение типов. Ожидается a 'a -> 'b -> 'c, обнаружен 'a -> unit
 
 printfn "hello %i %i" 42 43 44
-// ==> Error FS0001: Type mismatch. Expecting a  'a -> 'b -> 'c -> 'd
-//                   but given a 'a -> 'b -> unit
+// ==> ошибка FS0001: Несовпадение типов. Ожидается a  'a -> 'b -> 'c -> 'd, обнаружен 'a -> 'b -> unit
 ```
 
 > ### D. Passing too few arguments to a function {#FS0001D}
