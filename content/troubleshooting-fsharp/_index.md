@@ -23,9 +23,11 @@ date: 2020-01-01
 Затем я подробно остановлюсь на сообщениях об ошибках, и покажу, из-за чего они возникают, и как их исправить.
 
 > [(Jump to the error numbers)](#NumericErrors)
+
 [(Ошибки по номерам)](#NumericErrors)
 
 > ## General guidelines for troubleshooting ##
+
 ## Общие советы по исправлению ошибок
 
 > By far the most important thing you can do is to take the time and effort to understand exactly how F# works, especially the core concepts involving functions and the type system.
@@ -138,7 +140,7 @@ type Customer = {Name:string; Address: string}  // правильно
 ```
 
 > ### Don't use ! for not or != for not-equal ###
-### Не используйте ! как логическое отрицание и != как оператор не-равно
+### Не используйте ! как логическое отрицание и != как проверку на неравенство
 
 > The exclamation point symbol is not the "NOT" operator.
 > It is the deferencing operator for mutable references. <!-- dereferencing -->
@@ -161,7 +163,7 @@ let z = !y
 
 ```fsharp
 let y = true
-let z = not y       //правильно
+let z = not y       // правильно
 ```
 
 > And for "not equal", use "<>", again like SQL or VB.
@@ -169,7 +171,7 @@ let z = not y       //правильно
 Чтобы написать не-равно, используйте "<>" — снова, как в SQL или VB.
 
 ```fsharp
-let z = 1 <> 2      //правильно
+let z = 1 <> 2      // правильно
 ```
 
 > ### Don't use = for assignment ###
@@ -287,6 +289,7 @@ let randomFn   =  fun () -> r.Next()  // правильно
 ----
 
 > # F# compiler errors
+
 # Ошибки компилятора F# {#NumericErrors}
 
 ----
@@ -315,12 +318,9 @@ let randomFn   =  fun () -> r.Next()  // правильно
 > * [FS0072: Lookup on object of indeterminate type](#FS0072)
 > * [FS0588: Block following this 'let' is unfinished](#FS0588)
 
-<!-- Здесь и далее переводы в соответствии с [документацией MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/compiler-messages/). Там, где официального перевода нет, я переводил сам.
-Официальный перевод помечен комментариями. -->
-
-> * [FS0001: Ошибка при добавлении приравнивания типов](#FS0001) <!-- -->
-> * [FS0003: Это значение не является функцией и не может быть применено](#FS0003) <!-- -->
-> * [FS0008: Неопределённое приведение среды выполнения](#FS0008) <!-- -->
+> * [FS0001: Тип 'X' не совпадает с типом 'Y'](#FS0001)
+> * [FS0003: Это значение не является функцией и не может быть применено](#FS0003)
+> * [FS0008: Приведение типа во время выполнение или проверка типа приводят к неопределённорму типу](#FS0008)
 > * [FS0010: Неожиданные идентификатор в привязке](#FS0010a)
 > * [FS0010: Не полностью структурированная конструкция](#FS0010b)
 > * [FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу](#FS0013)
@@ -334,75 +334,147 @@ let randomFn   =  fun () -> r.Next()  // правильно
 > * [FS0588: Блок, следующих за оператором 'let', не завершён](#FS0588)
 
 
-> ## FS0001: The type 'X' does not match the type 'Y' {#FS0001}
+> ## FS0001: The type 'X' does not match the type 'Y'
+
+## FS0001: Тип 'X' не совпадает с типом 'Y' {#FS0001}
 
 > This is probably the most common error you will run into.
 > It can manifest itself in a wide variety of contexts, so I have grouped the most common problems together with examples and fixes.
 > Do pay attention to the error message, as it is normally quite explicit about what the problem is.
 
+Возможно, это самая частая ошибка, с которой вы столкнётесь. Она может проявляться в самых разных ситуациях, так что я сгруппировал основные проблемы, добавив примеры и способы исправления.
+
+> {{<rawtable>}}
+> <table class="table table-striped table-bordered table-condensed">
+> <thead>
+>   <tr>
+> 	<th>Error message</th>
+> 	<th>Possible causes</th>
+>   </tr>
+> </thead>
+> <tbody>
+>   <tr>
+> 	<td>The type 'float' does not match the type 'int'</td>
+> 	<td><a href="#FS0001A">A. Can't mix floats and ints</a></td>
+>   </tr>
+>   <tr>
+> 	<td>The type 'int' does not support any operators named 'DivideByInt'</td>
+> 	<td><a href="#FS0001A">A. Can't mix floats and ints.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>The type 'X' is not compatible with any of the types</td>
+> 	<td><a href="#FS0001B">B. Using the wrong numeric type.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This type (function type) does not match the type (simple type). Note: function types have a arrow in them, like <code>'a -&gt; 'b</code>.</td>
+> 	<td><a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have (function type) but here has (simple type)</td>
+> 	<td><a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have (N part function) but here has (N-1 part function)</td>
+> 	<td><a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have (simple type) but here has (function type)</td>
+> 	<td><a href="#FS0001D">D. Passing too few arguments to a function.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have (type) but here has (other type)</td>
+> 	<td><a href="#FS0001E">E. Straightforward type mismatch.</a><br>
+> 	<a href="#FS0001F">F. Inconsistent returns in branches or matches.</a><br>
+> 	<a href="#FS0001G">G. Watch out for type inference effects buried in a function.</a><br>
+> 	</td>
+>   </tr>
+>   <tr>
+> 	<td>Type mismatch. Expecting a (simple type) but given a (tuple type). Note: tuple types have a star in them, like <code>'a * 'b</code>.</td>
+> 	<td><a href="#FS0001H">H. Have you used a comma instead of space or semicolon?</a></td>
+>   </tr>
+>   <tr>
+> 	<td>Type mismatch. Expecting a (tuple type) but given a (different tuple type). </td>
+> 	<td><a href="#FS0001I">I. Tuples must be the same type to be compared.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have type <code>'a ref</code> but here has type X</td>
+> 	<td><a href="#FS0001J">J. Don't use ! as the "not" operator.</a></td>
+>   </tr>
+>   <tr>
+> 	<td>The type (type) does not match the type (other type)</td>
+> 	<td><a href="#FS0001K">K. Operator precedence (especially functions and pipes).</a></td>
+>   </tr>
+>   <tr>
+> 	<td>This expression was expected to have type (monadic type) but here has type <code>'b * 'c</code></td>
+> 	<td><a href="#FS0001L">L. let! error in computation expressions.</a></td>
+>   </tr>
+> </tbody>
+> </table>
+> {{</rawtable>}}
+
 {{<rawtable>}}
 <table class="table table-striped table-bordered table-condensed">
 <thead>
   <tr>
-	<th>> Error message</th>
-	<th>> Possible causes</th>
+	<th>Сообщение об ошибке</th>
+	<th>Возможные причины</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-	<td>> The type 'float' does not match the type 'int'</td>
-	<td>> <a href="#FS0001A">A. Can't mix floats and ints</a></td>
+	<td>Тип 'float' не совпадает с типом 'int'</td>
+	<td><a href="#FS0001A">A. Нельзя смешивать числа с плавающей точкой и целые числа.</a></td>
   </tr>
   <tr>
-	<td>> The type 'int' does not support any operators named 'DivideByInt'</td>
-	<td>> <a href="#FS0001A">A. Can't mix floats and ints.</a></td>
+	<td>Тип 'int' не поддерживает никаких операторов с именем 'DivideByInt'</td>
+	<td><a href="#FS0001A">A. Нельзя смешивать числа с плавающей точкой и целые числа.</a></td>
   </tr>
   <tr>
-	<td>> The type 'X' is not compatible with any of the types</td>
-	<td>> <a href="#FS0001B">B. Using the wrong numeric type.</a></td>
+	<td>Тип 'X' не совместим с любым из типов</td>
+	<td><a href="#FS0001B">B. Использование неверного численного типа.</a></td>
   </tr>
   <tr>
-	<td>> This type (function type) does not match the type (simple type). Note: function types have a arrow in them, like <code>'a -&gt; 'b</code>.</td>
-	<td>> <a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+	<td>Тип (функциональный тип) не совпадает с типом (простой тип). Замечания: функциональные типы содержат стрелку, например, <code>'a -&gt; 'b</code>.</td>
+	<td><a href="#FS0001C">C. Слишком много аргументов при вызове функции.</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have (function type) but here has (simple type)</td>
-	<td>> <a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+	<td>Ожидалось выражение типа (функциональный тип), обнаружен тип (простой тип)</td>
+	<td><a href="#FS0001C">C. Слишком много аргументов при вызове функции.</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have (N part function) but here has (N-1 part function)</td>
-	<td>> <a href="#FS0001C">C. Passing too many arguments to a function.</a></td>
+	<td>Ожидалось выражение типа (функция с N параметрами), обнаружен тип (функция с N-1 параметрами)</td>
+	<td><a href="#FS0001C">C. Слишком много аргументов при вызове функции.</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have (simple type) but here has (function type)</td>
-	<td>> <a href="#FS0001D">D. Passing too few arguments to a function.</a></td>
+	<td>Ожидалось выражение типа (простой тип), обнаружен тип (функциональный тип)</td>
+	<td><a href="#FS0001D">D. Слишком мало аргументов при вызове функции.</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have (type) but here has (other type)</td>
-	<td>> <a href="#FS0001E">E. Straightforward type mismatch.</a><br>
-	> <a href="#FS0001F">F. Inconsistent returns in branches or matches.</a><br>
-	> <a href="#FS0001G">G. Watch out for type inference effects buried in a function.</a><br>
+	<td>Ожидалось выражение типа (тип), обнаружен тип (другой тип)</td>
+	<td><a href="#FS0001E">E. Простое несоответствие типов.</a><br>
+	<a href="#FS0001F">F. Несогласованные типы в ветвлениях или сопоставлениях.</a><br>
+	<a href="#FS0001G">G. Остерегайтесь вывода типов внутри функции.</a><br>
 	</td>
   </tr>
   <tr>
-	<td>> Type mismatch. Expecting a (simple type) but given a (tuple type). Note: tuple types have a star in them, like <code>'a * 'b</code>.</td>
-	<td>> <a href="#FS0001H">H. Have you used a comma instead of space or semicolon?</a></td>
+	<td>Несовпадение типов. Ожидается (простой тип), обнаружен (тип кортежа). Замечание: типы кортежа содержат звёздочку, например, <code>'a * 'b</code>.</td>
+	<td><a href="#FS0001H">H. Запятая вместо пробела или точки с запятой?</a></td>
   </tr>
   <tr>
-	<td>> Type mismatch. Expecting a (tuple type) but given a (different tuple type). </td>
-	<td>> <a href="#FS0001I">I. Tuples must be the same type to be compared.</a></td>
+	<td>Несовпадение типов. Ожидается (тип кортежа), обнаружен (другой тип кортежа). </td>
+	<td><a href="#FS0001I">I. Кортежи должны быть одного типа, чтобы их сравнивать.</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have type <code>'a ref</code> but here has type X</td>
-	<td>> <a href="#FS0001J">J. Don't use ! as the "not" operator.</a></td>
+	<td>Ожидалось выражение типа <code>'a ref</code>, обнаружен тип X</td>
+	<td><a href="#FS0001J">J. Не используйте ! как оператор отрицания.</a></td>
   </tr>
   <tr>
-	<td>> The type (type) does not match the type (other type)</td>
-	<td>> <a href="#FS0001K">K. Operator precedence (especially functions and pipes).</a></td>
+	<td>Тип (тип) не совпадает с типом (другой тип)</td>
+	<td><a href="#FS0001K">K. Приоритет операторов (особенно, функций и конвейеров).</a></td>
   </tr>
   <tr>
-	<td>> This expression was expected to have type (monadic type) but here has type <code>'b * 'c</code></td>
-	<td>> <a href="#FS0001L">L. let! error in computation expressions.</a></td>
+  <td>Ожидалось выражение типа (монадический тип), обнаружен тип <code>'b * 'c</code></td>
+	<td><a href="#FS0001L">L. Ошибка let! в выражениях вычисления.</a></td>
   </tr>
 </tbody>
 </table>
