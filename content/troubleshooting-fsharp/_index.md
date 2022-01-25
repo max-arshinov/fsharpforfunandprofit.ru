@@ -31,7 +31,8 @@ date: 2020-01-01
 > By far the most important thing you can do is to take the time and effort to understand exactly how F# works, especially the core concepts involving functions and the type system.
 > So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 > If you don't understand how functions and types work, then the compiler errors will not make any sense.
-Безусловно, самое важное, что вы можете сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
+
+Безусловно, самое важное, что вы может е сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
 Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с основными идеями, прежде чем приступать к серьёзным вещам.
 
 > If you are coming from an imperative language such as C#, you may have developed some bad habits by relying on the debugger to find and fix incorrect code.
@@ -214,29 +215,56 @@ let add x y =
 
 > If you are trying to create a function pointer or delegate, watch out that you don't accidentally create a simple value that has already been evaluated.
 
+Если вы пытаетесь создать указатель на функцию или делегат, убедитесь, что вы случайно не создали простое значение, которое уже вычислено.
+
 > If you want a parameterless function that you can reuse, you will need to explicitly pass a unit parameter, or define it as a lambda.
+
+Если вам нужна функция без параметров, которую вы можете вызвать несколько раз, вам надо явно передавать параметр типа `unit`, или определить её как лямбда-функцию.
+
+<!-- 
+
+В [документации MS] (https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/unit-type)
+unit type на русский язык не переводится, записывается, как тип `unit`.
+
+В [вики](https://ru.wikipedia.org/wiki/%D0%A2%D0%B8%D0%BF-%D1%81%D1%83%D0%BC%D0%BC%D0%B0)
+встретил перевод _одиночный тип_.
+
+Также встретил перевод _тип блока_, но, кажется, это автоматический перевод английской википедии и большой веры ему нет. Впрочем, этот перевод встречается, если речь идёт, например, о блоках питания.
+
+Также _unit type_ означает вид воинского подразделения.
+
+Пока самыми адекватными кажутся переводы _одиночный тип_ или _тип `unit`_.
+
+-->
 
 ```fsharp
 let reader = new System.IO.StringReader("hello")
-let nextLineFn   =  reader.ReadLine()  //wrong
-let nextLineFn() =  reader.ReadLine()  //correct
-let nextLineFn   =  fun() -> reader.ReadLine()  //correct
+let nextLineFn   =  reader.ReadLine()  // неправильно
+let nextLineFn() =  reader.ReadLine()  // правильно
+let nextLineFn   =  fun() -> reader.ReadLine()  // правильно
 
 let r = new System.Random()
-let randomFn   =  r.Next()  //wrong
-let randomFn() =  r.Next()  //correct
-let randomFn   =  fun () -> r.Next()  //correct
+let randomFn   =  r.Next()  // неправильно
+let randomFn() =  r.Next()  // правильно
+let randomFn   =  fun () -> r.Next()  // правильно
 ```
 
 > See the series ["thinking functionally"](/series/thinking-functionally.html) for more discussion of parameterless functions.
 
+Подробно функции без параметров обсуждаются в цикле ["мыслить функционально"](/series/thinking-functionally.html).
+
 > ### Tips for troubleshooting "not enough information" errors ###
+### Советы по устранению ошибок вида "недостаточно информации"
 
 > The F# compiler is currently a one-pass left-to-right compiler, and so type information later in the program is unavailable to the compiler if it hasn't been parsed yet.
+
+Компилятор F# (по крайней мере, пока) работает в один проход и читает исходный код слева-направо, так что информация о типах, которые описаны дальше в программе, комплилятору недоступна — он её ещё не разобрал.
 
 > A number of errors can be caused by this, such as ["FS0072: Lookup on object of indeterminate type"](#FS0072) and ["FS0041: A unique overload for could not be determined"](#FS0041).
 > The suggested fixes for each of these specific cases are described below, but there are some general principles that can help if the compiler is complaining about missing types or not enough information.
 > These guidelines are:
+
+Часть ошибок может возникнуть именно поэтому, например ["FS0072: Поиск объекта неопределённого типа"](#FS0072) и ["FS0041: Невозможно определить уникальную перегрузку"](#FS0041). Для каждой из них существуют свои способы исправления, но есть и несколько общих принципов, которые могут помочь, если компилятор жалуется на отсутствие типов или недостаток информации. Вот эти рекомендации:
 
 > * Define things before they are used (this includes making sure the files are compiled in the right order)
 > * Put the things that have "known types" earlier than things that have "unknown types".
@@ -244,20 +272,33 @@ let randomFn   =  fun () -> r.Next()  //correct
 > * Annotate as needed.
     One common trick is to add annotations until everything works, and then take them away one by one until you have the minimum needed.
 
+* Определяйте все элементы программы до того, как их использовать (и убедитесь, что файлы в проекте компилируется в правильном порядке)
+* Размещайте объекты, тип которых известен, до объектов, тип которых неизвестен. Например, можно переупорядочить вызовы в конвейере или в подобной цепочке функций так, чтобы в начале шли объекты с известными типами.
+* Аннотируйте по мере необходимости. Одна из общих рекомендаций состоит в том, чтобы добавлять аннотации к коду, пока всё не заработает, а потом убирать их, пока вы не достигнете необходимого минимума.
+
 > Do try to avoid annotating if possible.
 > Not only is it not aesthetically pleasing, but it makes the code more brittle.
 > It is a lot easier to change types if there are no explicit dependencies on them.
 
+Постарайтесь избегать аннотаций, если это возможно.
+Не только потому, что аннотации некрасивы, но и потому, что они повышают хрупкость кода.
+Изменять типы намного проще, если ничто в программе не зависит от них явно.
+
 ----
 
-> # F# compiler errors {#NumericErrors}
+> # F# compiler errors
+# Ошибки компилятора F# {#NumericErrors}
 
 ----
 
 > Here is a list of the major errors that seem to me worth documenting.
 > I have not documented any errors that are self explanatory, only those that seem obscure to beginners.
 
+Вот список основных ошибок, которые, как я думаю, стоит задокументировать. Я не документировал очевидные ошибки — только те, которые кажутся непонятными новичкам.
+
 > I will continue to add to the list in the future, and I welcome any suggestions for additions.
+
+Я собираюсь обновлять этот список в будущем, и открыт к вашим предложениям по этому поводу.
 
 > * [FS0001: The type 'X' does not match the type 'Y'](#FS0001)
 > * [FS0003: This value is not a function and cannot be applied](#FS0003)
@@ -273,6 +314,24 @@ let randomFn   =  fun () -> r.Next()  //correct
 > * [FS0049: Uppercase variable identifiers should not generally be used in patterns](#FS0049)
 > * [FS0072: Lookup on object of indeterminate type](#FS0072)
 > * [FS0588: Block following this 'let' is unfinished](#FS0588)
+
+<!-- Здесь и далее переводы в соответствии с [документацией MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/compiler-messages/). Там, где официального перевода нет, я переводил сам.
+Официальный перевод помечен комментариями. -->
+
+> * [FS0001: Ошибка при добавлении приравнивания типов](#FS0001) <!-- -->
+> * [FS0003: Это значение не является функцией и не может быть применено](#FS0003) <!-- -->
+> * [FS0008: Неопределённое приведение среды выполнения](#FS0008) <!-- -->
+> * [FS0010: Неожиданные идентификатор в привязке](#FS0010a)
+> * [FS0010: Не полностью структурированная конструкция](#FS0010b)
+> * [FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу](#FS0013)
+> * [FS0020: Выражение должно иметь тип 'unit'](#FS0020)
+> * [FS0030: Ограничение на значение](#FS0030)
+> * [FS0035: Эта конструкция устарела](#FS0035)
+> * [FS0039: Поле, конструктор или член X не определён](#FS0039)
+> * [FS0041: Невозможно определить уникальную перегрузку](#FS0041)
+> * [FS0049: В шаблонах нельзя использовать идентификаторы переменных в верхнем регистре](#FS0049)
+> * [FS0072: Поиск объекта неопределённого типа](#FS0072)
+> * [FS0588: Блок, следующих за оператором 'let', не завершён](#FS0588)
 
 
 > ## FS0001: The type 'X' does not match the type 'Y' {#FS0001}
