@@ -23,19 +23,18 @@ date: 2020-01-01
 Затем я подробно остановлюсь на сообщениях об ошибках, и покажу, из-за чего они возникают, и как их исправить.
 
 > [(Jump to the error numbers)](#NumericErrors)
-[(Ошибки по номерам)](#NumericErrors)
 
 [(Ошибки по номерам)](#NumericErrors)
 
 > ## General guidelines for troubleshooting ##
-## Общие советы по исправлению ошибок
 
 ## Общие советы по исправлению ошибок
 
 > By far the most important thing you can do is to take the time and effort to understand exactly how F# works, especially the core concepts involving functions and the type system.
 > So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 > If you don't understand how functions and types work, then the compiler errors will not make any sense.
-Безусловно, самое важное, что вы можете сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
+
+Безусловно, самое важное, что вы может е сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
 Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойтесь с основными идеями, прежде чем приступать к серьёзным вещам.
 
 Безусловно, самое важное, что вы может е сделать — это потратить время и силы, чтобы разобраться в том, как устроен F#, особенно это касается базовых концепций, таких как функции и система типов.
@@ -69,10 +68,8 @@ let result = add (1 2)  // неправильно
 let result = add 1 2    // правильно
 ```
 
-<!-- Текст ошибок на русском язык с сайта Microsoft. Конкретно FS0003 — осюда:
-https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/compiler-messages/fs0003 -->
-
 > ### Don't mix up tuples with multiple parameters ###
+
 ### Не путайте кортежи и отдельные параметры функций
 
 > If it has a comma, it is a tuple.
@@ -85,7 +82,7 @@ https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/compiler-messa
 
 ```fsharp
 addTwoParams (1,2)  // пытаемся передать один кортеж вместо двух параметров
-   // ошибка FS0001: ожидается выражения типа int, обнаружено выражения типа 'a * 'b
+   // ошибка FS0001: ожидалось выражение типа int, обнаружен тип 'a * 'b
 ```
 
 > The compiler treats `(1,2)` as a generic tuple, which it attempts to pass to "`addTwoParams`".
@@ -104,6 +101,7 @@ addTuple 1 2   // пытаемся передать два аргумента в
 ```
 
 > ### Watch out for too few or too many arguments ###
+
 ### Остерегайтесь неверного числа аргументов 
 
 > The F# compiler will not complain if you pass too few arguments to a function (in fact "partial application" is an important feature), but if you don't understand what is going on, you will often get strange "type mismatch" errors later.
@@ -127,6 +125,7 @@ addTuple 1 2   // пытаемся передать два аргумента в
 За подробностями обращайтесь к циклу ["мыслить функционально"](/series/thinking-functionally.html).
 
 > ### Use semicolons for list separators ###
+
 ### Используйте точки с запятой, чтобы разделять значения в списках
 
 > In the few places where F# needs an explicit separator character, such as lists and records, the semicolon is used.
@@ -180,6 +179,7 @@ let z = 1 <> 2      // правильно
 ```
 
 > ### Don't use = for assignment ###
+
 ### Не используйте = для присваивания
 
 > If you are using mutable values, the assignment operation is written "`<-`".
@@ -195,6 +195,7 @@ x <- x + 1         // присвоит x+1 переменной x
 ```
 
 > ### Watch out for hidden tab characters ###
+
 ### Остерегайтесь скрытых символов табуляции
 
 > The indenting rules are very straightforward, and it is easy to get the hang of them.
@@ -218,6 +219,7 @@ let add x y =
 Если какой-то код вызывает у вас проблемы, попробуйте удалить все пробелы, а затем добавить их обратно.
 
 > ### Don't mistake simple values for function values ###
+
 ### Не путайте обычные значения с функциональными значениями
 
 > If you are trying to create a function pointer or delegate, watch out that you don't accidentally create a simple value that has already been evaluated.
@@ -226,7 +228,7 @@ let add x y =
 
 > If you want a parameterless function that you can reuse, you will need to explicitly pass a unit parameter, or define it as a lambda.
 
-Если вам нужна функция без параметров, которую вы можете вызвать несколько раз, вам надо явно передавать параметр типа `unit`, или определить её как лямбда-функцию.
+Если вам нужна функция без параметров, которую вы можете вызвать несколько раз, вам надо явно передавать параметр одиночного типа, или определить её как лямбда-функцию.
 
 <!-- 
 
@@ -261,6 +263,7 @@ let randomFn   =  fun () -> r.Next()  // правильно
 Подробно функции без параметров обсуждаются в цикле ["мыслить функционально"](/series/thinking-functionally.html).
 
 > ### Tips for troubleshooting "not enough information" errors ###
+
 ### Советы по устранению ошибок вида "недостаточно информации"
 
 > The F# compiler is currently a one-pass left-to-right compiler, and so type information later in the program is unavailable to the compiler if it hasn't been parsed yet.
@@ -323,21 +326,20 @@ let randomFn   =  fun () -> r.Next()  // правильно
 > * [FS0072: Lookup on object of indeterminate type](#FS0072)
 > * [FS0588: Block following this 'let' is unfinished](#FS0588)
 
-> * [FS0001: Тип 'X' не совпадает с типом 'Y'](#FS0001)
-> * [FS0003: Это значение не является функцией и не может быть применено](#FS0003)
-> * [FS0008: Приведение типа во время выполнение или проверка типа приводят к неопределённорму типу](#FS0008)
-> * [FS0010: Неожиданные идентификатор в привязке](#FS0010a)
-> * [FS0010: Не полностью структурированная конструкция](#FS0010b)
-> * [FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу](#FS0013)
-> * [FS0020: Выражение должно иметь тип 'unit'](#FS0020)
-> * [FS0030: Ограничение на значение](#FS0030)
-> * [FS0035: Эта конструкция устарела](#FS0035)
-> * [FS0039: Поле, конструктор или член X не определён](#FS0039)
-> * [FS0041: Невозможно определить уникальную перегрузку](#FS0041)
-> * [FS0049: В шаблонах нельзя использовать идентификаторы переменных в верхнем регистре](#FS0049)
-> * [FS0072: Поиск объекта неопределённого типа](#FS0072)
-> * [FS0588: Блок, следующих за оператором 'let', не завершён](#FS0588)
-
+* [FS0001: Тип 'X' не совпадает с типом 'Y'](#FS0001)
+* [FS0003: Это значение не является функцией и не может быть применено](#FS0003)
+* [FS0008: Приведение типа во время выполнение или проверка типа приводят к неопределённорму типу](#FS0008)
+* [FS0010: Неожиданные идентификатор в привязке](#FS0010a)
+* [FS0010: Не полностью структурированная конструкция](#FS0010b)
+* [FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу](#FS0013)
+* [FS0020: Выражение должно иметь тип 'unit'](#FS0020)
+* [FS0030: Ограничение на значение](#FS0030)
+* [FS0035: Эта конструкция устарела](#FS0035)
+* [FS0039: Поле, конструктор или член X не определён](#FS0039)
+* [FS0041: Невозможно определить уникальную перегрузку](#FS0041)
+* [FS0049: В шаблонах нельзя использовать идентификаторы переменных в верхнем регистре](#FS0049)
+* [FS0072: Поиск объекта неопределённого типа](#FS0072)
+* [FS0588: Блок, следующих за оператором 'let', не завершён](#FS0588)
 
 > ## FS0001: The type 'X' does not match the type 'Y'
 
