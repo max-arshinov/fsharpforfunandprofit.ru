@@ -567,53 +567,73 @@ printfn "hello %i %i" 42 43 44
 // ==> ошибка FS0001: Несовпадение типов. Ожидается a  'a -> 'b -> 'c -> 'd, обнаружен 'a -> 'b -> unit
 ```
 
-> ### D. Passing too few arguments to a function {#FS0001D}
+> ### D. Passing too few arguments to a function
+
+### D. Слишком мало аргументов при вызове функции {#FS0001D}
 
 > If you do not pass enough arguments to a function, you will get a partial application.
 > When you later use it, you get an error because it is not a simple type.
 
+Если вы не передали в функцию достаточно аргументов, вы получите частично применённую функцию.
+Когда позже вы её используете, вы получите ошибку, потому что это функция, а не вычисленное значение.
+
 ```fsharp
 let reader = new System.IO.StringReader("hello");
 
-let line = reader.ReadLine        //wrong but compiler doesn't complain
-printfn "The line is %s" line     //compiler error here!
-// ==> error FS0001: This expression was expected to have type string
-//                   but here has type unit -> string
+let line = reader.ReadLine        // неправильно, но компилятор не жалуется
+printfn "The line is %s" line     // ошибка компилятора здесь!
+// ==> ошибка FS0001: Ожидалось выражение типа string,
+//                    обнаружен тип unit -> string
 ```
 
 > This is particularly common for some .NET library functions that expect a unit parameter, such as `ReadLine` above.
+
+Для части библиотечных функций .NET это особенно характерно. Речь идёт о фукнциях с единственным параметром типа `unit`, как у `ReadLine` из примера выше.
 
 > The fix is to pass the correct number of parameters.
 > Check the type of the result value to make sure that it is indeed a simple type.
 > In the `ReadLine` case, the fix is to pass a `()` argument.
 
+Чтобы исправить ошибку, надо передать в функцию правильное число параметров.
+Проверяйте тип получившегося значения, чтобы убедиться, что он действительно простой.
+В примере с `ReadLine` надо передать значение `()` в качестве аргумента.
+
 ```fsharp
-let line = reader.ReadLine()      //correct
-printfn "The line is %s" line     //no compiler error
+let line = reader.ReadLine()      // правильно
+printfn "The line is %s" line     // ошибки нет
 ```
 
 
-> ### E. Straightforward type mismatch {#FS0001E}
+> ### E. Straightforward type mismatch
+
+### E. Простое несоответствие типов {#FS0001E}
 
 > The simplest case is that you have the wrong type, or you are using the wrong type in a print format string.
 
+Простейший случай, когда вы встречаетесь с неправильным типом — строки формата печати.
+
 ```fsharp
 printfn "hello %s" 1.0
-// => error FS0001: This expression was expected to have type string
-//                  but here has type float
+// => ошибка FS0001: Ожидалось выражение типа string,
+//                   обнаружен тип float
 ```
 
-> ### F. Inconsistent return types in branches or matches {#FS0001F}
+> ### F. Inconsistent return types in branches or matches
+
+### F. Несогласованные типы в ветвлениях или сопоставлениях {#FS0001F}
+
 
 > A common mistake is that if you have a branch or match expression, then every branch MUST return the same type.
 > If not, you will get a type error.
+
+В выражениях ветвления и сопоставления все ветки ДОЛЖНЫ иметь один и тот же тип. Если нет, вы получите ошибку.
 
 ```fsharp
 let f x =
   if x > 1 then "hello"
   else 42
-// => error FS0001: This expression was expected to have type string
-//                  but here has type int
+// => ошибка FS0001: Ожидалось выражение типа string,
+//                   обнаружен тип int
 ```
 
 ```fsharp
@@ -621,11 +641,13 @@ let g x =
   match x with
   | 1 -> "hello"
   | _ -> 42
-// error FS0001: This expression was expected to have type
-//               string but here has type int
+// => ошибка FS0001: Ожидалось выражение типа string,
+//                   обнаружен тип int
 ```
 
 > Obviously, the straightforward fix is to make each branch return the same type.
+
+Очевидно, простой способ исправить эту ошибку — возвращать в каждой ветке значения одного типа.
 
 ```fsharp
 let f x =
@@ -640,41 +662,52 @@ let g x =
 
 > Remember that if an "else" branch is missing, it is assumed to return unit, so the "true" branch must also return unit.
 
+Помните, что если ветка "else" опущена, предполагается, что она возвращает `unit`, поэтому "истинная" ветка таже должна возвращать `unit`.
+
 ```fsharp
 let f x =
   if x > 1 then "hello"
-// error FS0001: This expression was expected to have type
-//               unit but here has type string
+// error FS0001: Ожидалось значение типа unit,
+//               обнаружен тип string
 ```
 
 > If both branches cannot return the same type, you may need to create a new union type that can contain both types.
 
+Если ветви не могут иметь один и тот же тип, создайте новое объединение, которое содержит оба типа.
+
 ```fsharp
-type StringOrInt = | S of string | I of int  // new union type
+type StringOrInt = | S of string | I of int  // новое объединение
 let f x =
   if x > 1 then S "hello"
   else I 42
 ```
 
 
-> ### G. Watch out for type inference effects buried in a function {#FS0001G}
+> ### G. Watch out for type inference effects buried in a function
+
+### G. Остерегайтесь вывода типов внутри функции {#FS0001G}
 
 > A function may cause an unexpected type inference that ripples around your code.
 > For example, in the following, the innocent print format string accidentally causes `doSomething` to expect a string.
 
+Функция может вызвать неожиданноый вывод типа, который распространяется по всему коду. В примере ниже, невинная строка формата приводит к тому, что `doSomething` ожидает строку в качестве параметра.
+
 ```fsharp
 let doSomething x =
-   // do something
+   // что-то делаем
    printfn "x is %s" x
-   // do something more
+   // делаем что-то ещё
 
 doSomething 1
-// => error FS0001: This expression was expected to have type string
-//    but here has type int
+// => ошибка FS0001: Ожидалось выражение типа string,
+//                   обнаружен тип int
 ```
 
 > The fix is to check the function signatures and drill down until you find the guilty party.
 > Also, use the most generic types possible, and avoid type annotations if possible.
+
+Чтобы исправить эту ошибку, проверяйте сигнатуры функций, спускаясь всё ниже, пока не найдёте виновницу.
+Также, используйте самые общие возможные типы и избегайте аннотаций, если получится.
 
 > ### H. Have you used a comma instead of space or semicolon? {#FS0001H}
 
