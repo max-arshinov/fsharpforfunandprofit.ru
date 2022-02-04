@@ -453,7 +453,7 @@ let randomFn   =  fun () -> r.Next()  // правильно
   </tr>
   <tr>
 	<td>Несовпадение типов. Ожидается (тип кортежа), обнаружен (другой тип кортежа). </td>
-	<td><a href="#FS0001I">I. Кортежи должны быть одного типа, чтобы их сравнивать.</a></td>
+	<td><a href="#FS0001I">I. Кортежи должны быть одного типа, чтобы их можно было сравнивать.</a></td>
   </tr>
   <tr>
 	<td>Ожидалось выражение типа <code>'a ref</code>, обнаружен тип X</td>
@@ -709,139 +709,172 @@ doSomething 1
 Чтобы исправить эту ошибку, проверяйте сигнатуры функций, спускаясь всё ниже, пока не найдёте виновницу.
 Также, используйте самые общие возможные типы и избегайте аннотаций, если получится.
 
-> ### H. Have you used a comma instead of space or semicolon? {#FS0001H}
+> ### H. Have you used a comma instead of space or semicolon?
+
+### H. Запятая вместо пробела или точки с запятой? {#FS0001H}
 
 > If you are new to F#, you might accidentally use a comma instead of spaces to separate function arguments:
 
+Если вы новичок в F#, вы можете случайно разделять аргументы функций запятыми вместо пробелов:
+
 ```fsharp
-// define a two parameter function
+// определяем функцию с двумя параметрами
 let add x y = x + 1
 
-add(x,y)   // FS0001: This expression was expected to have
-           // type int but here has type  'a * 'b
+add(x,y)   // FS0001: Ожидалось выражение типа int,
+           // обнаружен тип 'a * 'b
 ```
 
 > The fix is: don't use a comma!
 
+Как исправить? Просто не используйте запятые!
+
 ```fsharp
-add x y    // OK
+add x y    // правильно
 ```
 
 > One area where commas *are* used is when calling .NET library functions.
 > These all take tuples as arguments, so the comma form is correct.
 > In fact, these calls look just the same as they would from C#:
 
+Одно из мест, где запятые *нужны* — вызов библиотечных функций .NET. Они принимают кортежи
+в качестве аргументов, так что здесь запятые уместны. Фактически, эти вызовы выглядят
+точно также, как и в C#.
+
+
 ```fsharp
-// correct
+// правильно
 System.String.Compare("a","b")
 
-// incorrect
+// неправильно
 System.String.Compare "a" "b"
 ```
 
+> ### I. Tuples must be the same type to be compared or pattern matched
 
-
-> ### I. Tuples must be the same type to be compared or pattern matched {#FS0001I}
+### I. Кортежи должны быть одного типа, чтобы их можно было сравнивать {#FS0001I}
 
 > Tuples with different types cannot be compared.
 > Trying to compare a tuple of type `int * int`, with a tuple of type `int * string` results in an error:
+
+Кортежи разных типов сравнивать нельзя. Результатом сравнения кортежа типа `int * int` с кортежем типа `int * string` будет ошибка:
 
 ```fsharp
 let  t1 = (0, 1)
 let  t2 = (0, "hello")
 t1 = t2
-// => error FS0001: Type mismatch. Expecting a int * int
-//    but given a int * string
-//    The type 'int' does not match the type 'string'
+// => ошибка FS0001: Несоответствие типов. Ожидается тип int * int,
+//    обнаружен тип int * string
+//    Тип 'int' не сопоставим с типом 'string'
 ```
 
 > And the length must be the same:
+Размер также должен быть одинаковым:
 
 ```fsharp
 let  t1 = (0, 1)
 let  t2 = (0, 1, "hello")
 t1 = t2
-// => error FS0001: Type mismatch. Expecting a int * int
-//    but given a int * int * string
-//    The tuples have differing lengths of 2 and 3
+// => ошибка FS0001: Несоответствие типов. Ожидается тип int * int,
+//    обнаружен тип int * int * string
+//    Кортежи имеют различающиеся размеры 2 и 3
 ```
 
 > You can get the same issue when pattern matching tuples during binding:
 
+Вы можете получить похожую ситуацию, привязывая значения с помощью сопоставления с образцом:
+
 ```fsharp
 let x,y = 1,2,3
-// => error FS0001: Type mismatch. Expecting a 'a * 'b
-//                  but given a 'a * 'b * 'c
-//                  The tuples have differing lengths of 2 and 3
+// => ошибка FS0001: Несоответствие типов. Ожидается тип 'a * 'b,
+//                   обнаружен тип 'a * 'b * 'c
+//                   Кортежи имеют различающиеся размеры 2 и 3
 
 let f (x,y) = x + y
 let z = (1,"hello")
 let result = f z
-// => error FS0001: Type mismatch. Expecting a int * int
-//                  but given a int * string
-//                  The type 'int' does not match the type 'string'
+// => ошибка FS0001: Несоответствие типов. Ожидается тип int * int,
+//                   обнаружен тип int * string
+//                   Тип 'int' не сопоставим с типом 'string'
 ```
 
+> ### J. Don't use ! as the "not" operator
 
-
-> ### J. Don't use ! as the "not" operator {#FS0001J}
+### J. Не используйте ! как оператор отрицания {#FS0001J}
 
 > If you use `!` as a "not" operator, you will get a type error mentioning the word "ref".
 
+Если вы используете `!` как оператор отрицания, вы получите ошибку соответствия типов, в котором будет встречаться слово "ref".
+
 ```fsharp
 let y = true
-let z = !y     //wrong
-// => error FS0001: This expression was expected to have
-//    type 'a ref but here has type bool
+let z = !y     // неправильно
+// => ошибка FS0001: Ошидалось выражение типа 'a ref, обнаружен тип bool
 ```
 
 > The fix is to use the "not" keyword instead.
 
+Чтобы избавиться от ошибки, используйте ключевое слово "not".
+
 ```fsharp
 let y = true
-let z = not y   //correct
+let z = not y   // правильно
 ```
 
+> ### K. Operator precedence (especially functions and pipes)
 
-> ### K. Operator precedence (especially functions and pipes) {#FS0001K}
+### K. Приоритет операторов (особенно, функций и конвейеров) {#FS0001K}
 
 > If you mix up operator precedence, you may get type errors.
 > Generally, function application is highest precedence compared to other operators, so you get an error in the case below:
 
+Если вы перепутаете приоритет операторов, у вас могут возникнуть ошибки соответствия типов.
+В общем случае применение функций имеет высший приоритет по сравнению с другими операторами, так что вы получите ошибки в случаях, перечисленных ниже:
+
 ```fsharp
 String.length "hello" + "world"
-   // => error FS0001:  The type 'string' does not match the type 'int'
+   // => ошибка FS0001:  Тип 'string' не сопоставим с типом 'int'
 
-// what is really happening
+// что тут действительно происходит
 (String.length "hello") + "world"
 ```
 
 > The fix is to use parentheses.
 
+Чтобы избавиться от ошибки, используйте скобки.
+
+
 ```fsharp
-String.length ("hello" + "world")  // corrected
+String.length ("hello" + "world")  // правильно
 ```
 
 > Conversely, the pipe operator is low precedence compared to other operators.
 
+И наоборот, приоритет конвейерного оператора ниже приоритета других опреаторов.
+
 ```fsharp
 let result = 42 + [1..10] |> List.sum
- // => => error FS0001:  The type ''a list' does not match the type 'int'
+ // => => ошибка FS0001: Тип ''a list' не сопоставим с типом 'int'
 
-// what is really happening
+// что тут действительно происходит
 let result = (42 + [1..10]) |> List.sum
 ```
 
 > Again, the fix is to use parentheses.
 
+Снова, чтобы избавиться от ошибки, используйте скобки.
+
 ```fsharp
 let result = 42 + ([1..10] |> List.sum)
 ```
 
+> ### L. let! error in computation expressions (monads)
 
-> ### L. let! error in computation expressions (monads) {#FS0001L}
+### L. Ошибка let! в выражениях вычисления (монадах) {#FS0001L}
 
 > Here is a simple computation expression:
+
+Вот простое выражения вычисления:
 
 ```fsharp
 type Wrapper<'a> = Wrapped of 'a
@@ -859,21 +892,28 @@ let wrap = new wrapBuilder()
 
 > However, if you try to use it, you get an error.
 
+Однако, если вы попытаетесь использовать его, вы получите сообщение об ошибке.
+
 ```fsharp
 wrap {
-    let! x1 = Wrapped(1)   // <== error here
+    let! x1 = Wrapped(1)   // <== ошибка здесь
     let! y1 = Wrapped(2)
     let z1 = x + y
     return z
     }
-// error FS0001: This expression was expected to have type Wrapper<'a>
-//               but here has type 'b * 'c
+// error FS0001: Ожидалось выражения типа Wrapper<'a>,
+//               обнаружен тип 'b * 'c
 ```
 
 > The reason is that "`Bind`" expects a tuple `(wrapper,func)`, not two parameters.
 > (Check the signature for bind in the F# documentation).
 
+Причина в том, что "`Bind`" ожидает кортеж `(wrapper,func)`, а не два отдельных параметра.
+(Проверьте сигнатуру метода в документации F#).
+
 > The fix is to change the bind function to accept a tuple as its (single) parameter.
+
+Чтобы избавиться от ошибки, измените метод так, чтобы он принимал кортеж в качестве (единственного) параметра.
 
 ```fsharp
 type wrapBuilder() =
