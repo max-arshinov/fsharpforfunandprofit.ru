@@ -311,9 +311,9 @@ let randomFn   =  fun () -> r.Next()  // правильно
 > * [FS0588: Block following this 'let' is unfinished](#FS0588)
 
 * [FS0001: Тип 'X' не совпадает с типом 'Y'](#FS0001)
-* [FS0003: Это значение не является функцией и не может быть применено](#FS0003)
-* [FS0008: Приведение типа во время выполнение или проверка типа приводят к неопределённорму типу](#FS0008)
-* [FS0010: Неожиданные идентификатор в привязке](#FS0010a)
+* [FS0003: Значение не является функцией и не может быть применено](#FS0003)
+* [FS0008: Приведение типа времени выполнения или сопоставление типа приводит к неопределяемому типу](#FS0008)
+* [FS0010: Неожиданный идентификатор в привязке](#FS0010a)
 * [FS0010: Не полностью структурированная конструкция](#FS0010b)
 * [FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу](#FS0013)
 * [FS0020: Выражение должно иметь тип 'unit'](#FS0020)
@@ -321,9 +321,9 @@ let randomFn   =  fun () -> r.Next()  // правильно
 * [FS0035: Эта конструкция устарела](#FS0035)
 * [FS0039: Поле, конструктор или член X не определён](#FS0039)
 * [FS0041: Невозможно определить уникальную перегрузку](#FS0041)
-* [FS0049: В шаблонах нельзя использовать идентификаторы переменных в верхнем регистре](#FS0049)
+* [FS0049: В образцах нельзя использовать идентификаторы переменных в верхнем регистре](#FS0049)
 * [FS0072: Поиск объекта неопределённого типа](#FS0072)
-* [FS0588: Блок, следующих за оператором 'let', не завершён](#FS0588)
+* [FS0588: Блок, следующий за оператором 'let', не завершён](#FS0588)
 
 > ## FS0001: The type 'X' does not match the type 'Y'
 
@@ -922,175 +922,250 @@ type wrapBuilder() =
         | Wrapped(innerThing) -> func innerThing
 ```
 
-> ## FS0003: This value is not a function and cannot be applied {#FS0003}
+> ## FS0003: This value is not a function and cannot be applied
+
+## FS0003: Значение не является функцией и не может быть применено {#FS0003}
 
 > This error typically occurs when passing too many arguments to a function.
+
+Эта ошибка обычно возникает, если в функцию передано слишком много параметров.
 
 ```fsharp
 let add1 x = x + 1
 let x = add1 2 3
-// ==>   error FS0003: This value is not a function and cannot be applied
+// ==>   ошибка FS0003: Значение не является функцией и не может быть применено
 ```
 
 > It can also occur when you do operator overloading, but the operators cannot be used as prefix or infix.
 
+Она также может возникнуть при перегрузке оператора, когда оператор нельзя использовать в префиксной или инфиксной форме.
+
 ```fsharp
 let (!!) x y = x + y
-(!!) 1 2              // ok
-1 !! 2                // failed !! cannot be used as an infix operator
-// error FS0003: This value is not a function and cannot be applied
+(!!) 1 2              // правильно
+1 !! 2                // неправильно — !! нельзя использовать в инфиксной форме
+// error FS0003: Значение не является функцией и не может быть применено
 ```
 
-> ## FS0008: This runtime coercion or type test involves an indeterminate type {#FS0008}
+> ## FS0008: This runtime coercion or type test involves an indeterminate type
+
+## FS0008: Приведение типа времени выполнения или сопоставление типа приводит к неопределяемому типу {#FS0008}
 
 > You will often see this when attempting to use "`:?`" operator to match on a type.
+
+Вы часто будете видеть это сообщение, пытаясь использовать оператор "`:?`" для сопоставления типа.
+
 
 ```fsharp
 let detectType v =
     match v with
         | :? int -> printfn "this is an int"
         | _ -> printfn "something else"
-// error FS0008: This runtime coercion or type test from type 'a to int
-// involves an indeterminate type based on information prior to this program point.
-// Runtime type tests are not allowed on some types. Further type annotations are needed.
+// ошибка FS0008: Приведение типа времени выполнения или сопоставление типа `a с int
+// приводит к неопределяемому типу, если опираться на информацию, доступную в данной точке программы.
+// Сопоставление некоторых типов во время выполнения невозможно. Нужна дополнительная аннотация типа.
 ```
 
 > The message tells you the problem: "runtime type tests are not allowed on some types".
 
+Сообщение говорит вам о проблеме: "сопоставление некоторых типов во время выполнения невозможно".
+
 > The answer is to "box" the value which forces it into a reference type, and then you can type check it:
+
+Решение состоит в том, чтобы "упаковать" значение, приводящее к ошибке, в ссылочный тип. После этого вы можете проверять тип:
 
 ```fsharp
 let detectTypeBoxed v =
-    match box v with      // used "box v"
+    match box v with      // используем "упакованное значение v"
         | :? int -> printfn "this is an int"
         | _ -> printfn "something else"
 
-//test
+// проверяем
 detectTypeBoxed 1
 detectTypeBoxed 3.14
 ```
 
 
-> ## FS0010: Unexpected identifier in binding {#FS0010a}
+> ## FS0010: Unexpected identifier in binding
+
+## FS0010: Неожиданный идентификатор в привязке {#FS0010a}
 
 > Typically caused by breaking the "offside" rule for aligning expressions in a block.
+
+Обычно ошибка возникает из-за неправильного выравнивания выражений в блоке.
+
+<!-- В оригинале используется термин "правило офсайда", которое в русском языке не встречается.
+Термин ввёл Питер Лендин в статье 1966 года "Следующие 700 языков программирования".
+
+Формулировка: Any non-whitespace token to the left of the first such token on the previous line is taken to be the start of a new declaration.
+
+Правило определяет языки, где блоки кода определяются отсутпами, а не скобками или ключевыми словами, такими как begin и end.
+
+Перевод правила на русский: Любой токен, не состоящий из пробелов, который находится слева от первого такого же токена в предыдущей строке кода, начинает новую декларацию.
+
+Довольно запутанно. Возможно, похоже на определение офсайда в футболе. -->
 
 ```fsharp
 //3456789
 let f =
-  let x=1     // offside line is at column 3
-   x+1        // oops! don't start at column 4
-              // error FS0010: Unexpected identifier in binding
+  let x=1     // новый отступ в столбце 3
+   x+1        // ой! не делайте отступ в столбце 4
+              // ошибка FS0010: offside line is at column 3
 ```
 
 > The fix is to align the code correctly!
 
+Чтобы избавиться от ошибки, выравнивайте код корректно!
+
 > See also [FS0588: Block following this 'let' is unfinished](#FS0588) for another issue caused by alignment.
 
-> ## FS0010: Incomplete structured construct {#FS0010b}
+Также смотрите [FS0588: Блок, следующий за оператором 'let', не завершён](#FS0588), где описана другая ошибка, вызыванная некорректным выравниваем.
+
+> ## FS0010: Incomplete structured construct
+
+## FS0010: Не полностью структурированная конструкция {#FS0010b}
 
 > Often occurs if you are missing parentheses from a class constructor:
+
+Часто возникает, если вы пропустили круглые скобки при вызове конструктора.
 
 ```fsharp
 type Something() =
    let field = ()
 
-let x1 = new Something     // Error FS0010
-let x2 = new Something()   // OK!
+let x1 = new Something     // ошибка FS0010
+let x2 = new Something()   // правильно
 ```
 
 > Can also occur if you forgot to put parentheses around an operator:
 
+Может также возникнуть, если вы забыли заключить оператор в круглые скобки:
+
 ```fsharp
-// define new operator
+// определяем новый оператор
 let (|+) a = -a
 
-|+ 1    // error FS0010:
-        // Unexpected infix operator
+|+ 1    // ошибка FS0010:
+        // Неожиданный инфиксный оператор
 
-(|+) 1  // with parentheses -- OK!
+(|+) 1  // Со скобками — всё хорошо!
 ```
 
 > Can also occur if you are missing one side of an infix operator:
 
+Может также возникнуть, если вы забыли записать один из операндов инфиксного оператора:
+
 ```fsharp
-|| true  // error FS0010: Unexpected symbol '||'
-false || true  // OK
+|| true  // ошибка FS0010: Неожиданный символ '||'
+false || true  // Всё хорошо
 ```
 
 > Can also occur if you attempt to send a namespace definition to F# interactive.
 > The interactive console does not allow namespaces.
 
-```fsharp
-namespace Customer  // FS0010: Incomplete structured construct
+Может также возникнуть, если вы пытаетесь задать пространство имён в F# Interactive.
+Интерактивная консоль не понимает пространства имён.
 
-// declare a type
+```fsharp
+namespace Customer  // FS0010: Не полностью структурированная конструкция
+
+// определяем тип
 type Person= {First:string; Last:string}
 ```
 
 
-> ## FS0013: The static coercion from type X to Y involves an indeterminate type {#FS0013}
+> ## FS0013: The static coercion from type X to Y involves an indeterminate type
+
+> ## FS0013: Статическое приведение типа X к типу Y приводит к неопределённому типу {#FS0013}
+
 
 > This is generally caused by implic
 
-> ## FS0020: This expression should have type 'unit' {#FS0020}
+<!-- Раздел не написан в оригинале. Надо, видимо, указать на него Скотту. -->
+
+> ## FS0020: This expression should have type 'unit'
+
+> ## FS0020: Выражение должно иметь тип 'unit' {#FS0020}
 
 > This error is commonly found in two situations:
+
+Эта ошибка обычно возникает в двух случаях:
 
 > * Expressions that are not the last expression in the block
 > * Using wrong assignment operator
 
+* Выражения, которые не являются последними выражениями в блоке
+* Использование неверного оператора присваивания
+
 > ### FS0020 with expressions that are not the last expression in the block ###
+
+> ### FS0020 из-за выражений, которые не являются последними выражениями в блоке ###
 
 > Only the last expression in a block can return a value.
 > All others must return unit.
 > So this typically occurs when you have a function in a place that is not the last function.
 
+Возвращать значение может только последнее выражение в блоке. Все остальные должны возвращать значение типа `unit`. Так что ошибка обычно возникает, когда у вас есть функция там в какой-то из строк, кроме последней.
+
 ```fsharp
 let something =
-  2+2               // => FS0020: This expression should have type 'unit'
+  2+2               // => FS0020: Это выражение должно иметь тип 'unit'
   "hello"
 ```
 
 > The easy fix is use `ignore`.
 > But ask yourself why you are using a function and then throwing away the answer -- it might be a bug.
 
+Простое исправление заключается в вызове функции `ignore`. Однако, спросите себя, почему вы используете функции, а потом игнорируете её результат — возможно, это ошибка.
+
 ```fsharp
 let something =
-  2+2 |> ignore     // ok
+  2+2 |> ignore     // правильно
   "hello"
 ```
 
 > This also occurs if you think you writing C# and you accidentally use semicolons to separate expressions:
 
+Кроме того, эта ошибка возникает, если вы по привычке из C# случайно используете точку с запятой, чтобы разделять выражения:
+
 ```fsharp
-// wrong
+// неправильно
 let result = 2+2; "hello";
 
-// fixed
+// правильно
 let result = 2+2 |> ignore; "hello";
 ```
 
 > ### FS0020 with assignment ###
 
+> ### FS0020 из-за присваивания ###
+
 > Another variant of this error occurs when assigning to a property.
+
+Другой вариант этой ошибки возникает, когда вы присваивате значение свойству.
 
 >     This expression should have type 'unit', but has type 'Y'.
 
+     Это выражение должно иметь тип 'unit', но имеет тип 'Y'.
+
 > With this error, chances are you have confused the assignment operator "`<-`" for mutable values, with the equality comparison operator "`=`".
 
+В этой ошибке, скорее всего, вы перепутали оператор присваивания "`<-`" для изменяемых значений с оператором сравнения "`=`".
+
 ```fsharp
-// '=' versus '<-'
+// '=' вместо '<-'
 let add() =
     let mutable x = 1
-    x = x + 1          // warning FS0020
+    x = x + 1          // предупреждение FS0020
     printfn "%d" x
 ```
 
 > The fix is to use the proper assignment operator.
 
+Чтобы избавиться от ошибки, используйте правильный оператор присваивания.
+
 ```fsharp
-// fixed
+// исправлено
 let add() =
     let mutable x = 1
     x <- x + 1
@@ -1098,11 +1173,17 @@ let add() =
 ```
 
 
-> ## FS0030: Value restriction {#FS0030}
+> ## FS0030: Value restriction
+
+> ## FS0030: Ограничение на значение {#FS0030}
 
 > This is related to F#'s automatic generalization to generic types whenever possible.
 
-> For example, given :
+Эта ошибка связана с автоматическим расширением до обобщённого типа, когда это возможно.
+
+> For example, given:
+
+Например, в примерах:
 
 ```fsharp
 let id x = x
@@ -1112,6 +1193,8 @@ let opt = None
 
 > F#'s type inference will cleverly figure out the generic types.
 
+Механизм вывода типов F# проявит смекалку и определит обобщённые типы.
+
 ```fsharp
 val id : 'a -> 'a
 val compose : ('a -> 'b) -> ('b -> 'c) -> 'a -> 'c
@@ -1120,49 +1203,76 @@ val opt : 'a option
 
 > However in some cases, the F# compiler feels that the code is ambiguous, and, even though it looks like it is guessing the type correctly, it needs you to be more specific:
 
+Но в некоторых случаях компилятор F# посчитает код неоднозначным и, хотя кажется, что он правильно угадывает тип, ему нужно, чтобы вы были более конкретными.
+
 ```fsharp
-let idMap = List.map id             // error FS0030
-let blankConcat = String.concat ""  // error FS0030
+let idMap = List.map id             // ошибка FS0030
+let blankConcat = String.concat ""  // ошибка FS0030
 ```
 
 > Almost always this will be caused by trying to define a partially applied function, and almost always, the easiest fix is to explicitly add the missing parameter:
 
+Почти всегда ошибка будет вызвана попыткой определить частично применённую функцию и, почти всегда, простейшее исправление заключается в явном добавлении недостающего параметра.
+
 ```fsharp
-let idMap list = List.map id list             // OK
-let blankConcat list = String.concat "" list  // OK
+let idMap list = List.map id list             // правильно
+let blankConcat list = String.concat "" list  // правильно
 ```
 
 > For more details see the MSDN article on ["automatic generalization"](http://msdn.microsoft.com/en-us/library/dd233183%28v=VS.100%29.aspx).
 
-> ## FS0035: This construct is deprecated {#FS0035}
+Больше деталей вы найдёте в статье MSDN, посвящённой ["автоматическому обобщению"](http://msdn.microsoft.com/en-us/library/dd233183%28v=VS.100%29.aspx).
+
+> ## FS0035: This construct is deprecated
+
+## FS0035: Эта конструкция устарела {#FS0035}
 
 > F# syntax has been cleaned up over the last few years, so if you are using examples from an older F# book or webpage, you may run into this.
 > See the MSDN documentation for the correct syntax.
 
+Синтаксис F# за последние несколько лет сильно упростился, так что если вы используете примеры из старой книги или старой страницы, посвящённой F#, вы можете столкнуться с такой ошибкой.
+
 ```fsharp
 let x = 10
-let rnd1 = System.Random x         // Good
-let rnd2 = new System.Random(x)    // Good
-let rnd3 = new System.Random x     // error FS0035
+let rnd1 = System.Random x         // хорошо
+let rnd2 = new System.Random(x)    // хорошо
+let rnd3 = new System.Random x     // ошибка FS0035
 ```
 
-> ## FS0039: The field, constructor or member X is not defined {#FS0039}
+> ## FS0039: The field, constructor or member X is not defined
+
+## FS0039: Поле, конструктор или член X не определён {#FS0039}
 
 > This error is commonly found in four situations:
+
+Эта ошибка обычно возникает в одной из четырёх ситуаций.
 
 > * The obvious case where something really isn't defined! And make sure that you don't have a typo or case mismatch either.
 > * Interfaces
 > * Recursion
 > * Extension methods
 
+* Очевидный случай, когда что-то действительно не определено! И убедитесь, что у вас нет опечатки, и вы не перепутали большие и маленькие буквы.
+* Интерфейсы
+* Рекурсия
+* Методы расширения
+
 > ### FS0039 with interfaces ###
+
+> ### FS0039 из-за интерфейсов ###
 
 > In F# all interfaces are "explicit" implementations rather than "implicit".
 > (Read the C# documentation on ["explicit interface implementation"](http://msdn.microsoft.com/en-us/library/aa288461%28v=vs.71%29.aspx) for an explanation of the difference).
 
+В F# все интерфейсы должны быть реализованы "явно", в отличие от "неявной" реализации, принятой в C# (см. раздел ["явная реализация интерфейса"](http://msdn.microsoft.com/en-us/library/aa288461%28v=vs.71%29.aspx) где разъясняется отличие).
+
 > The key point is that when a interface member is explicitly implemented, it cannot be accessed through a normal class instance, but only through an instance of the interface, so you have to cast to the interface type by using the `:>` operator.
 
+Суть в том, что когда элемент интерфейса реализован явно, к нему нельзя получить доступ через экземпляр класса, только через экземпляр интерфейса, поэтому вы должны привести объект к типу интерфейса с помощью оператора `:>`.
+
 > Here's an example of a class that implements an interface:
+
+Вот примера класса, который реализует интерфейс.
 
 ```fsharp
 type MyResource() =
@@ -1172,26 +1282,34 @@ type MyResource() =
 
 > This doesn't work:
 
+Этот код не работает:
+
 ```fsharp
 let x = new MyResource()
-x.Dispose()  // error FS0039: The field, constructor
-             // or member 'Dispose' is not defined
+x.Dispose()  // ошибка FS0039: Поле, конструктор
+             // или член 'Dispose' не определён
 ```
 
 > The fix is to cast the object to the interface, as below:
 
+Чтобы избавиться от ошибки, приведите объект к типу интерфейса, как показано ниже:
+
 ```fsharp
-// fixed by casting to System.IDisposable
-(x :> System.IDisposable).Dispose()   // OK
+// исправлено приведением к System.IDisposable
+(x :> System.IDisposable).Dispose()   // правильно
 
 let y =  new MyResource() :> System.IDisposable
-y.Dispose()   // OK
+y.Dispose()   // правильно
 ```
 
 
 > ### FS0039 with recursion ###
 
+> ### FS0039 из-за рекурсии ###
+
 > Here's a standard Fibonacci implementation:
+
+Вот стандартная реализация чисел Фибоначчи:
 
 ```fsharp
 let fib i =
@@ -1203,11 +1321,19 @@ let fib i =
 
 > Unfortunately, this will not compile:
 
+К сожалению, этот код компилироваться не будет:
+
 >    Error FS0039: The value or constructor 'fib' is not defined
+
+    Ошибка FS0039: Значение или конструктор 'fib' не определён
 
 > The reason is that when the compiler sees 'fib' in the body, it doesn't know about the function because it hasn't finished compiling it yet!
 
+Причина в том, что когда компилятор видит вызов 'fib', он не знает о такой функции, потому что он её ещё не скомпилировал!
+
 > The fix is to use the "`rec`" keyword.
+
+Чтобы избавиться от ошибки, используйте ключевое слово "`rec`".
 
 ```fsharp
 let rec fib i =
@@ -1220,6 +1346,9 @@ let rec fib i =
 > Note that this only applies to "`let`" functions.
 > Member functions do not need this, because the scope rules are slightly different.
 
+Обратите внимание, что оно нужно только при описании функций с помощью "`let`".
+Функции-члены в нём не нуждаются, поскольку у них другие правила, касающиеся области видимости.
+
 ```fsharp
 type FibHelper() =
     member this.fib i =
@@ -1231,9 +1360,15 @@ type FibHelper() =
 
 > ### FS0039 with extension methods ###
 
+> ### FS0039 из-за методов расширения ###
+
 > If you have defined an extension method, you won't be able to use it unless the module is in scope.
 
+Если вы определили метод расширения, вы не сможете его использовать до тех пор, пока не подключите соответствующий модуль.
+
 > Here's a simple extension to demonstrate:
+
+Вот простой пример для демонстрации:
 
 ```fsharp
 module IntExtensions =
@@ -1243,24 +1378,32 @@ module IntExtensions =
 
 > If you try to use it the extension, you get the FS0039 error:
 
+Если вы попытаетесь использовать метод расширения, вы получите ошибку FS0039:
+
 ```fsharp
 let i = 2
 let result = i.IsEven
-    // FS0039: The field, constructor or
-    // member 'IsEven' is not defined
+    // FS0039: Поле, конструктор или
+    // член 'IsEven' не определён
 ```
 
 > The fix is just to open the `IntExtensions` module.
 
+Чтобы избавиться от ошибки, достаточно подключить модуль `IntExtensions`.
+
 ```fsharp
-open IntExtensions // bring module into scope
+open IntExtensions // вводим методы модуля в область видимости
 let i = 2
-let result = i.IsEven  // fixed!
+let result = i.IsEven  // исправлено!
 ```
 
-> ## FS0041: A unique overload for could not be determined {#FS0041}
+> ## FS0041: A unique overload for could not be determined
+
+## FS0041: Невозможно определить уникальную перегрузку {#FS0041}
 
 > This can be caused when calling a .NET library function that has multiple overloads:
+
+Эта ошибка может возникнуть при вызове библиотечной функции .NET с несколькими перегрузками:
 
 ```fsharp
 let streamReader filename = new System.IO.StreamReader(filename) // FS0041
@@ -1268,51 +1411,67 @@ let streamReader filename = new System.IO.StreamReader(filename) // FS0041
 
 > There a number of ways to fix this. One way is to use an explicit type annotation:
 
+Есть несколько способов избавиться от ошибки. Во-первых, вы можете использовать аннотации типов:
+
 ```fsharp
-let streamReader filename = new System.IO.StreamReader(filename:string) // OK
+let streamReader filename = new System.IO.StreamReader(filename:string) // работает
 ```
 
 > You can sometimes use a named parameter to avoid the type annotation:
 
+Иногда вы можете использовать именованные параметры, чтобы избежать аннотации:
+
 ```fsharp
-let streamReader filename = new System.IO.StreamReader(path=filename) // OK
+let streamReader filename = new System.IO.StreamReader(path=filename) // работает
 ```
 
 > Or you can try to create intermediate objects that help the type inference, again without needing type annotations:
 
+Или вы можете попытаться создать промежуточные объекты, которые помогают выводу типов, и также избавляют нас от аннотаций:
+
 ```fsharp
 let streamReader filename =
     let fileInfo = System.IO.FileInfo(filename)
-    new System.IO.StreamReader(fileInfo.FullName) // OK
+    new System.IO.StreamReader(fileInfo.FullName) // работает
 ```
 
-> ## FS0049: Uppercase variable identifiers should not generally be used in patterns {#FS0049}
+> ## FS0049: Uppercase variable identifiers should not generally be used in patterns
+
+> ## FS0049: В образцах нельзя использовать идентификаторы переменных в верхнем регистре {#FS0049}
 
 > When pattern matching, be aware of a subtle difference between the pure F# union types which consist of a tag only, and a .NET Enum type.
 
+При сопоставлении с образцом не забывайте о тонкой разнице между размеченными объединениями F#, которые содержат только идентификаторы вариантов, и типом `Enum` из .NET.
+
 > Pure F# union type:
+
+Размеченные объединения из F#:
 
 ```fsharp
 type ColorUnion = Red | Yellow
 let redUnion = Red
 
 match redUnion with
-| Red -> printfn "red"     // no problem
+| Red -> printfn "red"     // без проблем
 | _ -> printfn "something else"
 ```
 
 > But with .NET enums you must fully qualify them:
 
+Но перечисления .NET требуют указания полного имени:
+
 ```fsharp
-type ColorEnum = Green=0 | Blue=1      // enum
+type ColorEnum = Green=0 | Blue=1      // перечисление
 let blueEnum = ColorEnum.Blue
 
 match blueEnum with
-| Blue -> printfn "blue"     // warning FS0049
+| Blue -> printfn "blue"     // предупреждение FS0049
 | _ -> printfn "something else"
 ```
 
 > The fixed version:
+
+Исправленная версия:
 
 ```fsharp
 match blueEnum with
@@ -1320,62 +1479,99 @@ match blueEnum with
 | _ -> printfn "something else"
 ```
 
-> ## FS0072: Lookup on object of indeterminate type {#FS0072}
+> ## FS0072: Lookup on object of indeterminate type
+
+## FS0072: Поиск объекта неопределённого типа {#FS0072}
 
 > This occurs when "dotting into" an object whose type is unknown.
 
+Ошибка возникает, когда вы пытаетесь обратиться к свойству объекта, чей тип неизвестен.
+
 > Consider the following example:
 
+Рассмотрим следующий пример:
+
 ```fsharp
-let stringLength x = x.Length // Error FS0072
+let stringLength x = x.Length // ошибка FS0072
 ```
 
 > The compiler does not know what type "x" is, and therefore does not know if "`Length`" is a valid method.
 
+Компилятор не знает типа "x" и поэтому не может проверить, что "`Length`" является правильным свойством.
+
+<!-- Здесь речь идёт о свойстве, а не о методе. Подозреваю, метод оставлся после переписывания, так что просто исправил слово в переводе. -->
+
 > There a number of ways to fix this.
 > The crudest way is to provide an explicit type annotation:
 
+Есть несколько способов избавиться от этой ошибки. Метод "в лоб" — предоставить явную аннотацию типа:
+
 ```fsharp
-let stringLength (x:string) = x.Length  // OK
+let stringLength (x:string) = x.Length  // правильно
 ```
 
 > In some cases though, judicious rearrangement of the code can help.
 > For example, the example below looks like it should work.
 > It's obvious to a human that the `List.map` function is being applied to a list of strings, so why does `x.Length` cause an error?
 
+В некоторых случаях может помочь разумная реорганизация кода.
+Скажем, пример ниже, кажется, должен работать.
+Программисту очевидно, что функция `List.map` применяется к списку строк, так почему `x.Length` приводит к ошибке?
+
 ```fsharp
-List.map (fun x -> x.Length) ["hello"; "world"] // Error FS0072
+List.map (fun x -> x.Length) ["hello"; "world"] // ошибка FS0072
 ```
 
 > The reason is that the F# compiler is currently a one-pass compiler, and so type information present later in the program cannot be used if it hasn't been parsed yet.
 
+Причина заключается в том, что компилятор F# работает в один проход, так что информация о типе, представленная в программе позже, ему не доступна — ведь он о ней ещё не знает.
+
 > Yes, you can always explicitly annotate:
 
+Да, вы всегда можете добавить явную аннотацию:
+
 ```fsharp
-List.map (fun x:string -> x.Length) ["hello"; "world"] // OK
+List.map (fun x:string -> x.Length) ["hello"; "world"] // работает
 ```
 
 > But another, more elegant way that will often fix the problem is to rearrange things so the known types come first, and the compiler can digest them before it moves to the next clause.
 
+Но есть и другой, более элегантный способ решения проблемы. Надо реорганизовать код так, чтобы типы шли в начале, и комплиятор узнал про них прежде, чем разбирать следующую конструкцию.
+
 ```fsharp
-["hello"; "world"] |> List.map (fun x -> x.Length)   // OK
+["hello"; "world"] |> List.map (fun x -> x.Length)   // работает
 ```
 
 > It's good practice to avoid explicit type annotations, so this approach is best, if it is feasible.
 
-> ## FS0588: Block following this 'let' is unfinished {#FS0588}
+Считается хорошей практикой избегать явных аннотаций, так что применяйте этот подход всякий раз, когда получается.
+
+> ## FS0588: Block following this 'let' is unfinished
+
+> ## FS0588: Блок, следующий за оператором 'let', не завершён {#FS0588}
 
 > Caused by outdenting an expression in a block, and thus breaking the "offside rule".
+
+Ошибка вызвана неверным выравниваем кода в блоке.
+
+<!-- Выше есть комментарий про "правило офсайда" (правило вне игры). Этот термин не имеет
+устойчивого перевода в русском языке.
+
+Предлагаю в переводе вместо нарушения правила говорить о неверных отступах или неверном выравнивании кода. -->
 
 ```fsharp
 //3456789
 let f =
-  let x=1    // offside line is at column 3
- x+1         // offside! You are ahead of the ball!
-             // error FS0588: Block following this
-             // 'let' is unfinished
+  let x=1    // отступ в 3 пробела
+ x+1         // проблема! отступ в 2 пробела!
+             // Ошибка FS0588: Блок, следующий за оператором
+             // 'let', не завершён
 ```
 
 > The fix is to align the code correctly.
 
+Чтобы изабвиться от ошибки, выровняйте код правильно.
+
 > See also [FS0010: Unexpected identifier in binding](#FS0010a) for another issue caused by alignment.
+
+Смотрите также раздел [FS0010: Неожиданный идентификатор в привязке](#FS0010a), где рассказано о другой ошибке, вызыванной неправильным выравниваем.
