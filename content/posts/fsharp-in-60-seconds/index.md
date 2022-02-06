@@ -11,17 +11,17 @@ seriesOrder: 2
 
 > Here is a very quick overview on how to read F# code for newcomers unfamiliar with the syntax.
 
-Вот очень короткое введение, как читать код на F#. Для новичков, не знакомых с синтаксисом.
+Вот небольшая памятка, как читать код на F# — для новичков, не знакомых с синтаксисом языка.
 
 > It is obviously not very detailed but should be enough so that you can read and get the gist of the
 > upcoming examples in this series. Don't worry if you don't understand all of it, as I will give more
 > detailed explanations when we get to the actual code examples.
 
-Введение, очевидно, не содержит важных подробностей, но его должно хватить, чтобы уловить суть и понимать примеры, с которыми вы столкнётесь в следующих статьях. Не переживайте, если не сможете сразу во всём разобраться. Я всё подробно расскажу, когда мы перейдём к примерам кода.
+Памятка, очевидно, не содержит важных подробностей, но её должно хватить, чтобы уловить суть и разбирать примеры, с которыми вы столкнётесь в следующих статьях. Не переживайте, если не сможете понять всё и сразу — детали я объясню позже, когда мы начнём рассматривать примеры кода.
 
 > The two major differences between F# syntax and a standard C-like syntax are:
 
-Два главных различия между синтаксисом F# и обычным синтаксисом языков, выросших из C:
+Два главных различия между синтаксисом F# и классическим синтаксисом языков-наследников C:
 
 > * Curly braces are not used to delimit blocks of code. Instead, indentation is used (Python is similar this way).
 > * Whitespace is used to separate parameters rather than commas.
@@ -59,7 +59,7 @@ seriesOrder: 2
 > * Alternatively, try running this code in the interactive window. Remember to always use `;;` at the
 >   end to tell the interpreter that you are done entering and ready to evaluate.
 
-* Введите его в файл для скриптов F# (с расширением .fsx), а затем отправьте в F# Interactive.
+* Введите его в файл для скриптов F# (с расширением .fsx), а затем отправьте в окно F# Interactive.
   Подробнее об этом способе рассказано в статье ["Установка и использование F#"](/installing-and-using/).
 * В качестве альтернативы, попробуйте запустить код в интерактивном окне. Помните, что для запуска
   надо ввести символы `;;` — так интепретатор поймёт, что вы завершили ввод и код можно выполнять.
@@ -81,7 +81,7 @@ let twoToFive = [2;3;4;5]        // При создании списка в ка
                                  // используются точки с запятой.
 
 let oneToFive = 1 :: twoToFive   // :: создает список с новым первым элементом
-// Результат [1;2;3;4;5]
+                                 // Результат [1;2;3;4;5]
 let zeroToFive = [0;1] @ twoToFive   // @ соединяет два списка 
 
 // ВАЖНО: запятые никогда не используются в качестве разделителей, только точки с запятой!
@@ -164,8 +164,6 @@ type Temp =
   | DegreesF of float
 let temp = DegreesF 98.6
 
-// Types can be combined recursively in complex ways.
-// E.g. here is a union type that contains a list of the same type:
 // Типы можно рекурсивно комбинировать сложными способами.
 // Здесь, например, объединение, которое содержит список элементов своего же типа:
 type Employee =
