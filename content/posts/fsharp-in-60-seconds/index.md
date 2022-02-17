@@ -9,61 +9,30 @@ seriesCode: why-use-fsharp
 seriesOrder: 2
 ---
 
-> Here is a very quick overview on how to read F# code for newcomers unfamiliar with the syntax.
-
 Вот небольшая памятка, как читать код на F# — для новичков, не знакомых с синтаксисом языка.
-
-> It is obviously not very detailed but should be enough so that you can read and get the gist of the
-> upcoming examples in this series. Don't worry if you don't understand all of it, as I will give more
-> detailed explanations when we get to the actual code examples.
 
 Памятка, очевидно, не содержит важных подробностей, но её должно хватить, чтобы уловить суть и разбирать примеры, с которыми вы столкнётесь в следующих статьях. Не переживайте, если не сможете понять всё и сразу — детали я объясню позже, когда мы начнём рассматривать примеры кода.
 
-> The two major differences between F# syntax and a standard C-like syntax are:
-
 Два главных различия между синтаксисом F# и классическим синтаксисом языков-наследников C:
-
-> * Curly braces are not used to delimit blocks of code. Instead, indentation is used (Python is similar this way).
-> * Whitespace is used to separate parameters rather than commas.
-
 
 * Для выделения блоков кода не нужны фигурные скобки. Вместо них, также, как и в Python, используются отступы.
 * При определении и вызове функций параметры разделяются не запятыми, а пробелами.
 
-> Some people find the F# syntax off-putting. If you are one of them, consider this quote:
-
 Некоторым людям не нравится синтаксис F#. Если вы один из них, поразмышляйте над этой цитатой:
-
-> > "Optimising your notation to not confuse people in the first 10 minutes of seeing it but to hinder readability ever after is a really bad mistake."
-> > (David MacIver, via [a post about Scala syntax](http://rickyclarkson.blogspot.co.uk/2008/01/in-defence-of-0l-in-scala.html)).
 
 > "Большая ошибкая — подстраивать синтаксис под людей, знакомых с языком 10 минут, если этот синтаксис затруднит понимание кода на всё оставшееся время."
 > (Девид МакИвер (David MacIver), из [статьи, посвящённой синтаксису Scala](http://rickyclarkson.blogspot.co.uk/2008/01/in-defence-of-0l-in-scala.html)).
 
-> Personally, I think that the F# syntax is very clear and straightforward when you get used to it. In
-> many ways, it is simpler than the C# syntax, with fewer keywords and special cases.
-
 Лично я считаю синтаксис F# очень простым и понятным, стоит только к нему привыкнуть. Часто он проще, чем синтаксис C# — в нём меньше ключевых слов и исключений.
-
-> The example code below is a simple F# script that demonstrates most of the concepts that you need on a
-> regular basis.
 
 Пример ниже — простой скрипт на F#. Он демонстрирует большинство концепций, с которыми вам предстоит сталкиваться регулярно.
 
-> I would encourage you to test this code interactively and play with it a bit! Either:
-
 Я бы посоветовал вам запустить этот код в интерактивном режиме и немного поиграть с ним! Или:
-
-> * Type this into a F# script file (with .fsx extension) and send it to the interactive window. See the
->   ["installing and using F#"](/installing-and-using/) page for details.
-> * Alternatively, try running this code in the interactive window. Remember to always use `;;` at the
->   end to tell the interpreter that you are done entering and ready to evaluate.
 
 * Наберите его в файле для F# скриптов (с расширением .fsx), а затем отправьте в окно F# Interactive.
   Подробнее об этом способе рассказано в статье ["Установка и использование F#"](/installing-and-using/).
 * В качестве альтернативы, попробуйте запустить код в интерактивном окне. Помните, что для запуска
   надо ввести символы `;;` — так интепретатор поймёт, что вы завершили ввод и код можно выполнять.
-
 
 ```fsharp
 // однострочные комментарии начинаются с двойной косой черты
