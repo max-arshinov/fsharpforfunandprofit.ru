@@ -9,7 +9,10 @@ description: "Сложение типов друг с другом"
 
 date: 2012-06-06
 nav: fsharp-types
-seriesId: "Understanding F# types"
+
+# seriesId: "Understanding F# types"
+seriesId: "Понимание типов F#"
+
 seriesOrder: 6
 categories: [Types]
 ---
@@ -150,9 +153,15 @@ type IntOrBool =
 
 ```fsharp
 type IntOrBool = int of int| bool of bool
-//  ошибка FS0053: Названия ярлыков в размеченных объединениях
-//                 должны начинаться с заглавной буквы
+//  ошибка FS0053: Discriminated union cases
+//                 must be uppercase identifiers
 ```
+{{<footnote "*">}}
+Мы не переводим текст сообщений об ошибках, потому что, во-первых, именно так их выводит компилятор,
+а, во-вторых, так их проще гуглить.
+{{</footnote>}}
+
+
 
 > * Other named types (such as `Person` or `IntOrBool`) must be pre-defined outside the union type.
 >   You can't define them "inline" and write something like this:
