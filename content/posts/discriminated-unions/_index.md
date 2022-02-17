@@ -50,7 +50,7 @@ categories: [Types]
 
 > In this case the new type is the "sum" of the integer type plus the boolean type.
 
-В нашем случае, новый тип — это «сумма» целого типа и булевого типа. 
+В нашем случае, новый тип — это «сумма» типа «целое» и булевого типа. 
 
 > In F#, a sum type is called a "discriminated union" type.
 > Each component type (called a *union case*) must be tagged with a label (called a *case
@@ -86,7 +86,7 @@ type IntOrBool = I of int | B of bool
 > The component types can be any other type you like, including tuples, records, other union types,
   and so on.
 
-Типы компонентов могут быть любыми типами какие вам могут понадобиться: кортежами, записями, другими объединениями и так далее.
+Типы компонентов могут быть любыми типами, какие вам нужны: кортежами, записями, другими объединениями и так далее.
 
 ```fsharp
 type Person = {first:string; last:string}  // определяем тип записи
@@ -123,12 +123,12 @@ type MixedType =
 > It really is helpful to think of it as a sum of two types (as shown in the diagram), rather than
   as just an overlay of data.
 
-На первый взгляд, тип суммы кажется похожим на объединения C++ или варианты Visual Basic. Но здесь есть существенное отличие. Объединения в C++ небезопасны с точки зрения типа: данные, хранящиеся внутри, можно извлечь, используя любой ярлык. Размеченные объединения в F# безопасны: данные можно извлечь только одним способом.
+На первый взгляд, тип суммы кажется похожим на объединения C++ или варианты Visual Basic, но здесь есть существенное отличие. Объединения в C++ небезопасны с точки зрения типа: данные, хранящиеся внутри, можно извлечь, используя любой ярлык. Размеченные объединения в F# безопасны: данные можно извлечь только одним способом.
 О размеченных объединениях полезно думать именно как о сумме двух типов (см. диаграмму), а не как о значениях, которые разделяют одну и ту же память.
 
 > ## Key points about union types
 
-## Ключевые моменты в типах объединения
+## Ключевые пункты в типах объединения
 
 > Some key things to know about union types are:
 
@@ -370,7 +370,7 @@ matcher myP
 
 * Каждая «ветвь» сопоставления — это выражение образца, которое выглядит также, как соответствюущий
   вариант объединения.
-* Образец начинается с метки варианта. Остальная часть образца сопоставляется с типом, относящимуся
+* Образец начинается с метки варианта. Остальная часть образца сопоставляется с типом, относящимся
   к данному варианту.
 * За образцом следует стрелка "->" и затем код для выполнения.
 
@@ -447,14 +447,14 @@ let mySize2 = Medium
 > For example, let's say that we have customer ids and order ids which are both represented by integers,
 > but that they should never be assigned to each other.
 
-Представим, в качестве примера, что у вас есть идентификаторы заказчиков и идентификаторы заказов. И то,
+Представим, в качестве примера, что у вас есть идентификаторы заказчиков и идентификаторы заказов. И то
 и другое — целые числа, так что мы можем их перепутать, а нам бы этого не хотелось.
 
 > As we saw before, a type alias approach will not work, because an alias is just a synonym and doesn't
 > create a distinct type. Here's how you might try to do it with aliases:
 
 Мы уже знаем, что подход с созданием псевдонима типа не работает, потому что псевдоним  — всего лишь
-синоним и он не создает отдельный тип. 
+синоним, и он не создает отдельный тип. 
 Вот как вы можете попытаться решить вопрос с помощью псевдонимов:
 
 ```fsharp
@@ -543,7 +543,7 @@ type SingleCase = | A   // тип объединения с единственн
 > Like other core F# types, union types have an automatically defined equality operation: two unions are equal if they have the same type and the same case and the values for that case is equal.
 
 Для типов объединений, также как и для других основных типы F#, компилятор автоматически создаёт функцию сравнения.
-Два значения считаются равными, если они у них один и тот же тип, один и тот же вариант, и значения для этого варианта у них равны.
+Два значения считаются равными, если у них один и тот же тип, один и тот же вариант, и значения для этого варианта у них равны.
 
 ```fsharp
 type Contact = Email of string | Phone of int
@@ -562,7 +562,7 @@ let areEqual = (email1=email2)
 > But unlike tuples, the ToString() representation is unhelpful.
 
 У типов объединения приятное встроенное строковое представление, и они легко сериализуются.
-Правда, в отличие от кортежей, представление, полученное через ToString(), бесполезно*.
+Но, в отличие от кортежей, представление, полученное через ToString(), бесполезно*.
 
 ```fsharp
 type Contact = Email of string | Phone of int
