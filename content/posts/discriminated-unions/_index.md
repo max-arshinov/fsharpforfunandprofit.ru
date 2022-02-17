@@ -83,7 +83,7 @@ type IntOrBool = I of int | B of bool
 > The component types can be any other type you like, including tuples, records, other union types,
   and so on.
 
-Типы компонентов могут быть любыми, какие вам могут понадобиться: кортежами, записями, другими объединениями и так далее.
+Типы компонентов могут быть любыми типами какие вам могут понадобиться: кортежами, записями, другими объединениями и так далее.
 
 ```fsharp
 type Person = {first:string; last:string}  // определяем тип записи
