@@ -52,7 +52,7 @@ seriesOrder: 2
 
 > I would encourage you to test this code interactively and play with it a bit! Either:
 
-Я бы посоветовал вам погонять этот код в интерактивном режиме и немного поиграть с ним! Или:
+Я бы посоветовал вам запустить этот код в интерактивном режиме и немного поиграть с ним! Или:
 
 > * Type this into a F# script file (with .fsx extension) and send it to the interactive window. See the
 >   ["installing and using F#"](/installing-and-using/) page for details.
