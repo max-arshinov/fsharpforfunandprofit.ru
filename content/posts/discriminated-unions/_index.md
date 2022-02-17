@@ -238,7 +238,7 @@ val b              : IntOrBool = B       true
 
 > If the case constructor has more than one "parameter", you construct it in the same way that you would call a function:
 
-Также, как и функция, конструктор вызывается и тогда, когда у него несколько параметров:
+Если у конструктора больше одного параметра, вызывайте его также, как и вызывали бы функцию:
 
 ```fsharp
 type Person = {first:string; last:string}
@@ -281,7 +281,7 @@ type C = Circle of int | Rectangle of int * int
 
 > But what happens if you have two types which have cases with the same labels?
 
-Но что случится, если у вас есть два типа с одинаковыми метками?
+Но что случится, если у вас есть два типа, у которых есть варианты с одинаковыми метками?
 
 ```fsharp
 type IntOrBool1 = I of int | B of bool
@@ -307,7 +307,7 @@ let x2 = IntOrBool2.B true  // val x2 : IntOrBool2 = B true
 
 > And if the types come from different modules, you can use the module name as well:
 
-Если типы определены в разных модулях, вы также можете использовать и имя модуля:
+Если типы приходят из разных модулей, вы можете использовать также и имя модуля:
 
 ```fsharp
 module Module1 =
@@ -427,32 +427,31 @@ let mySize2 = Medium
 
 > ## Single cases
 
-## Единственные варианты (single cases)
+## Одиночные варианты (single cases)
 
 > Sometimes it is useful to create union types with only one case.
 > This might be seem useless, because you don't seem to be adding value.
 > But in fact, this a very useful practice that can enforce type safety*.
 
-Иногда полезно создавать типы объединения с единственным вариантом.
+Иногда полезно создавать типы объединения с одним вариантом.
 Это может показаться бесполезным, потому что вы, кажется, не добавляете ничего нового к существующему значению.
 Но на самом деле, это очень полезная практика, которая помогает обеспечить типобезопасноть*. 
 
 {{<footnote "*">}}
-> And in a future series we'll see that, in conjunction with module signatures, single case unions can also
-  help with data hiding and capability based security.
+> And in a future series we'll see that, in conjunction with module signatures, single case unions can
+> also help with data hiding and capability based security.
 
 И в следующих статьях мы увидим, что вместе с сигнатурами модулей, объединения с одним вариантом помогают в сокрытии данных и безопасности на основе полномочий.
 {{</footnote>}}
 
-> For example, let's say that we have customer ids and order ids which are both represented by integers, but
-  that they should never be assigned to each other.
+> For example, let's say that we have customer ids and order ids which are both represented by integers,
+> but that they should never be assigned to each other.
 
 Представим, в качестве примера, что у вас есть идентификаторы заказчиков и идентификаторы заказов. И то,
 и другое — целые числа, так что мы можем их перепутать, а нам бы этого не хотелось.
 
-> As we saw before, a type alias approach will not work, because an alias is just a synonym and doesn't create
-  a distinct type.
-> Here's how you might try to do it with aliases:
+> As we saw before, a type alias approach will not work, because an alias is just a synonym and doesn't
+> create a distinct type. Here's how you might try to do it with aliases:
 
 Мы уже знаем, что подход с созданием псевдонима типа не работает, потому что псевдоним  — всего лишь
 синоним и он не создает отдельный тип. 
