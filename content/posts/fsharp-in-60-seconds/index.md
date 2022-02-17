@@ -59,7 +59,7 @@ seriesOrder: 2
 > * Alternatively, try running this code in the interactive window. Remember to always use `;;` at the
 >   end to tell the interpreter that you are done entering and ready to evaluate.
 
-* Введите его в файл для скриптов F# (с расширением .fsx), а затем отправьте в окно F# Interactive.
+* Наберите его в файле для F# скриптов (с расширением .fsx), а затем отправьте в окно F# Interactive.
   Подробнее об этом способе рассказано в статье ["Установка и использование F#"](/installing-and-using/).
 * В качестве альтернативы, попробуйте запустить код в интерактивном окне. Помните, что для запуска
   надо ввести символы `;;` — так интепретатор поймёт, что вы завершили ввод и код можно выполнять.
