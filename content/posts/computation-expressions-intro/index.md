@@ -21,7 +21,7 @@ seriesOrder: 1
 > In this series, you'll learn what computation expressions are, how to make your own, and some common patterns
 > involving them. In the process, we'll also look at continuations, the bind function, wrapper types, and more.
 
-В этой цепочке вы узнаете, что такое вычислительные выражения, как их создавать, а также освоите несколько общих паттернов, связанных с ними. В процессе мы также познакомимся с продолжениями, функцией связывания, типами-обёртками и прочим.
+В этом цикле статей вы узнаете, что такое вычислительные выражения, как их создавать, а также освоите несколько общих паттернов, связанных с ними. В процессе мы также познакомимся с продолжениями, функцией связывания, типами-обёртками и прочим.
 
 > ## Background ##
 
@@ -48,11 +48,17 @@ seriesOrder: 1
 > [official MSDN documentation](http://msdn.microsoft.com/en-us/library/dd233182.aspx), it is explicit,
 > but quite unhelpful to a beginner.
 
+Если мы обратимся за помощью к [официальной документации MSDN](http://msdn.microsoft.com/en-us/library/dd233182.aspx), мы обнаружим, что она точна, но достаточно бесполезна для начинающего.
+
 > For example, it says that when you see the following code within a computation expression:
+
+В частности, она говорит, что когда мы видимо подобный код в вычислительном выражении:
 
 ```fsharp
 {| let! pattern = expr in cexpr |}
 ```
+
+то это на самом деле синтаксический сахар для такого вызова:
 
 > it is simply syntactic sugar for this method call:
 
@@ -62,15 +68,26 @@ builder.Bind(expr, (fun pattern -> {| cexpr |}))
 
 > But... what does this mean exactly?
 
+Но... что это такое и для чего нужно?
+
 > I hope that by the end of this series, the documentation above will become obvious.  Don't believe me? Read on!
 
+Я надеюсь, что к концу цикла документация, пример которой приведён выше, станет очевидной. Не верите? Читайте дальше!
+
 > ## Computation expressions in practice ##
+
+## Вычислительные выражения на практике
 
 > Before going into the mechanics of computation expressions, let's look at a few trivial examples that show the
 > same code before and after using computation expressions.
 
+Прежде чем погружаться в глубины вычислительных выражений, рассмотрим несколько тривиальных примеров, которые показывают один и тот же код с вычислительными выражениями и без них.
+
 > Let's start with a simple one.  Let's say we have some code, and we want to log each step. So we define a
 > little logging function, and call it after every value is created, like so:
+
+Начнём с простого примера. Представим, что у нас есть код и мы хотим логировать каждый шаг.
+Мы пишем небольшую функцию логирования, и вызываем её после каждого вычисления.
 
 ```fsharp
 let log p = printfn "expression is %A" p
@@ -88,6 +105,8 @@ let loggedWorkflow =
 
 > If you run this, you will see the output:
 
+Если вы запустите эту программу, вы увидите:
+
 ```text
 expression is 42
 expression is 43
@@ -96,11 +115,19 @@ expression is 85
 
 > Simple enough.
 
+Совсем несложно.
+
 > But it is annoying to have to explicitly write all the log statements each time. Is there a way to hide them?
+
+Но раздражает, что всё время приходится вызывать функцию логирования. Существует ли способ спрятать этот вызов?
 
 > Funny you should ask... A computation expression can do that. Here's one that does exactly the same thing.
 
+Хорошо, что вы спросили... Вычислительные выражения помогут справиться с проблемой. Вот код, которые будет делать то же самое.
+
 > First we define a new type called `LoggingBuilder`:
+
+Для начала определим новый тип `LoggingBuilder`:
 
 ```fsharp
 type LoggingBuilder() =
@@ -116,6 +143,8 @@ type LoggingBuilder() =
 
 > *Don't worry about what the mysterious `Bind` and `Return` are for yet -- they will be explained soon.*
 
+*Пока не беспокойтесь по поводу таинственных `Bind` и `Return` — мы обязательно вернёмся к ним позже.*
+
 {{<alertinfo>}}
 > Note that the "builder" in the context of a computation expression is not the same as the OO "builder pattern"
 > for constructing and validating objects.
@@ -123,13 +152,24 @@ type LoggingBuilder() =
 {{</alertinfo>}}
 
 
+{{<alertinfo>}}
+> Обратие внимание, что *строитель* (builder) в контексте вычислительных выражений это не то же самое,
+> что объектно-ориентированный паттерн *Строитель*, который применяется для создания сложных объектов.
+
+> Про паттерн *Строитель* вы можете прочитать [здесь](../builder-pattern).
+{{</alertinfo>}}
+
 > Next we create an instance of the type, `logger` in this case.
+
+Затем мы создадим экземпляр типа, в нашем случае `logger`.
 
 ```fsharp
 let logger = new LoggingBuilder()
 ```
 
 > So with this `logger` value, we can rewrite the original logging example like this:
+
+И теперь, имея переменную `logger`, мы можем переписать оригинальный пример вот так:
 
 ```fsharp
 let loggedWorkflow =
@@ -144,6 +184,8 @@ let loggedWorkflow =
 
 > If you run this, you get exactly the same output, but you can see that the use of the `logger{...}` workflow
 > has allowed us to hide the repetitive code.
+
+Запустив код, вы увидите на экране то же самое, но, как вы могли заметить, использование конструкции `logger{...}` позволило нам избавиться от повторяющегося кода.
 
 > ### Safe division ###
 
