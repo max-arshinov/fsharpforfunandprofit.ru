@@ -1,34 +1,48 @@
 ---
 layout: post
 # title: "Computation expressions: Introduction"
-title: "Computation expressions: Introduction"
+title: "Вычислительные выражения: Введение"
 # description: "Unwrapping the enigma..."
-description: "Unwrapping the enigma..."
+description: "Разгадывая загадку..."
 date: 2013-01-20
 nav: thinking-functionally
 # seriesId: "Computation Expressions"
-seriesId: "Computation Expressions"
+seriesId: "Вычислительные выражения"
 seriesOrder: 1
 ---
 
 > By popular request, it is time to talk about the mysteries of computation expressions, what they are, and how
 > they can be useful in practice (and I will try to avoid using the [forbidden m-word](/about/#banned)).
 
+По многочисленным просьбам, мы поговорим про тайны вычислительных выражений, о том, что они из себя представляют и как могут применяться на практике (и я постараюсь избегать [запрещённого слова на букву М](/about/#banned)).
+
+<!-- Речь про монады -->
+
 > In this series, you'll learn what computation expressions are, how to make your own, and some common patterns
 > involving them. In the process, we'll also look at continuations, the bind function, wrapper types, and more.
+
+В этой цепочке вы узнаете, что такое вычислительные выражения, как их создавать, а также освоите несколько общих паттернов, связанных с ними. В процессе мы также познакомимся с продолжениями, функцией связывания, типами-обёртками и прочим.
 
 > ## Background ##
 
 > Computation expressions seem to have a reputation for being abstruse and difficult to understand.
 
+Кажется, что вычислительные выражениях имеют репутацию заумной штуки, трудной для понимания.
+
 > On one hand, they're easy enough to use. Anyone who has written much F# code has certainly used standard ones
 > like `seq{...}` or `async{...}`.
 
+С одной стороны, их достаточно легко использовать. Любой, кто написал достаточно кода на F# наверняка использовал стандартные конструкции, такие как `seq{...}` или `async{...}`. 
+
 > But how do you make a new one of these things? How do they work behind the scenes?
+
+Но как вы можете создать новую похожую конструкцию? Как они работают за кулисами?
 
 > Unfortunately, many explanations seem to make things even more confusing.  There seems to be some sort of
 > mental bridge that you have to cross.
 > Once you are on the other side, it is all obvious, but to someone on this side, it is baffling.
+
+К сожалению, кажется, что многие объяснения делают весь гораздо более запутанными. Кажется, что существует своеобразный ментальный мост, который вы должны пересечь. Для тех, кто на другой стороне, всё кажется очевидным, но те, кто на этой, сбиты с толку.
 
 > If we turn for guidance to the
 > [official MSDN documentation](http://msdn.microsoft.com/en-us/library/dd233182.aspx), it is explicit,
