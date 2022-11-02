@@ -155,7 +155,7 @@ F# позволяет использовать нефункциональные 
 >It might seem like extra work, but this way of working is essential 
 > when using pipes and higher order functions like `List.map`.
 
-Это может показаться ненужным усложнение, но этот подход естественнен при использовании конвейеров
+Это может показаться ненужным усложнением, но этот подход естественнен при использовании конвейеров
 и функций высшего порядка, таких как `List.map`.
 
 >And don't write your own methods either!
