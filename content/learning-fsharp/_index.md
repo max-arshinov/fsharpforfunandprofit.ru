@@ -100,7 +100,7 @@ F# позволяет использовать нефункциональные 
 > and ["understanding F# types"](/series/understanding-fsharp-types.html), 
 > play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 
-Так что, пожалуйста, прочтите (и перечитайте, если потребуется)серию 
+Так что, пожалуйста, прочтите (и перечитайте, если потребуется) серию 
 ["думать функционально"](/series/thinking-functionally.html) 
 и ["понимание F# типов"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и 
 освойтесь с основными концепциями, прежде чем приступать к серьёзному кодированию. 
