@@ -240,7 +240,7 @@ F# позволяет использовать нефункциональные 
 
 >This style is much more idiomatic than nested function calls like `f(g(x))`
 
-Этот стиль - идиоматический для F#, в отличие от вложенных вызовов функций, наподобие `f(g(x))`.
+Этот стиль — идиоматический для F#, в отличие от вложенных вызовов функций, наподобие `f(g(x))`.
 
 >* Do understand how partial application works, and try to become comfortable with point-free (tacit) style.
 
