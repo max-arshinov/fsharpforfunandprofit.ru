@@ -236,7 +236,7 @@ F# позволяет использовать нефункциональные 
 
 >* Do use pipe (`|>`) and composition (`>>`) as much as you can.
 
-* Используйте конвейер (`|>`) и композицию (`>>`) везде где только возможно.
+* Используйте конвейер (`|>`) и композицию (`>>`) везде, где только возможно.
 
 >This style is much more idiomatic than nested function calls like `f(g(x))`
 
