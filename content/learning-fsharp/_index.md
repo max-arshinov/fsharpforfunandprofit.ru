@@ -56,8 +56,8 @@ date: 2015-01-01
 >Yes, F# is a hybrid language and does support these concepts.
 >But you will learn much faster if you start with a beginners mind.
 
-Да, F# - это гибридный язык и поддерживает эти концепции, но вы научитесь гораздо 
-быстрее если начнёте с чистого листа.
+Да, F# — это гибридный язык и поддерживает эти концепции, но вы научитесь гораздо 
+быстрее, если начнёте с чистого листа.
 
 > ## Change the way you think ##
 
@@ -68,7 +68,7 @@ date: 2015-01-01
 > in the way that truly object-oriented programming (in Smalltalk say) 
 > is also a different way of thinking from a traditional imperative language such as C.
 
-Важно понимать, что функциональное программирование - не просто стилистическое отличие. 
+Важно понимать, что функциональное программирование — не просто стилистическое отличие. 
 Это совершенно иной способ мышления о программировании. Разница столь же велика, что и между настоящим 
 объектно-ориентированным программированием (скажем, как в Smalltalk) и традиционным 
 императивным языком, таким как C.
@@ -107,7 +107,7 @@ F# позволяет использовать нефункциональные 
 
 >If you don't understand how functions and types work, then you will have a hard time being productive.
 
-Без понимания как работают функции и типы вам будет тяжело быть продуктивным.
+Без понимания, как работают функции и типы, вам будет тяжело быть продуктивным.
 
 > ## Dos and Don'ts ##
 ## Что такое хорошо и что такое плохо ##
@@ -146,7 +146,7 @@ F# позволяет использовать нефункциональные 
 
 >Instead of "dotting into" objects, try to use functions for everything.
 
-Вместо того чтобы обращаться через точку к методам объектов, попробуйте везде использовать функции.
+Вместо того, чтобы обращаться через точку к методам объектов, попробуйте везде использовать функции.
 
 >That is, write `String.length "hello"` rather than `"hello".Length`.
 
@@ -180,8 +180,8 @@ F# позволяет использовать нефункциональные 
 
 >If you have relied on the debugger to find and fix incorrect code, you will get a nasty shock.
 
-Если вы раньше полагались на использование отладчика для нахождения и исправление 
-ошибок в коде, вас ждет неприятный сюрприз.
+Если вы раньше полагались на использование отладчика для нахождения и исправления 
+ошибок в коде, вы будете сильно удивлены.
 
 >In F#, you will probably not get that far, because the compiler is so much stricter in many ways.
 
@@ -219,7 +219,7 @@ F# позволяет использовать нефункциональные 
 >Once you understand how to use them, you will be well on your way to understanding higher 
 > order functions in general.
 
-Понимание, как их использовать - ключ к понимаю функций высшего порядка в целом.
+Понимание, как их использовать - ключ к изучению функций высшего порядка в целом.
 
 >* Once you understand the collection modules, try to avoid recursion.
 
@@ -228,7 +228,7 @@ F# позволяет использовать нефункциональные 
 >Recursion can be error prone, and it can be hard to make sure that it is properly tail-recursive.
 
 В рекурсивном коде легче допустить ошибку. К тому же не всегда очевидно 
-будет ли оптимизирована в хвостовую.
+будет ли она оптимизирована в хвостовую.
 
 >When you use `List.fold`, you can never have that problem.
 
