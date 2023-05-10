@@ -11,7 +11,7 @@
 | boolean function          | булева функция                |                           |                                                           |
 | browser                   | браузер                       |                           |                                                           |
 | composition               | композиция                    |                           | Имеется в виду операция >> в F#                           |
-| computation expressions   | выражения вычисления          |                           | [Так в документации MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/computation-expressions) |
+| computation expressions   | вычислительные выражения      | вычисления выражения      | [Альтернатива в документации MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/computation-expressions) |
 | debug                     | отладка                       |                           |                                                           |
 | equality                  | проверка на равенство         | равнозначность            | Никоим образом не является "равенством" (equation)        |
 | exception                 | исключение                    |                           |                                                           |
