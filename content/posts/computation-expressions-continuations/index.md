@@ -13,7 +13,11 @@ seriesOrder: 2
 
 > In the previous post we saw how some complex code could be condensed using computation expressions.
 
+В предыдущей статье мы увидели, как с помощью вычислительных выражений можно сокращать довольно сложный код.
+
 > Here's the code before using a computation expression:
+
+Вот код без вычислительных выражений:
 
 ```fsharp
 
@@ -32,6 +36,8 @@ let loggedWorkflow =
 
 > And here's the same code after using a computation expression:
 
+А это — код с вычислительными выражениями:
+
 ```fsharp
 let loggedWorkflow =
     logger
@@ -45,11 +51,20 @@ let loggedWorkflow =
 
 > The use of `let!` rather than a normal `let` is important.  Can we emulate this ourselves so we can understand what is going on?  Yes, but we need to understand continuations first.
 
+Обратите внимание, что вместо оператора `let` используется оператор `let!`. Чтобы разобраться, как работет этот код, попробуем его эмулировать. Но прежде нам необходимо понять, как устроены продолжения.
+
 > ## Continuations
+
+## Продолжения
 
 > In imperative programming, we have the concept of "returning" from a function. When you call a function, you "go in", and then you "come out", just like pushing and popping a stack.
 
+В императивном программировании существует концепция "возврата" из функции. Вызывая функцию, мы "входим в неё", а потом "возвращаемся обратно", точно также, как в случае со стеком — помещаем и возвращаем значения.
+
 > Here is some typical C# code which works like this. Notice the use of the `return` keyword.
+
+Вот достаточно типичный код на C#, который действует описанным способом. Обратие внимание на ключевое слово `return`.
+
 
 ```csharp
 public int Divide(int top, int bottom)
@@ -73,13 +88,23 @@ public bool IsEven(int aNumber)
 
 > You've seen this a million times, but there is a subtle point about this approach that you might not have considered: *the called function always decides what to do*.
 
+Вы видели подобное миллион раз, но, возможно, никогда не обращали внимание на тонкий момент, а именно: *вызываемая функция определят детали реализации*.
+
 > For example, the implementation of `Divide` has decided that it is going to throw an exception.  But what if I don't want an exception? Maybe I want a `nullable<int>`, or maybe I am going to display it on a screen as "#DIV/0". Why throw an exception that I am immediately going to have to catch?  In other words, why not let the *caller* decide what should happen, rather the callee.
+
+Например, функция `Divide` определяет, что при делении на ноль будет выбрасывать исключение. Но что если нам не нужно исключение? Что, если мы хотим результат типа `nullable<int>` или мы хотим вывести на экран сообщение "#DIV/0"? Зачем выбрасывать исключение, которое придётся немедленно перехватывать? Иными словами, почему бы решение о деталях не отдать на откуп вызывающей функции, а не вызываемой?
 
 > Similarly in the `IsEven` example, what am I going to do with the boolean return value? Branch on it? Or maybe print it in a report? I don't know, but again, rather than returning a boolean that the caller has to deal with, why not let the caller tell the callee what to do next?
 
+Также и в примере с `IsEven` не ясно, что я сделаю с полученным булевым значением. Вставлю в `if`? Или, возможно, помещу в отчёт? Я не знаю, но вместо того, чтобы возвращать логическое значение, почему бы мне не разрешить вызывающей функции определять, что делать дальше — в случае чётных и нечётных чисел?
+
 > So this is what continuations are.  A **continuation** is simply a function that you pass into another function to tell it what to do next.
 
+Это именно то, чем являются продолжения. **Продолжение** — это функция, которую вы передаёте в другую функцию, чтобы сказать, что делать дальше.
+
 > Here's the same C# code rewritten to allow the caller to pass in functions which the callee uses to handle each case. If it helps, you can think of this as somewhat analogous to a visitor pattern. Or maybe not.
+
+Вот код на C#, переписанный так, чтобы вызывающая функция могла решать, что делать вызываемой в разных случаях. Если это поможет, вы можете думать об этом приёме, как о некой форме паттерна *Посетитель*. Или нет.
 
 ```csharp
 public T Divide<T>(int top, int bottom, Func<T> ifZero, Func<int,T> ifSuccess)
@@ -108,9 +133,15 @@ public T IsEven<T>(int aNumber, Func<int,T> ifOdd, Func<int,T> ifEven)
 
 > Note that the C# functions have been changed to return a generic `T` now, and both continuations are a `Func` that returns a `T`.
 
+Обратите вниманеие, что теперь функции возвращают значение обобщённого типа `T` и оба продолжения — это `Func`, которые возвращают `T`.
+
 > Well, passing in lots of `Func` parameters always looks pretty ugly in C#, so it is not done very often.  But passing functions is easy in F#, so let's see how this code ports over.
 
+Да, в C# передача нескольких параметров типа `Func` выглядит достаточно уродливо, так что подобную технику используют не часто. Но в F# передача функций изящнее, поэтому взглянем, каким станет код после портирования.
+
 > Here's the "before" code:
+
+Это код "до":
 
 ```fsharp
 let divide top bottom =
@@ -123,6 +154,8 @@ let isEven aNumber =
 ```
 
 > and here's the "after" code:
+
+А это — код "после":
 
 ```fsharp
 let divide ifZero ifSuccess top bottom =
@@ -138,7 +171,11 @@ let isEven ifOdd ifEven aNumber =
 
 > A few things to note. First, you can see that I have put the extra functions (`ifZero`, etc) *first* in the parameter list, rather than last, as in the C# example. Why? Because I am probably going to want to use [partial application](/posts/partial-application/).
 
+Несколько замечаний. Во-первых, вы видите, что я добавил дополнительные функции (`ifZero` и прочие) в *начало* списка параметров, а не в конец, как в примере на C#. Почему? Потому что я, возможно, захочу воспользоваться [частичными применением](../partial-application/).
+
 > And also, in the `isEven` example, I wrote `aNumber |> ifEven` and `aNumber |> ifOdd`. This makes it clear that we are piping the current value into the continuation and the continuation is always the very last step to be evaluated.  *We will be using this exact same pattern later in this post, so make sure you understand what is going on here.*
+
+Во-вторых, я написал `aNumber |> ifEven` и `aNumber |> ifOdd` в теле функции `isEven`. Такая запись подчёркивает идею, что мы передаём значение в функцию-продолжение и продолжение всегда является последним шагом в вычислениях. *Мы будем часто применять этот паттерн в статье, так что убедитесь, что вы понимаете, как он работает.*
 
 > ### Continuation examples
 
