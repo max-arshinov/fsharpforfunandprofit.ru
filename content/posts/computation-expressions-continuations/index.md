@@ -30,7 +30,7 @@ let loggedWorkflow =
     log y
     let z = x + y
     log z
-    //return
+    // возвращаем
     z
 ```
 
@@ -179,97 +179,117 @@ let isEven ifOdd ifEven aNumber =
 
 > ### Continuation examples
 
+### Примеры продолжений
+
 > With the power of continuations at our disposal, we can use the same `divide` function in three completely different ways, depending on what the caller wants.
 
+С обретённой мощью продолжений, мы можем использовать функцию `divide` тремя совершенно разными способами, в зависимости от того, что требуется вызывающей стороне.
+
 > Here are three scenarios we can create quickly:
+
+Вот три сценария, которые мы можем быстро реализовать:
 
 > * pipe the result into a message and print it,
 > * convert the result to an option using `None` for the bad case and `Some` for the good case,
 > * or throw an exception in the bad case and just return the result in the good case.
 
+* превратить результат в сообщение и напечатать его,
+* обернуть результат в тип `Option`, используя `None` для плохого сценария и `Some` для хорошего,
+* или выбросить исключение в плохом случае и просто вернуть значение в хорошем.
+
 ```fsharp
-// Scenario 1: pipe the result into a message
+// Сценарий 1: первраащем результат в сообщение
 // ----------------------------------------
-// setup the functions to print a message
+// готовим функции для печати сообщений
 let ifZero1 () = printfn "bad"
 let ifSuccess1 x = printfn "good %i" x
 
-// use partial application
+// используем частичное применение
 let divide1  = divide ifZero1 ifSuccess1
 
-//test
+// проверяем
 let good1 = divide1 6 3
 let bad1 = divide1 6 0
 
-// Scenario 2: convert the result to an option
+// Сценарий 2: оборачиваем результат в тип `Option`
 // ----------------------------------------
-// setup the functions to return an Option
+// готовим функции для оборачивания
 let ifZero2() = None
 let ifSuccess2 x = Some x
 let divide2  = divide ifZero2 ifSuccess2
 
-//test
+// проверяем
 let good2 = divide2 6 3
 let bad2 = divide2 6 0
 
-// Scenario 3: throw an exception in the bad case
+// Сценарий 3: выбрасываем исключение в случае ошибки
 // ----------------------------------------
-// setup the functions to throw exception
+// готовим функции для исключения
 let ifZero3() = failwith "div by 0"
 let ifSuccess3 x = x
 let divide3  = divide ifZero3 ifSuccess3
 
-//test
+// проверяем
 let good3 = divide3 6 3
 let bad3 = divide3 6 0
 ```
 
 > Notice that with this approach, the caller *never* has to catch an exception from `divide` anywhere. The caller decides whether an exception will be thrown, not the callee. So not only has the `divide` function become much more reusable in different contexts,  but the cyclomatic complexity has just dropped a level as well.
 
+Обратите внимание, что при таком подходе вызывающая сторона *никогда* не перехватывает исключения в функции `divide`. Именно вызывающая (а не вызываемая) сторона решает, надо ли выбрасывать исключение. Теперь функция `divide` не только больше подходит для использования в разных контекстах, но и снижается и уровень цикломатеической сложности.
+
 > The same three scenarios can be applied to the `isEven` implementation:
 
+Те же три сценария можно применить к реализации `isEven`:
+
 ```fsharp
-// Scenario 1: pipe the result into a message
+// Сценарий 1: первраащем результат в сообщение
 // ----------------------------------------
-// setup the functions to print a message
+// готовим функции для печати сообщений
 let ifOdd1 x = printfn "isOdd %i" x
 let ifEven1 x = printfn "isEven %i" x
 
-// use partial application
+// используем частичное применение
 let isEven1  = isEven ifOdd1 ifEven1
 
-//test
+// проверяем
 let good1 = isEven1 6
 let bad1 = isEven1 5
 
-// Scenario 2: convert the result to an option
+// Сценарий 2: оборачиваем результат в тип `Option`
 // ----------------------------------------
-// setup the functions to return an Option
+// готовим функции для оборачивания
 let ifOdd2 _ = None
 let ifEven2 x = Some x
 let isEven2  = isEven ifOdd2 ifEven2
 
-//test
+// проверяем
 let good2 = isEven2 6
 let bad2 = isEven2 5
 
-// Scenario 3: throw an exception in the bad case
+// Сценарий 3: выбрасываем исключение в случае ошибки
 // ----------------------------------------
-// setup the functions to throw exception
+// готовим функции для исключения
 let ifOdd3 _ = failwith "assert failed"
 let ifEven3 x = x
 let isEven3  = isEven ifOdd3 ifEven3
 
-//test
+// проверяем
 let good3 = isEven3 6
 let bad3 = isEven3 5
 ```
 
 > In this case, the benefits are subtler, but the same: the caller never had to handle booleans with an `if/then/else` anywhere.  There is less complexity and less chance of error.
 
+В этим примере преимущества не так очевидны, но, в любом случае: вызывающая стороная никогда не обрабатывает возвращаемый результат с помощью `if/then/else`. Сложность кода становится ниже, как и вероятность допустить ошибку.
+
 > It might seem like a trivial difference, but by passing functions around like this, we can use all our favorite functional techniques such as composition, partial application, and so on.
 
+Это может показаться тривиальной разницей, но, передавая фукнции подобным образом, мы можем использовать все наши любимые функциональные техники: композицию, частичное приминение и другие.
+
 > We have also met continuations before, in the series on [designing with types](/posts/designing-with-types-single-case-dus/). We saw that their use enabled the caller to decide what would happen in case of possible validation errors in a constructor, rather than just throwing an exception.
+
+Мы уже встречали продолжения раньше, в серии статей про [проектирование с помощью типов](../designing-with-types-single-case-dus/). Мы видели, что их применение позволяет вызывающей стороне решать, что делать в случае ошибок валидации в конструкторе, вместо того, чтобы просто бросать исключения.
 
 ```fsharp
 type EmailAddress = EmailAddress of string
@@ -282,15 +302,19 @@ let CreateEmailAddressWithContinuations success failure (s:string) =
 
 > The success function takes the email as a parameter and the error function takes a string. Both functions must return the same type, but the type is up to you.
 
+Функция обработки в успешной ветке получает в качестве параметра электронный адрес, в то время, как функция обработки ошибки получает строку. Обе функции должны иметь одинаковый тип, и вы можете выбрать любой.
+
 > And here is a simple example of the continuations in use. Both functions do a printf, and return nothing (i.e. unit).
 
+Вот простой пример использования продолжений. Обе функции вызывают `printf` и ничего не возвращают (то есть возвращают `unit`).
+
 ```fsharp
-// setup the functions
+// готовим функции
 let success (EmailAddress s) = printfn "success creating email %s" s
 let failure  msg = printfn "error creating email: %s" msg
 let createEmail = CreateEmailAddressWithContinuations success failure
 
-// test
+// проверяем
 let goodEmail = createEmail "x@example.com"
 let badEmail = createEmail "example.com"
 ```
