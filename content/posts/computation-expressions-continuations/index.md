@@ -321,38 +321,56 @@ let badEmail = createEmail "example.com"
 
 > ### Continuation passing style
 
+### Программирование через передачу продолжений
+
 > Using continuations like this leads to a style of programming called "[continuation passing style](http://en.wikipedia.org/wiki/Continuation-passing_style)" (or CPS), whereby *every* function is called with an extra "what to do next" function parameter.
+
+Использование продолжений описанным способом ведёт к стилю, который называется "[программированием через передачу продолжений](http://en.wikipedia.org/wiki/Continuation-passing_style)" (Continuation Passing Style, CPS). При этом *каждая* функция вызывается с дополнительным параметром-функцией "что делать дальше".
 
 > To see the difference, let's look at the standard, direct style of programming.
 
+Чтобы увидеть разницу, давайте взглянем на стандартный стиль передачи управления.
+
 > When you use the direct style, you go "in" and "out" of functions, like this
 
+Программируя в этом стиле, вы передаёте управление в функцию, а затем получаете его обратно:
+
 ```text
-call a function ->
-   <- return from the function
-call another function ->
-   <- return from the function
-call yet another function ->
-   <- return from the function
+вызов функции ->
+   <- возврат из функции
+вызов функции ->
+   <- возврат из функции
+вызов функции ->
+   <- возврат из функции
 ```
 
 > In continuation passing style, on the other hand, you end up with a chain of functions, like this:
 
+С другой стороны, если вы программируете через передачу продолжений, вы получаете цепочку вызовов:
+
 ```text
-evaluate something and pass it into ->
-   a function that evaluates something and passes it into ->
-      another function that evaluates something and passes it into ->
-         yet another function that evaluates something and passes it into ->
-            ...etc...
+вычислить значение и передать его в ->
+   функцию, которая вычисляет значение и передаёт его в ->
+      другую функцию, которая вычисляет значение и передаёт его в ->
+         ещё одну функцию, которая вычисляет значение и передаёт его в ->
+            и так далее...
 ```
 
 > There is obviously a big difference between the two styles.
 
+Очевидно, между этими стилями есть большая разница.
+
 > In the direct style, there is a hierarchy of functions. The top level function is a sort of "master controller" who calls one subroutine, and then another, deciding when to branch, when to loop, and generally coordinating the control flow explicitly.
+
+В случае передачи управления есть иерархия функций. Функция верхнего уровня — это, своего рода, "главный управляющий", который сначала вызывает одну подрограмму, затем другую; решает, когда нужны ветвления, а когда — циклы и, в целом, явным образом управляет потоком управления.
 
 > In the continuation passing style, though, there is no "master controller". Instead there is a sort of "pipeline", not of data but of control flow, where the "function in charge" changes as the execution logic flows through the pipe.
 
+В случае передачи продолжений, как видим, нет ничего похожего на "главного управляющего". Вместо него, есть своеобразный канал — не данных, а потока управления — в котором исполняемая функция определяет, куда это управление будет передано.
+
 > If you have ever attached a event handler to a button click in a GUI, or used a callback with [BeginInvoke](http://msdn.microsoft.com/en-us/library/2e08f6yc.aspx), then you have used this style without being aware of it. And in fact, this style will be key to understanding the `async` workflow, which I'll discuss later in this series.
+
+Даже если вы просто присоединяли обработчик к событию нажатия кнопки в пользовательском интерфейсе, или использовали функцию обратного вызова в [BeginInvoke](http://msdn.microsoft.com/en-us/library/2e08f6yc.aspx), вы уже использовали этот стиль, даже не зная об этом. И, фактически, этот стиль окажется ключевым для понимания, как работает `async`, о чём мы поговорим позже в этом цикле.
 
 > ## Continuations and 'let' ##
 
