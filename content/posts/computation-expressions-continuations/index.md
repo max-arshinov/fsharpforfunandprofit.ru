@@ -374,13 +374,23 @@ let badEmail = createEmail "example.com"
 
 > ## Continuations and 'let' ##
 
+## Продолжения и `let`
+
 > So how does all this fit in with `let`?
+
+Так как всё это связано с `let`?
 
 > Let's go back and [revisit](/posts/let-use-do/) what 'let` actually does.
 
+Давайте вернёмся назад и [перечитаем](/posts/let-use-do/), что в действительности делает `let`.
+
 > Remember that a (non-top-level) "let" can never be used in isolation -- it must always be part of a larger code block.
 
+Вспомним, что (не на самом верхнем уровне) `let` никогда не может быть использован изолированно — он всегда должен быть частью большего блока кода.
+
 > That is:
+
+То есть:
 
 ```fsharp
 let x = someExpression
@@ -388,13 +398,19 @@ let x = someExpression
 
 > really means:
 
+в действительности означает:
+
 ```fsharp
-let x = someExpression in [an expression involving x]
+let x = someExpression in [выражение, где встречается x]
 ```
 
 > And then every time you see the `x` in the second expression (the body expression), substitute it with the first expression (`someExpression`).
 
+И потом, каждый раз, когда вы видите `x` во втором выражении (в теле выражения), подставляйте на его место первое выражение (`someExpression`).
+
 > So for example, the expression:
+
+Так, например, выражение:
 
 ```fsharp
 let x = 42
@@ -404,39 +420,53 @@ let z = x + y
 
 > really means (using the verbose `in` keyword):
 
+в действительности означает (с использованием громоздкого ключевого слова `in`):
+
 ```fsharp
 let x = 42 in
   let y = 43 in
     let z = x + y in
-       z    // the result
+       z    // результат
 ```
 
 > Now funnily enough, a lambda looks very similar to a `let`:
 
+Достаточно забавно, что лямбды выглядят очень пожожими на `let`:
+
+
 ```fsharp
-fun x -> [an expression involving x]
+fun x -> [выражение, где встречается x]
 ```
 
 > and if we pipe in the value of `x` as well, we get the following:
 
+и если мы свяжем `x` с лямбдой конвейерным оператором, мы получим следующее:
+
 ```fsharp
-someExpression |> (fun x -> [an expression involving x] )
+someExpression |> (fun x -> [выражение, где встречается x] )
 ```
 
 > Doesn't this look awfully like a `let` to you? Here is a let and a lambda side by side:
 
+Разве этот код не похож на страшную версию `let`? Вот `let` и лямбда, записанные рядом:
+
 ```fsharp
 // let
-let x = someExpression in [an expression involving x]
+let x = someExpression in [выражение, где встречается x]
 
-// pipe a value into a lambda
-someExpression |> (fun x -> [an expression involving x] )
+// конвейер из значения и лямбды
+someExpression |> (fun x -> [выражение, где встречается x] )
 ```
 
 > They both have an `x`, and a `someExpression`, and everywhere you see `x` in the body of the lambda you replace it with  `someExpression`.
 > Yes, the `x` and the `someExpression` are reversed in the lambda case, but otherwise it is basically the same thing as a `let`.
 
+В обеих записях есть `x` и `someExpression`, и везде, где вы видите `x` в теле лямбды, мы заменяете его на `someExpression`.
+Да, `x` и `someExpression` в записи лямбды меняются местами, но по сути это то же самое, что и `let`.
+
 > So, using this technique, we can rewrite the original example in this style:
+
+Теперь, используя эту технику, мы можем переписать оригинальный пример в новом стиле:
 
 ```fsharp
 42 |> (fun x ->
@@ -447,10 +477,18 @@ someExpression |> (fun x -> [an expression involving x] )
 
 > When it is written this way, you can see that we have transformed the `let` style into a continuation passing style!
 
+Когда пример записан подобным образом, мы видим, что запись в стиле `let` трансформировалась в запись через передачу прдолжений.
+
 > * In the first line we have a value `42` -- what do we want to do with it? Let's pass it into a continuation, just as we did with the `isEven` function earlier. And in the context of the continuation, we will relabel `42` as `x`.
 > * In the second line we have a value `43` -- what do we want to do with it? Let's pass it too into a continuation, calling it `y` in that context.
 > * In the third line we add the x and y together to create a new value. And what do we want to do with it? Another continuation, another label (`z`).
 > * Finally in the last line we are done and the whole expression evaluates to `z`.
+
+* В первой строке у нас значение `42` — что мы с ним cделаем?
+* Давайте передадим его в продолжение, как мы ранее делали с функцией `isEven`. В контексте продолжения переименуем `42` в `x`.
+* Во второй строке у нас значение `43` — что мы с ним cделаем? Давайте передадим его в продолжение, в контексте которого назовём его `y`.
+* В третьей строке мы складываем `x` и `y`, чтобы создать новое значение. Что мы с ним сделаем? Снова передадим его в продолжение и назовём `z`.
+* Наконец, в последней строке мы завершаем и `z` становится значением всего выражения.
 
 > ### Wrapping the continuation in a function
 
