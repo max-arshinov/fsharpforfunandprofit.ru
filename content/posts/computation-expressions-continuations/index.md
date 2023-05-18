@@ -492,10 +492,17 @@ someExpression |> (fun x -> [выражение, где встречается x
 
 > ### Wrapping the continuation in a function
 
+### Оборачивание продолжения в функцию
+
 > Let's get rid of the explicit pipe and write a little function to wrap this logic. We can't call it "let" because that is a reserved word, and more importantly, the parameters are backwards from 'let'.
 > The "x" is on the right hand side, and the "someExpression" is on the left hand side. So we'll call it `pipeInto` for now.
 
+Давайте избавимся от явного конвейера и напишем небольшую функцию, чтобы обернуть эту логику. Мы не можем назвать её "let", потому что это ключевое слово и, что более важно, потому что порядок параметров здесь проитивоположен. Параметр `x` находится справа, а `someExpression` — слева. Исходя из этого, назовём функцию `pipeInto` (с учётом контекста, означает что-то вроде «передать по конвейеру»).
+
+
 > The definition of `pipeInto` is really obvious:
+
+Определение `pipeInfo` поистине очевидно:
 
 ```fsharp
 let pipeInto (someExpression,lambda) =
@@ -504,7 +511,11 @@ let pipeInto (someExpression,lambda) =
 
 > *Note that we are passing both parameters in at once using a tuple rather than as two distinct parameters separated by whitespace. They will always come as a pair.*
 
+*Обратите внимание, что мы передаём оба параметра как один, заключив их в кортеж, вместо того, чтобы передать их раздельно, перчислив через пробел. Они всегда идут парой.*
+
 > So, with this `pipeInto` function we can then rewrite the example once more as:
+
+Теперь, благодаря `pipeInfo`, мы можем ещё раз переписать пример таким образом:
 
 ```fsharp
 pipeInto (42, fun x ->
@@ -515,6 +526,8 @@ pipeInto (42, fun x ->
 
 > or we can eliminate the indents and write it like this:
 
+или мы можем устранить вложенность и записать всё вот так:
+
 ```fsharp
 pipeInto (42, fun x ->
 pipeInto (43, fun y ->
@@ -524,11 +537,19 @@ z)))
 
 > You might be thinking: so what? Why bother to wrap the pipe into a function?
 
+Вы, должно быть, думаете: ну и что? Зачем тратить время на оборачивание конвейера в функцию?
+
 > The answer is that we can add *extra code* in the `pipeInto` function to do stuff "behind the scenes", just as in a computation expression.
+
+Ответ заключается в том, что мы можем реализовать *дополнительную логику* в функции `pipeInto`, чтобы неявно делать разные штуки также, как это происходит в вычислительных выражениях.
 
 > ### The "logging" example revisited ###
 
+### Переписываем логгирование
+
 > Let's redefine `pipeInto` to add a little bit of logging, like this:
+
+Давайте переопределим `pipeInto`, чтоыб добавить немного логгирования, как здесь:
 
 ```fsharp
 let pipeInto (someExpression,lambda) =
@@ -537,6 +558,8 @@ let pipeInto (someExpression,lambda) =
 ```
 
 > Now... run that code again.
+
+И... снова запустим код.
 
 ```fsharp
 pipeInto (42, fun x ->
@@ -548,6 +571,8 @@ z
 
 > What is the output?
 
+Что получим на выходе?
+
 ```text
 expression is 42
 expression is 43
@@ -556,13 +581,21 @@ expression is 85
 
 > This is exactly the same output as we had in the earlier implementations.  We have created our own little computation expression workflow!
 
+Это в точности такой же вывод, который мы наблюдали в ранних реализациях. Мы создали собственный движок для вычислительных выражений!
+
 > If we compare this side by side with the computation expression version, we can see that our homebrew version is very similar to the `let!`, except that we have the parameters reversed, and we have the explicit arrow for the continuation.
+
+Если мы сравним своё решение с обычным вычислительным выражением, мы увидим, что наша доморощенная функция весьма похожа на `let!`, за тем исключением, что параметры идут в обратном поррядке и для продолжения явно используется стрелка.
 
 ![computation expression: logging](./compexpr_logging.png)
 
 > ### The "safe divide" example revisited ###
 
+### Переписываем "безопасное деление"
+
 > Let's do the same thing with the "safe divide" example. Here was the original code:
+
+Давайте сделаем то же самое с безопасным делением. Вот оригинальный код:
 
 ```fsharp
 let divideBy bottom top =
@@ -573,28 +606,37 @@ let divideBy bottom top =
 let divideByWorkflow x y w z =
     let a = x |> divideBy y
     match a with
-    | None -> None  // give up
-    | Some a' ->    // keep going
+    | None -> None  // останавливаемся
+    | Some a' ->    // продолжаем
         let b = a' |> divideBy w
         match b with
-        | None -> None  // give up
-        | Some b' ->    // keep going
+        | None -> None  // останавливаемся
+        | Some b' ->    // продолжаем
             let c = b' |> divideBy z
             match c with
-            | None -> None  // give up
-            | Some c' ->    // keep going
-                //return
+            | None -> None  // останавливаемся
+            | Some c' ->    // продолжаем
+                // возвращаем
                 Some c'
 ```
 
 > You should see now that this "stepped" style is an obvious clue that we really should be using continuations.
 
+Теперь вы понимаете, что такая «лесенка» является очевидной подсказкой, что нам следует использовать продолжения.
+
 > Let's see if we can add extra code to `pipeInto` to do the matching for us. The logic we want is:
+
+Проверим, сможем ли мы реализовать *дополнительную логику* в `pipeInto`, чтобы она делала что-то подобное. Мы хотеим, чтобы фукнция:
 
 > * If the `someExpression` parameter is `None`, then don't call the continuation lambda.
 > * If the `someExpression` parameter is `Some`, then do call the continuation lambda, passing in the contents of the `Some`.
 
+* Если `someExpression` не содержит значения (`None`), не вызывать лямбду-продолжение.
+* Если `someExpression` содержит значение (`Some` *что-то*), передавать это *что-то* в лямбду-продолжение. 
+
 > Here it is:
+
+Получается что-то вроде этого:
 
 ```fsharp
 let pipeInto (someExpression,lambda) =
@@ -607,6 +649,8 @@ let pipeInto (someExpression,lambda) =
 
 > With this new version of `pipeInto` we can rewrite the original code like this:
 
+С новой версией `pipeInto`, мы можем переписать оригинальный код вот так:
+
 ```fsharp
 let divideByWorkflow x y w z =
     let a = x |> divideBy y
@@ -615,26 +659,32 @@ let divideByWorkflow x y w z =
         pipeInto (b, fun b' ->
             let c = b' |> divideBy z
             pipeInto (c, fun c' ->
-                Some c' //return
+                Some c' // возвращаем
                 )))
 ```
 
 > We can clean this up quite a bit.
 
+Этот код можно немного почистить.
+
 > First we can eliminate the `a`, `b` and `c`, and replace them with the `divideBy` expression directly. So that this:
+
+Во-первых, мы можем избавиться от `a`, `b` и `c`, заменив их выражением `divideBy`. Такой код:
 
 ```fsharp
 let a = x |> divideBy y
 pipeInto (a, fun a' ->
 ```
 
-> becomes just this:
+> станет таким:
 
 ```fsharp
 pipeInto (x |> divideBy y, fun a' ->
 ```
 
 > Now we can relabel `a'` as just `a`, and so on, and we can also remove the stepped indentation, so that we get this:
+
+Теперь переименовываем `a'` в `a` и так далее, и параллельно избавляемся от лесенки. Вот что у нас получилось:
 
 ```fsharp
 let divideByResult x y w z =
@@ -646,6 +696,8 @@ let divideByResult x y w z =
 ```
 
 > Finally, we'll create a little helper function called `return'` to wrap the result in an option. Putting it all together, the code looks like this:
+
+Наконец, создаим небольшую вспомогательную функцию и назовём её `return`. Она будет оборачивать результат вычисления. После того, как мы сведём всё воедино, код приобретёт следующий вид:
 
 ```fsharp
 let divideBy bottom top =
@@ -675,11 +727,18 @@ let bad = divideByWorkflow 12 3 0 1
 
 > Again, if we compare this side by side with the computation expression version, we can see that our homebrew version is identical in meaning. Only the syntax is different.
 
+И снова, если мы пострчно сравним этот код с аналогичным вычислительным выражением, мы увидим, что наша доморощенная версия по сути идентична. Различается только синтаксис.
+
 ![computation expression: logging](./compexpr_safedivide.png)
 
 > ### Summary
 
+### Заключение
+
 > In this post, we talked about continuations and continuation passing style, and how we can think of `let` as a nice syntax for doing continuations behind scenes.
+
+В этом посте мы говорили о продолжениях, о программировании через продолжения, и о том, что мы можем думать об операторе `let` как о красивом синтаксисе, скрывающим вызов продолжений.
 
 > So now we have everything we need to start creating our *own* version of `let`. In the next post, we'll put this knowledge into practice.
 
+Теперь у нас есть всё, чтобы начать делать *свою* версию `let`. В следующем посте мы применим новые знания на практике.
