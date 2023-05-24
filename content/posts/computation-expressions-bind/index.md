@@ -187,14 +187,25 @@ let loggingWorkflow =
 
 > ## Option.bind and the "maybe" workflow revisited
 
+## `Option.bind`: ещё раз про обработку опциональных значений
+
 > In the F# libraries, you will see `Bind` functions or methods in many places. Now you know what they are for!
 
+В библеотеке F# вы не раз встретите функции или методы `Bind`. Теперь вы знаете, зачем они нужны!
+
 > A particularly useful one is `Option.bind`, which does exactly what we wrote by hand above, namely
+
+Особенно полезна функция `Option.bind`, которая делает в точности то, что мы написали выше, а именно
 
 > * If the input parameter is `None`, then don't call the continuation function.
 > * If the input parameter is `Some`, then do call the continuation function, passing in the contents of the `Some`.
 
+* Если входной параметр имеет значение `None`, она не вызывает функцию-продолжение.
+* Если входной параметр имеет значение `Some`, она вызывает функцию-продолжение, передавая ей содержимое `Some`.
+
 > Here was our hand-crafted function:
+
+Так выглядела функция, которую мы написали сами:
 
 ```fsharp
 let pipeInto (m,f) =
@@ -206,6 +217,8 @@ let pipeInto (m,f) =
 ```
 
 > And here is the implementation of `Option.bind`:
+
+А так выглядит реализация `Option.bind`:
 
 ```fsharp
 module Option =
@@ -219,7 +232,11 @@ module Option =
 
 > There is a moral in this -- don't be too hasty to write your own functions. There may well be library functions that you can reuse.
 
+Вот и мораль — не торопитесь писать свои функции. Может оказаться, что нужные библиотечные функции давно написаны!
+
 > Here is the "maybe" workflow, rewritten to use `Option.bind`:
+
+Вот методы билдера опционального типа, реализованные через `Option.bind`:
 
 ```fsharp
 type MaybeBuilder() =
