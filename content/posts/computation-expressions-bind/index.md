@@ -14,7 +14,11 @@ seriesOrder: 3
 > In the last post we talked about how we can think of `let` as a nice syntax for doing continuations behind scenes.
 > And we introduced a `pipeInto` function that allowed us to add hooks into the continuation pipeline.
 
+В последнем посте мы говорили, что об операторе `let` можно думать, как о приятном синтаксисе для реализации продолжений с дополнительной — подкапотной — работой.
+
 > Now we are ready to look at our first builder method, `Bind`, which formalizes this approach and is the core of any computation expression.
+
+Сейчас мы готовы к тому, чтобы взглянуть на первый метод класса-строителя, `Bind`, который формализует этот подход и является сердцем любого вычислительного выражения.
 
 > {{<alertinfo>}}
 > Note that the "builder" in the context of a computation expression is not the same as the OO "builder pattern" for constructing and validating objects.
@@ -22,37 +26,59 @@ seriesOrder: 3
 > {{</alertinfo>}}
 
 
-> ### Introducing "Bind "
+{{<alertinfo>}}
+Обратите внимание, что "класс-строитель" в контексте вычислительных выражений — это не то же самое, что "паттерн строитель", который применияется для конструиварония и валидации объектов.
+Чтобы понять разницу, прочтите пост о ["паттерне строитель"](../builder-pattern).
+{{</alertinfo>}}
+
+
+> ### Introducing "Bind"
+
+### Введение в "Bind"
 
 > The [MSDN page on computation expressions](http://msdn.microsoft.com/en-us/library/dd233182.aspx) describes the `let!` expression as syntactic sugar for a `Bind` method. Let's look at this again:
 
+[Страница MSDN о вычислительных выражениях](http://msdn.microsoft.com/en-us/library/dd233182.aspx) описывает `let!` как синтаксический сахар для метода `Bind`. Сравним их ещё раз:
+
 > Here's the `let!` expression documentation, along with a real example:
 
+Вот документация по оператору `let!` вместе с примером использования:
+
 ```fsharp
-// documentation
+// документация
 {| let! pattern = expr in cexpr |}
 
-// real example
+// пример
 let! x = 43 in some expression
 ```
 
 > And here's the `Bind` method documentation, along with a real example:
 
+А вот документация по методу `Bind`, также с примером использования:
+
 ```fsharp
-// documentation
+// документация
 builder.Bind(expr, (fun pattern -> {| cexpr |}))
 
-// real example
+// пример
 builder.Bind(43, (fun x -> some expression))
 ```
 
 > Notice a few interesting things about this:
 
+Обратим внимание на несколько интересных аспектов:
+
 > * `Bind` takes two parameters, an expression (`43`) and a lambda.
 > * The parameter of the lambda (`x`) is bound to the expression passed in as the first parameter. (In this case at least. More on this later.)
 > * The parameters of `Bind` are reversed from the order they are in `let!`.
 
+* `Bind` принимает два параметра: выражение (`43`) и лямбду.
+* Параметры лямбды (`x`) связывается с выражением, переданным в качестве первого параметра. (По крайней мере, в этом примере. Подробности позже.)
+* Параметры `Bind` записываются в порядке, противоположном их порядку в `let!`.
+
 > So in other words, if we chain a number of `let!` expressions together like this:
+
+Другими словами, если мы запишем подряд несколько операторов `let!` вот так:
 
 ```fsharp
 let! x = 1
@@ -62,28 +88,46 @@ let! z = x + y
 
 > the compiler converts it to calls to `Bind`, like this:
 
+компилятор превратит их в вызовы `Bind` вот так:
+
 ```fsharp
 Bind(1, fun x ->
 Bind(2, fun y ->
 Bind(x + y, fun z ->
-etc
+// и т.д.
 ```
 
 > I think you can see where we are going with this by now.
 
+У думаю, вы уже видите, к чему я веду.
+
 > Indeed, our `pipeInto` function is exactly the same as the `Bind` method.
+
+И действительно, наша функция `pipeInfo` — это то же самое, что и метод `Bind`.
 
 > This is a key insight: *computation expressions are just a way to create nice syntax for something that we could do ourselves*.
 
+Вот ключевая мысль: *вычислительное выражение — всего лишь упрощённая запись вещей, которые мы и так можем сделать*.
+
 > ### A standalone bind function
+
+### Функция `bind` под микроскопом
 
 > Having a "bind" function like this is actually a standard functional pattern, and it is not dependent on computation expressions at all.
 
+Рассмотренная нами функция `bind` в действительности являтеся стандартным функциональным паттерном и вообще не зависит от вычислительных выражений.
+
 > First, why is it called "bind"? Well, as we've seen, a "bind" function or method can be thought of as feeding an input value to a function. This is known as "[binding](/posts/function-values-and-simple-values/)" a value to the parameter of the function (recall that all functions have only [one parameter](/posts/currying/)).
+
+Во-первых, почему она называется "bind" (прявязать, связывать)? Что ж, как мы видели, функцию или метод "bind" можно рассматривать, как передачу входного значения в функцию. Этот процесс известен, как "[связывание]"(/posts/function-values-and-simple-values/) значения с параметром функции (помним, что в функциональных языках все функции можно привести к виду, когда они получают только [один параметр](/posts/currying/)).
 
 > So when you think of `bind` this this way, you can see that it is similar to piping or composition.
 
+Если смотреть на связыание с этой точки зрения, то оно напоминает конфейер или композицию функциий.
+
 > In fact, you can turn it into an infix operation like this:
+
+В действительности, вы можете превратить его в инфиксный оператор:
 
 ```fsharp
 let (>>=) m f = pipeInto(m,f)
@@ -91,7 +135,11 @@ let (>>=) m f = pipeInto(m,f)
 
 > *By the way, this symbol ">>=" is the standard way of writing bind as an infix operator. If you ever see it used in other F# code, that is probably what it represents.*
 
+*Кстати, символ ">>=" — стандартная запись связывания в виде инфиксного оператора. Если вы когда-нибудь видели её в F#-коде, скорее всего, вы видели именно связывание.*
+
 > Going back to the safe divide example, we can now write the workflow on one line, like this:
+
+Возвращаясь к примеру с безопасным делением, мы можем переписать логику в одну строку:
 
 ```fsharp
 let divideByWorkflow x y w z =
@@ -100,17 +148,29 @@ let divideByWorkflow x y w z =
 
 > You might be wondering exactly how this is different from normal piping or composition? It's not immediately obvious.
 
+Вам, возможно, интересно, чем именно связывание отличается от обычных конвейера или композиции? Это не так очевидно.
+
 > The answer is twofold:
 
-> * First, the `bind` function has *extra* customized behavior for each situation. It is not a generic function, like pipe or composition.
+Ответ здесь двойной:
 
+> * First, the `bind` function has *extra* customized behavior for each situation. It is not a generic function, like pipe or composition.
 > * Second, the input type of the value parameter (`m` above) is not necessarily the same as the output type of the function parameter (`f` above), and so one of the things that bind does is handle this mismatch elegantly so that functions can be chained.
+
+* Во-первых, функция `bind` делает дополнительную работу, разную в разных ситуациях. Это не обобщённая функция, как конвейер или композиция.
+* Во-вторых, тип входного параметра (`m` выше) не обязательно совпадает с типом результата функции (`f` выше), так что одна из вещей, которую делает `bind` — это элегантная обработка несоответствия типов, в результате которого вызовы можно объединять в цепочку.
 
 > As we will see in the next post, bind generally works with some "wrapper" type. The value parameter might be of `WrapperType<TypeA>`, and then the signature of the function parameter of `bind` function is always `TypeA -> WrapperType<TypeB>`.
 
+Как мы увидим в следующем посте, связывание в целом работает на базе какого-то типа-обёртки. Типом параметра может быть `WrapperType<TypeA>`, а сигнатурой функционального параметра функции `bind` будет `TypeA -> WrapperType<TypeB>`.
+
 > In the particular case of the `bind` for safe divide, the wrapper type is `Option`. The type of the value parameter (`m` above) is `Option<int>` and the signature of the function parameter (`f` above) is `int -> Option<int>`.
 
+В случае `bind` для безопасного деления, типом-обёрткой является `Option`. Тип входного параметра (`m` выше) — `Option<int>`, а сигнатура функционального параметре (`f` выше) — `int -> Option<int>`.
+
 > To see bind used in a different context, here is an example of the logging workflow expressed using a infix bind function:
+
+Чтобы увидеть связывание в разных контекстах, приведём пример логгирования, работающий посредством инфиксной функции `bind`:
 
 ```fsharp
 let (>>=) m f =
@@ -122,6 +182,8 @@ let loggingWorkflow =
 ```
 
 > In this case, there is no wrapper type. Everything is an `int`. But even so, `bind` has the special behavior that performs the logging behind the scenes.
+
+В этом случае нет даже типа-обёртки, используется только `int`. Но даже здесь у `bind` есть специальное поведение — логгирование — которое выполняется под капотом.
 
 > ## Option.bind and the "maybe" workflow revisited
 
