@@ -236,7 +236,7 @@ module Option =
 
 > Here is the "maybe" workflow, rewritten to use `Option.bind`:
 
-Вот методы билдера опционального типа, реализованные через `Option.bind`:
+Вот методы класса-строителя опционального типа, реализованные через `Option.bind`:
 
 ```fsharp
 type MaybeBuilder() =
@@ -244,13 +244,21 @@ type MaybeBuilder() =
     member this.Return(x) = Some x
 ```
 
-> ## Reviewing the different approaches so far ##
+> ## Reviewing the different approaches so far
+
+## Сравнение подходов
 
 > We've used four different approaches for the "safe divide" example so far. Let's put them together side by side and compare them once more.
 
+На данный момент мы использовали четыре различных подхода в примере с "безопасным делением". Давайте ещё раз сравним их строка за строкой.
+
 > *Note: I have renamed the original `pipeInto` function to `bind`, and used `Option.bind` instead of our original custom implementation.*
 
+*Примечание: я переименовал оригинальную функцию `pipeInfo` в `bind` и исользовал `Option.bind` вместо орагинальной самописной реализации.*
+
 > First the original version, using an explicit workflow:
+
+Для начала взглянем на оригинальную версию, явно описывающую весь процесс:
 
 ```fsharp
 module DivideByExplicit =
@@ -263,24 +271,26 @@ module DivideByExplicit =
     let divideByWorkflow x y w z =
         let a = x |> divideBy y
         match a with
-        | None -> None  // give up
-        | Some a' ->    // keep going
+        | None -> None  // прерываем
+        | Some a' ->    // продолжаем
             let b = a' |> divideBy w
             match b with
-            | None -> None  // give up
-            | Some b' ->    // keep going
+            | None -> None  // прерываем
+            | Some b' ->    // продолжаем
                 let c = b' |> divideBy z
                 match c with
-                | None -> None  // give up
-                | Some c' ->    // keep going
-                    //return
+                | None -> None  // прерываем
+                | Some c' ->    // продолжаем
+                    // возврат
                     Some c'
-    // test
+    // проверяем
     let good = divideByWorkflow 12 3 2 1
     let bad = divideByWorkflow 12 3 0 1
 ```
 
 > Next, using our own version of "bind"  (a.k.a. "pipeInto")
+
+Теперь — на версию с самописной функцией `bind` (которую мы называли `pipeInfo`):
 
 ```fsharp
 module DivideByWithBindFunction =
@@ -308,6 +318,8 @@ module DivideByWithBindFunction =
 ```
 
 > Next, using a computation expression:
+
+Далее на версию с вычислительным выражением:
 
 ```fsharp
 module DivideByWithCompExpr =
@@ -339,6 +351,8 @@ module DivideByWithCompExpr =
 
 > And finally, using bind as an infix operation:
 
+И, наконец, на версию с `bind` в качестве инфиксного оператора:
+
 ```fsharp
 module DivideByWithBindOperator =
 
@@ -361,21 +375,35 @@ module DivideByWithBindOperator =
 
 > Bind functions turn out to be very powerful. In the next post we'll see that combining `bind` with wrapper types creates an elegant way of passing extra information around in the background.
 
+Функции связывания оказываются очень мощными. В следующем посте мы увидим, как комбинирование `bind` с типами-обёртками даёт элегантную возможность неявно передавать дополнительную информацию.
+
 > ## Exercise: How well do you understand?
+
+## Упражнение: Насколько вы разобрались в материале?
 
 > Before you move on to the next post, why don't you test yourself to see if you have understood everything so far?
 
+Перед тем, как двинуться дальше, почему бы вам не проверить, насколько хорошо вы поняли всё, что мы обсудили к этому моменту?
+
 > Here is a little exercise for you.
+
+Вот для вас небольшое упражнение.
 
 > **Part 1 - create a workflow**
 
+### Часть 1 — реализуйте процесс
+
 > First, create a function that parses a string into a int:
+
+Для начала напишите функцию, которая преобразует строку в целое число:
 
 ```fsharp
 let strToInt str = ???
 ```
 
 > and then create your own computation expression builder class so that you can use it in a workflow, as shown below.
+
+и затем — класс-строитель вычислительного выражения, такой, чтобы его можно было использовать в программе, показанной ниже.
 
 ```fsharp
 let stringAddWorkflow x y z =
@@ -387,14 +415,18 @@ let stringAddWorkflow x y z =
         return a + b + c
         }
 
-// test
+// проверяем
 let good = stringAddWorkflow "12" "3" "2"
 let bad = stringAddWorkflow "12" "xyz" "2"
 ```
 
 > **Part 2 -- create a bind function**
 
+### Часть 2 — напишите функцию `bind`
+
 > Once you have the first part working, extend the idea by adding two more functions:
+
+Как только ваш код заработает, расширьте его, добавлив две новых функции:
 
 ```fsharp
 let strAdd str i = ???
@@ -403,6 +435,8 @@ let (>>=) m f = ???
 
 > And then with these functions, you should be able to write code like this:
 
+Теперь, с помощью этих функций вам должно быть нетрудно переписать код в таком стиле:
+
 ```fsharp
 let good = strToInt "1" >>= strAdd "2" >>= strAdd "3"
 let bad = strToInt "1" >>= strAdd "xyz" >>= strAdd "3"
@@ -410,8 +444,16 @@ let bad = strToInt "1" >>= strAdd "xyz" >>= strAdd "3"
 
 > ## Summary ##
 
+## Заключение
+
 > Here's a summary of the points covered in this post:
+
+Вот о чём, в двух словах, мы говорили в этом посте:
 
 > * Computation expressions provide a nice syntax for continuation passing, hiding the chaining logic for us.
 > * `bind` is the key function that links the output of one step to the input of the next step.
 > * The symbol `>>=` is the standard way of writing bind as an infix operator.
+
+* Вычислительные выражания — это красивый синтаксис для программирования через передачу продолжений, скрывающий от нас вложенность когда.
+* `bind` — ключевая функция которая связывает выход, полученный на текущем шаге с входо следующего шага.
+* Символ ">>=" — стандартная запись `bind` в виде инфиксного оператора.
