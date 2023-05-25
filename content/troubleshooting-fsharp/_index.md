@@ -33,7 +33,7 @@ date: 2020-01-01
 > So please read and reread the series ["thinking functionally"](/series/thinking-functionally.html) and ["understanding F# types"](/series/understanding-fsharp-types.html), play with the examples, and get comfortable with the ideas before you try to start doing serious coding.
 > If you don't understand how functions and types work, then the compiler errors will not make any sense.
 
-Безусловно, важнейшее, что вы можете сделать — это глубоко разобраться в F#, особенно в базовых концепциях, такие как функции и система типов.
+Безусловно, важнейшее, что вы можете сделать — это глубоко разобраться в F#, особенно в базовых концепциях, таких как функции и система типов.
 Так что, пожалуйста, прочитайте и перечитайте циклы статей о том, как ["мыслить функционально"](/series/thinking-functionally.html) и ["разбираться в типах F#"](/series/understanding-fsharp-types.html), поиграйтесь с примерами, и освойте основные идеи, прежде чем приступать к серьёзным вещам.
 
 > If you are coming from an imperative language such as C#, you may have developed some bad habits by relying on the debugger to find and fix incorrect code.
