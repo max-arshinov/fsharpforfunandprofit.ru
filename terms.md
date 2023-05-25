@@ -10,9 +10,10 @@
 | backward-pipe operator    | обратный конвейерный оператор |                           |                                                           |
 | boolean function          | булева функция                |                           |                                                           |
 | browser                   | браузер                       |                           |                                                           |
-| composition               | композиция                    |                           | Имеется ввиде операция >> в F#                            |
+| composition               | композиция                    |                           | Имеется в виду операция >> в F#                           |
+| computation expressions   | вычислительные выражения      | вычисления выражения      | [Альтернатива в документации MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/computation-expressions) |
 | debug                     | отладка                       |                           |                                                           |
-| equality                  | проверка на равенство         | равнозначность            | Никоим образом не является "равенством"(equation)         |
+| equality                  | проверка на равенство         | равнозначность            | Никоим образом не является "равенством" (equation)        |
 | exception                 | исключение                    |                           |                                                           |
 | extension method          | метод расширения              |                           |                                                           |
 | forward-pipe operator     | прямой конвейерный оператор   |                           |                                                           |
@@ -51,5 +52,6 @@
 | type system               | система типов                 |                           |                                                           |
 | unions                    | объединения                   |                           |                                                           |
 | unit                      | модуль                        |                           |                                                           |
+| unit type                 | единичный тип                 | тип `unit`                | Так в переводе _Типов в языках программирования_          |
 | unit test                 | модульный тест                |                           |                                                           |
 | unit of measure           | единица измерения             |                           |                                                           |
