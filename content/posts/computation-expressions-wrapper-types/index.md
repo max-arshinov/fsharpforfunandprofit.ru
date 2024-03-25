@@ -42,7 +42,7 @@ let result =
 * В строках с конструкцей `let!`, выражение *справа* от знака равенства имеет тип `int option`, при этом значение *слева* имеет тип `int`.
   `let!` "разворачивает" опциональный тип перед тем, как связать его со значением.
 * В строке `return` всё наоборот.
-  Выражение имеет тип `int`, но значение всего вычислительного выражения (`result`) имеет тип `int option`.
+  Возвращаемое выражение имеет тип `int`, но значение всего вычислительного выражения (`result`) имеет тип `int option`.
   То есть, `return` "заворачивает" обычное значение обратно в опциональный тип.
 
 > We will follow up these observations in this post, and we will see that this leads to one of the major uses of computation expressions: namely, to implicitly unwrap and rewrap values that are stored in some sort of wrapper type.
