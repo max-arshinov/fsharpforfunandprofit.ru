@@ -12,7 +12,7 @@ seriesOrder: 4
 
 > In the previous post, we were introduced to the "maybe" workflow, which allowed us to hide the messiness of chaining together option types.
 
-В предыдущем посте мы исследовали процесс "maybe", который позволил нам спрятать мешанину, возникающую при объединении опциональных типов.
+В предыдущем посте мы представили процесс "maybe", который позволил нам спрятать мешанину, возникающую при объединении опциональных типов.
 
 > A typical use of the "maybe" workflow looked something like this:
 
