@@ -47,7 +47,7 @@ let result =
 
 > We will follow up these observations in this post, and we will see that this leads to one of the major uses of computation expressions: namely, to implicitly unwrap and rewrap values that are stored in some sort of wrapper type.
 
-В этом посте мы не раз столкнёмся с подобными ситуациями, и увидим, что это один из основных способов применения вычислительных выражений, а именно: неявное "разворачивание" и "заворачивание" значений, хранящихся в типе-обёртке.
+В этом посте мы не раз столкнёмся с подобными наблюдениями, и увидим, что это ведет к одному из основных способов применения вычислительных выражений, а именно: неявное "разворачивание" и "заворачивание" значений, хранящихся в каком-то типе-обёртке.
 
 > ## Another example
 
