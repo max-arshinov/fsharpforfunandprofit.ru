@@ -128,7 +128,7 @@ let product =
 > We can write one that handles the branching of Success/Error behind the scenes:
 
 Вычислительные выражения спешат на помощь!
-Мы можем написать выражение, которое само проверяет наличие Ошибки:
+Мы можем написать выражение, которое обрабатывает ветвление Успех/Ошибка за кулисами:
 
 ```fsharp
 type DbResultBuilder() =
