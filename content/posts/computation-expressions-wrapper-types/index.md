@@ -39,7 +39,7 @@ let result =
 >   The expression being returned is an `int`, but the value of the whole workflow (`result`) is an `int option`.
 >   That is, the `return` has "wrapped" the raw value back into an option.
 
-* В строках с конструкцей `let!`, выражение справа от знака равенства имеет тип `int option`, при этом значение *слева* имеет тип `int`.
+* В строках с конструкцей `let!`, выражение *справа* от знака равенства имеет тип `int option`, при этом значение *слева* имеет тип `int`.
   `let!` "разворачивает" опциональный тип перед тем, как связать его со значением.
 * В строке `return` всё наоборот.
   Выражение имеет тип `int`, но значение всего вычислительного выражения (`result`) имеет тип `int option`.
