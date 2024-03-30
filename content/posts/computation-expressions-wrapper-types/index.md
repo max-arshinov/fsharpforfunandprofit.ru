@@ -238,7 +238,7 @@ member Return : 'T -> M<'T>
 
 > *Note: In signatures, the wrapper type is normally called `M`, so `M<int>` is the wrapper type applied to `int` and `M<string>` is the wrapper type applied to `string`, and so on.*
 
-*Обратине внимание: В сигнатурах тип-обёртка обычно называется `M`, так что `M<int>` — это тип-обёртка с типом-параметром `int`, а `M<string>` — тип-обёртка с типом-параметром `string`, и так далее.*
+*Обратите внимание: В сигнатурах тип-обёртка обычно называется `M`, так что `M<int>` — это тип-обёртка примененный к `int`, а `M<string>` — тип-обёртка примененный к `string`, и так далее.*
 
 > And we've seen two examples of this usage.
 > The `maybe` workflow returns a `Some`, which is an option type, and the `dbresult` workflow returns `Success`, which is part of the `DbResult` type.
