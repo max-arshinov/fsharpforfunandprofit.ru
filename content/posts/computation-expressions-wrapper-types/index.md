@@ -200,7 +200,7 @@ printfn "%A" product''
 > And the wrapper type is often designed specifically to go hand-in-hand with the workflow that we want to manage.
 
 И это не особые случаи. На самом деле, у *каждого* вычислительного выражения *должен* быть связанный с ним тип-обёртка.
-И часто тип-обёртка разрабатывается с оглядкой на процесс, который мы реализуем.
+И часто тип-обёртка разрабатывается с оглядкой на процесс, которым мы хотим управлять.
 
 > The example above demonstrates this clearly.
 > The `DbResult` type we created is more than just a simple type for return values; it actually has a critical role in the workflow by "storing" the current state of the workflow, and whether it is succeeding or failing at each step.
