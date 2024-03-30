@@ -69,7 +69,7 @@ type DbResult<'a> =
 > Here are some very simple stubs to give you an idea of how the `DbResult` type might be used:
 
 Теперь мы можем использовать этот тип в наших методах доступа к базе данных.
-Вот несколько простых заглучшек, которые дадут вам представление, как можно использовать тип `DbResult`:
+Вот несколько простых заглушек, которые дадут вам представление, как можно использовать тип `DbResult`:
 
 ```fsharp
 let getCustomerId name =
