@@ -62,7 +62,7 @@ type TraceBuilder() =
         None
 
     member this.Combine (a,b) =
-        printfn "Return ранний %A. Игнорируем вторую часть: %A" a b
+        printfn "Combine. Сразу возвращаем %A. Игнорируем  %A" a b
         a
 
     member this.Delay(f) =
@@ -101,7 +101,7 @@ Delay
 Zero   // здесь zero, потому что нет явного return для этой части
 
 // комбинируем два выражения
-Returning ранний Some 1. Игнорируем вторую часть: <null>
+Combine. Сразу возвращаем Some 1. Игнорируем <null>
 
 // финальный результат
 Результат Части 1 без Части 2: Some 1
@@ -367,47 +367,58 @@ trace {
 Также, этот помогает помнить, что 
 
 ```text
-// откладываем вычисление всего выражения (вывод Combine)
-<fun:clo@160-66> - Delaying using <fun:delayed@141-3>
+// откладываем вычисление всего выражения (результат Combine)
+<fun:Pipe #1 input at line 42@43> - отложена благодаря <fun:delayed@23>
 
-// running the outermost delayed expression (the output of Combine)
-<fun:delayed@141-3> - Run Start.
-<fun:clo@160-66> - Starting Delayed Fn.
+// запускаем самое внешнее отложенное выражение (полученное из Combine)
+<fun:delayed@23> - Run Начало.
+<fun:Pipe #1 input at line 42@43> - Начало отложенной функции.
 
-// the first expression results in Some(1)
-Part 1: about to return 1
-Return an unwrapped 1 as an option
+// результат первого выражения Some(1)
+Часть 1: до return 1
+Return незавёрнутого 1 как Option
 
-// the second expression is wrapped in a delay
-<fun:clo@162-67> - Delaying using <fun:delayed@141-3>
+// второе выражение заворачивается в функцию
+<fun:Pipe #1 input at line 42@45-1> - отложена благодаря <fun:delayed@23>
 
-// the first and second expressions are combined
-Combine. Returning early with Some 1. Ignoring <fun:delayed@141-3>
+// первое и второе выражения комбинируется
+Return ранний Some 1. Игнорируем вторую часть: <fun:delayed@23>
 
-// overall delayed expression (the output of Combine) is complete
-<fun:clo@160-66> - Finished Delayed Fn. Result is Some 1
-<fun:delayed@141-3> - Run End. Result is Some 1
+// завершено оборачивание всего выражения (результата Combine)
+<fun:Pipe #1 input at line 42@43> - Конец отложенной функции. Результат Some 1
+<fun:delayed@23> - Run Конец. Результат Some 1
 
-// the result is now an Option not a function
-Result for Part1 without Part2: Some 1
+// сейчас резульат Option, а не функция
+Результат Части 1 без Части 2: Some 1
 ```
 
 > ## "Delay" changes the signature of "Combine"
 
+## "Delay" изменяет сигнатуру "Combine"
+
 > When `Delay` is introduced into the pipeline like this, it has an effect on the signature of `Combine`.
+
+Когда `Delay` вводится в цепочку вызовов, как в этом примере, это оказывает эффект на сигнутуру `Combine`.
 
 > When we originally wrote `Combine` we were expecting it to handle `options`.
 > But now it is handling the output of `Delay`, which is a function.
 
+Когда мы написали `Combine` в начале, вы ожидали, что он обрабатывает опциональный тип.
+Но сейчас он обрабатывает вывод `Delay`, который является функцией.
+
 > We can see this if we hard-code the types that `Combine` expects, with `int option` type annotations like this:
+
+Мы увидим это, если явно пропишем типы, которые ожидает `Combine`, и укажем `int option`, как здесь:
 
 ```fsharp
 member this.Combine (a: int option,b: int option) =
-    printfn "Returning early with %A. Ignoring %A" a b
+    printfn "Combine. Сразу возвращаем %A. Игнорируем  %A" a b
     a
 ```
 
 > If this is done, we get an compiler error in the "return" expression:
+
+Если мы сделаем это, мы получим ошибку при возврате выражения:
 
 ```fsharp
 trace {
@@ -428,49 +439,64 @@ but here has type
 
 > In other words, the `Combine` is being passed a delayed function (`unit -> 'a`), which doesn't match our explicit signature.
 
+Другими словами, в `Combine` передаётся отложенная функция (`unit -> 'a`), которая не совпадает с нашей явноей сигнатурой.
+
 > So what happens when we *do* want to combine the parameters, but they are passed in as a function instead of as a simple value?
+
+Так что происходит, когда мы *хотим* скомбинировать параметры, но они передаются как функции вместо обычных значений?
 
 > The answer is straightforward: just call the function that was passed in to get the underlying value.
 
+Ответ простой: просто вызовите функцию, которая была передана, чтобы получить отложенное значение.
+
 > Let's demonstrate that using the adding example from the previous post.
+
+Давайте продемонстрируем это, используя пример со сложением из предыдущего поста.
 
 ```fsharp
 type TraceBuilder() =
-    // other members as before
+    // другие члены как разнье
 
     member this.Combine (m,f) =
-        printfn "Combine. Starting second param %A" f
+        printfn "Combine. Перед получением отложенного параметра %A" f
         let y = f()
-        printfn "Combine. Finished second param %A. Result is %A" f y
+        printfn "Combine. После получения отложенного параметра %A. Результат %A" f y
 
         match m,y with
         | Some a, Some b ->
-            printfn "combining %A and %A" a b
+            printfn "комбинируем %A с %A" a b
             Some (a + b)
         | Some a, None ->
-            printfn "combining %A with None" a
+            printfn "комбинируем %A с None" a
             Some a
         | None, Some b ->
-            printfn "combining None with %A" b
+            printfn "комбинируем None с %A" b
             Some b
         | None, None ->
-            printfn "combining None with None"
+            printfn "комбинируем None с None"
             None
 ```
 
 > In this new version of `Combine`, the *second* parameter is now a function, not an `int option`.
 > So to combine them, we must first evaluate the function before doing the combination logic.
 
+В этой новой версии `Combine` *второй* параметр стал функцией, не `int option`.
+Так что, комбинируя их, мы должны сначала вызвать фукнци, преджде чем выполнить комбинационную логику.
+
 > If we test this out:
+
+Если мы протестируем этот вывод:
 
 ```fsharp
 trace {
     return 1
     return 2
-    } |> printfn "Result for return then return: %A"
+    } |> printfn "Результ return с последующим return: %A"
 ```
 
 > We get the following (annotated) trace:
+
+Мы получем следующую (аннотированный) трассировку:
 
 ```text
 // entire expression is delayed
@@ -511,12 +537,22 @@ combining 1 and 2
 Result for return then return: Some 3
 ```
 
+```text
+```
+
 > ## Understanding the type constraints
+
+## Понимание ограничений типов
 
 > Up to now, we have used only our "wrapped type" (e.g. `int option`) and the delayed version (e.g. `unit -> int option`) in the implementation of our builder.
 
+До сих пор в реализации нашего построителя мы использовали только типы-обёртки (такие как `int option`) и их отложенные версии (`unit -> int option`).
+
 > But in fact we can use other types if we like, subject to certain constraints.
 > In fact, understanding exactly what the type constraints are in a computation expression can clarify how everything fits together.
+
+Но на самом деле мы можем использовать другие типы, если нам надо, с уётом определённых ограничений.
+На самом деле 
 
 > For example, we have seen that:
 
