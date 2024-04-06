@@ -1,45 +1,60 @@
 ---
 layout: post
 # title: "Implementing a CE: Delay and Run"
-title: "Implementing a CE: Delay and Run"
+title: "Реализуя вычислительные выражения: Delay и Run"
 # description: "Controlling when functions execute"
-description: "Controlling when functions execute"
+description: "Управляем временем выполнения функции"
 date: 2013-01-27
 nav: thinking-functionally
 # seriesId: "Computation Expressions"
-seriesId: "Computation Expressions"
+seriesId: "Вычислительные выражения"
 seriesOrder: 8
 ---
 
 > In the last few posts we have covered all the basic methods (Bind, Return, Zero, and Combine) needed to create your own computation expression builder.
 > In this post, we'll look at some of the extra features needed to make the workflow more efficient, by controlling when expressions get evaluated.
 
+В нескольких последних постах мы покрыли <!-- обсудили --> все базовые методы (Bind, Return, Zero и Combine), нужные для создания вашего собственного построителя вычислительного выражения.
+
 > {{<alertinfo>}}
 > Note that the "builder" in the context of a computation expression is not the same as the OO "builder pattern" for constructing and validating objects.
 > There is a post on the ["builder pattern" here](../builder-pattern).
 > {{</alertinfo>}}
 
+{{<alertinfo>}}
+Обратите внимание, что "строитель" или "построитель" в контексте вычислительного выражения --- это не то же самое, что и объектно-ориентированный "паттерн строитель" , нужный для конструирования и валидации объектов.
+Пост по "паттерне строитель" доступен [здесь](../builder-pattern).
+{{</alertinfo>}}
+
 
 > ## The problem: avoiding unnecessary evaluations
+
+## Проблема: избавляемся от ненужных вычислений
 
 > Let's say that we have created a "maybe" style workflow as before.
 > But this time we want to use the "return" keyword to return early and stop any more processing being done.
 
+Давайте предстаим, что мы создали процесс в стиле "maybe", как раньше.
+Но сейчас мы хотим использовать ключевое слово "return" для раннего выхода и остановки любой оставшейся обработки.
+
 > Here is our complete builder class.
 > The key method to look at is `Combine`, in which we simply ignore any secondary expressions after the first return.
+
+Здесь наш класс-построитель полностью.
+Ключевой метод, на который нужно обратить внимание, это `Combine`, где мы просто игнорируем второе выражение, после того, как возвращаем первое.
 
 ```fsharp
 type TraceBuilder() =
     member this.Bind(m, f) =
         match m with
         | None ->
-            printfn "Binding with None. Exiting."
+            printfn "Bind с None. Выход."
         | Some a ->
-            printfn "Binding with Some(%A). Continuing" a
+            printfn "Bind с Some(%A). Продолжение" a
         Option.bind f m
 
     member this.Return(x) =
-        printfn "Return an unwrapped %A as an option" x
+        printfn "Return незавёрнутого %A как Option" x
         Some x
 
     member this.Zero() =
@@ -47,70 +62,89 @@ type TraceBuilder() =
         None
 
     member this.Combine (a,b) =
-        printfn "Returning early with %A. Ignoring second part: %A" a b
+        printfn "Return ранний %A. Игнорируем вторую часть: %A" a b
         a
 
     member this.Delay(f) =
         printfn "Delay"
         f()
 
-// make an instance of the workflow
+// создаём экземпляр процесса
 let trace = new TraceBuilder()
 ```
 
 > Let's see how it works by printing something, returning, and then printing something else:
 
+Давайте взглянем как это работает, напечатав что-то одно, вызвав "return", и затем напечатав что-то другое:
+
 ```fsharp
 trace {
-    printfn "Part 1: about to return 1"
+    printfn "Часть 1: до return 1"
     return 1
-    printfn "Part 2: after return has happened"
-    } |> printfn "Result for Part1 without Part2: %A"
+    printfn "Часть 2: после return"
+    } |> printfn "Результат Части 1 без Части 2: %A"
 ```
 
 > The debugging output should look something like the following, which I have annotated:
 
+Отладочный вывод (который я прокомментировал) должен выглядеть приблизительно так, как ниже:
+
 ```text
-// first expression, up to "return"
+// первое выражение, перед "return"
 Delay
-Part 1: about to return 1
-Return an unwrapped 1 as an option
+Часть 1: до 1
+Return незавёрнутого 1 как Option
 
-// second expression, up to last curly brace.
+// второе выражение, перед закрывающей фигурной скобкой.
 Delay
-Part 2: after return has happened
-Zero   // zero here because no explicit return was given for this part
+Часть 2: после return
+Zero   // здесь zero, потому что нет явного return для этой части
 
-// combining the two expressions
-Returning early with Some 1. Ignoring second part: <null>
+// комбинируем два выражения
+Returning ранний Some 1. Игнорируем вторую часть: <null>
 
-// final result
-Result for Part1 without Part2: Some 1
+// финальный результат
+Результат Части 1 без Части 2: Some 1
 ```
 
 > We can see a problem here.
 > The "Part 2: after return" was printed, even though we were trying to return early.
 
+Здесь мы можем увидеть проблему.
+Строка "Часть 2: после return" была напечатана, не смотря на то, что мы пытались сделать ранний возврат. 
+
 > Why?
 > Well I'll repeat what I said in the last post: **return and yield do *not* generate an early return from a computation expression**.
 > The entire computation expression, all the way to the last curly brace, is *always* evaluated and results in a single value.
 
+Почему?
+Хорошо, я повторю то, что говорил в предыдущем посте: **return и yield *не* генерируют код раннего возврата из вычислительного выражения**.
+Вычислительное выражение целиком, всё, что до закрывающей фигурной скобки, *всегда* вычисляется и возвращает одно значение.
+
 > This is a problem, because you might get unwanted side effects (such as printing a message in this case) and your code is doing something unnecessary, which might cause performance problems.
+
+Это является проблемой, потому что вам могут быть не нужны побочные эффекты (такие, как печать сообщений в нашем случае) и ваш код делает что-то ненужное, что может привести к проблемам производительности.
 
 > So, how can we avoid evaluating the second part until we need it?
 
+Так как нам избежать вычисления второй части до тех пор, пока она действительно нам не понадобиться.
+
 > ## Introducing "Delay"
 
+## Введение в "Delay"
+
 > The answer to the question is straightforward -- simply wrap part 2 of the expression in a function and only call this function when needed, like this.
+
+Ответ на этот вопрос достаточно прост --- просто оберните вторую часть выражения в функцию и вызывайте её только тогда, когда это нужно, как здесь:
 
 ```fsharp
 let part2 =
     fun () ->
-        printfn "Part 2: after return has happened"
-        // do other stuff
-        // return Zero
+        printfn "Часть 2: после return"
+        // выполняем какие-то действия
+        // возвращаем Zero
 
-// only evaluate if needed
+// вычисляем, только если нужно
 if needed then
    let result = part2()
 ```
@@ -118,24 +152,32 @@ if needed then
 > Using this technique, part 2 of the computation expression can be processed completely, but because the expression returns a function, nothing actually *happens* until the function is called.
 > But the `Combine` method will never call it, and so the code inside it does not run at all.
 
+Благодая этой технике, часть 2 вычислительного выражения может быть обработана полностью, но из-за того, что выражение возвращает функцию, в действительности ничего *не происходит*, пока функция не будет вызвана.
+Но метод `Combine` никогда не вызовет её, так что код внутри неё вообще никогда не выполнится.
+
 > And this is exactly what the `Delay` method is for.
 > Any result from `Return` or `Yield` is immediately wrapped in a "delay" function like this, and then you can choose whether to run it or not.
 
+И это в точности то, для чего нужен метод `Delay`.
+Любой результат от `Return` или `Yield` немедленно оборачивается в "отложенную" функцию, как мы описаил, и затем вы можете выбрать, запускать её или не запускать.
+
 > Let's change the builder to implement a delay:
+
+Давайте изменим построитель, чтобы реализовать отложенные вычисления:
 
 ```fsharp
 type TraceBuilder() =
-    // other members as before
+    // другие члены как раньше
 
     member this.Delay(funcToDelay) =
         let delayed = fun () ->
-            printfn "%A - Starting Delayed Fn." funcToDelay
+            printfn "%A - Начало отложенной функции." funcToDelay
             let delayedResult = funcToDelay()
-            printfn "%A - Finished Delayed Fn. Result is %A" funcToDelay delayedResult
-            delayedResult  // return the result
+            printfn "%A - Конец отложенной функции. Результат %A" funcToDelay delayedResult
+            delayedResult  // возвращаем результат
 
-        printfn "%A - Delaying using %A" funcToDelay delayed
-        delayed // return the new function
+        printfn "%A - отложена благодаря %A" funcToDelay delayed
+        delayed // возвращаем новую функцию
 ```
 
 > As you can see, the `Delay` method is given a function to execute.
@@ -143,18 +185,28 @@ type TraceBuilder() =
 > What we're doing now is wrapping this function in another function and returning the delayed function instead.
 > I have added a number of trace statements before and after the function is wrapped.
 
+Как вы можете видеть, метод `Delay` получает функцию для выполнения.
+Раньше мы вызывали её немедленно.
+Что мы делаем сейчас --- оборачиваем эту функцию в другую функцию и возвращаем отложенную функцию вместо первой.
+Я добавил несколько трассирующих операторов до и после обёрнутой функции.
+
 > If you compile this code, you can see that the signature of `Delay` has changed.
 > Before the change, it returned a concrete value (an option in this case), but now it returns a function.
 
+Если вы компилируете этот код, вы можете видеть, что сигнатура `Delay` изменилась.
+До изменения, она возвращала конкретное значение (в данном случае Option), но сейчас она возвращает функцию.
+
 ```fsharp
-// signature BEFORE the change
+// сигнатура ДО изменения
 member Delay : f:(unit -> 'a) -> 'a
 
-// signature AFTER the change
+// сигнатура ПОСЛЕ изменения
 member Delay : f:(unit -> 'b) -> (unit -> 'b)
 ```
 
 > By the way, we could have implemented `Delay` in a much simpler way, without any tracing, just by returning the same function that was passed in, like this:
+
+Кстати, мы могли бы реализовать `Delay` гораздо проще, без всякой трассировки, просто возвращая ту же самую функцию, которую получили, как здесь:
 
 ```fsharp
 member this.Delay(f) =
@@ -164,24 +216,35 @@ member this.Delay(f) =
 > Much more concise!
 > But in this case, I wanted to add some detailed tracing information as well.
 
+Гораздо короче!
+Но в этом случае я всё-таки захотел добавить немного трассирующей информации.
+
 > Now let's try again:
+
+Попробуем снова:
 
 ```fsharp
 trace {
-    printfn "Part 1: about to return 1"
+    printfn "Часть 1: перед return 1"
     return 1
-    printfn "Part 2: after return has happened"
-    } |> printfn "Result for Part1 without Part2: %A"
+    printfn "Часть 2: после return"
+    } |> printfn "Результат Части 1 без Части 2: %A"
 ```
 
 > Uh-oh.
 > This time nothing happens at all!
 > What went wrong?
 
+Ой-ой.
+Сейчас вообще ничего ен происходит!
+Что пошло не так?
+
 > If we look at the output we see this:
 
+Если мы посмотрим на вывод, то увидим:
+
 ```text
-Result for Part1 without Part2: <fun:Delay@84-5>
+Результат Части 1 без Части 2: <fun:Delay@84-5>
 ```
 
 > Hmmm.
@@ -189,61 +252,91 @@ Result for Part1 without Part2: <fun:Delay@84-5>
 > Why?
 > Because we created all these delays, but we never "undelayed" them by actually calling the function!
 
+Хммм.
+Вывод всего выражения `trace` теперь *функция*, а не `Option`.
+Потому что мы отложили все эти вычисления, но мы ни разу "не вернули их в работу", действительно вызвав функцию!
+
 > One way to do this is to assign the output of the computation expression to a function value, say `f`, and then evaluate it.
+
+Один способ сделать это --- сделать результатом вычислительного выражения функцию, скажем `f`, и в конце вызвать её.
 
 ```fsharp
 let f = trace {
-    printfn "Part 1: about to return 1"
+    printfn "Часть 1: до return 1"
     return 1
-    printfn "Part 2: after return has happened"
+    printfn "Часть 2: после return"
     }
-f() |> printfn "Result for Part1 without Part2: %A"
+f() |> printfn "Результат Части 1 без Части 2: %A"
 ```
 
 > This works as expected, but is there a way to do this from inside the computation expression itself?
 > Of course there is!
 
-## Introducing "Run"
+Это работает как ожидается, но есть ли способ сделать это изнутри самого вычислительного выражения?
+Конечно, есть!
+
+> ## Introducing "Run"
+
+## Ввекдение в "Run"
 
 > The `Run` method exists for exactly this reason.
 > It is called as the final step in the process of evaluating a computation expression, and can be used to undo the delay.
 
+Именно по этой причине существует метод `Run`.
+Он вызывается на последнем шаге процесса вычисления вычислительного выражения и моежт быть использован, чтобы запустить отложенные вычисления.
+
 > Here's an implementation:
+
+Вот реализация:
 
 ```fsharp
 type TraceBuilder() =
-    // other members as before
+    // другие члены как и раньше
 
     member this.Run(funcToRun) =
-        printfn "%A - Run Start." funcToRun
+        printfn "%A - Run Начало." funcToRun
         let runResult = funcToRun()
-        printfn "%A - Run End. Result is %A" funcToRun runResult
-        runResult // return the result of running the delayed function
+        printfn "%A - Run Конец. Результат %A" funcToRun runResult
+        runResult // возвращаем результат выполнения отложенной функции
 ```
 
 > Let's try one more time:
 
 ```fsharp
 trace {
-    printfn "Part 1: about to return 1"
+    printfn "Часть 1: до return 1"
     return 1
-    printfn "Part 2: after return has happened"
-    } |> printfn "Result for Part1 without Part2: %A"
+    printfn "Часть 2: после return"
+    } |> printfn "Результат Части 1 без Части 2: %A"
 ```
 
 > And the result is exactly what we wanted.
 > The first part is evaluated, but the second part is not.
 > And the result of the entire computation expression is an option, not a function.
 
+И результат в точности такой, как мы хотели.
+Первая часть выполняется, а вторая часть нет
+И результат всего вычислительного выражения это `Option`, а не функция.
+
 > ## When is delay called?
 
+## Когда вызывается "Delay"?
+
 > The way that `Delay` is inserted into the workflow is straightforward, once you understand it.
+
+Способ, каким `Delay` вставляется в процесс простой, как только вы его поймёте.
 
 > * The bottom (or innermost) expression is delayed.
 > * If this is combined with a prior expression, the output of `Combine` is also delayed.
 > * And so on, until the final delay is fed into `Run`.
 
+* Нижнее (самое вложенное) выражение откладывается.
+* Если оно комбинируется с предшествующим выражением, вывод `Combine` также откладывается.
+* И так далее, пока финальное отложенное вычисление не отправляется в `Run`.
+
 > Using this knowledge, let's review what happened in the example above:
+
+Опираясь на это знание, давайте разберёмся, что случилось в примере выше.
 
 > * The first part of the expression is the print statement plus `return 1`.
 > * The second part of the expression is the print statement without an explicit return, which means that `Zero()` is called
@@ -252,17 +345,29 @@ trace {
 > * The result of the combine is turned into another "delayed option".
 > * Finally, the delayed option is fed to `Run`, which evaluates it and returns a normal option.
 
+* Первая часть выражения --- это оператор печати плюс `return 1`.
+* Вторая часть выражения --- оператора печати без явного `return`, что означает, что вызван метод `Zero()`.
+* Значение `None`, полученное из `Zero`, отправляется в `Delay`, возвращая "отложенное значение" `Option`, то есть функцию, которая возвращает `Option`, если её вызывать.
+* Опциональное значение из части 1 и отложенное значение из части 2 комбинирутся с помощью `Combine` и второе значение отбрасывается.
+* Результат комбинации превращается в другое "отложенное значение".
+* В конце, отложенное выражение попадает в `Run`, которое выполяет его и возвращает обычное опцинальное значение.
+
 > Here is a diagram that represents this process visually:
 
-![Delay](./ce_delay.png)
+Вот диаграмма, которая представляет этот процесс визуально:
 
+![Delay](./ce_delay.png)
 
 > If we look at the debug trace for the example above, we can see in detail what happened.
 > It's a little confusing, so I have annotated it.
 > Also, it helps to remember that working *down* this trace is the same as working *up* from the bottom of the diagram above, because the outermost code is run first.
 
+Если мы посмотрим на трассирующий вывод из примера выше, мы можем увидеть в деталях, что произошло.
+Это может сбивать с толку, так что я добавил объяснения.
+Также, этот помогает помнить, что 
+
 ```text
-// delaying the overall expression (the output of Combine)
+// откладываем вычисление всего выражения (вывод Combine)
 <fun:clo@160-66> - Delaying using <fun:delayed@141-3>
 
 // running the outermost delayed expression (the output of Combine)
