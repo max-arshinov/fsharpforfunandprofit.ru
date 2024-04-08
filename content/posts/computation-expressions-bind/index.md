@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Введение в `bind`"
+title: "Введение в 'Bind'"
 description: "Шаги к созданию собственного оператора `let!`"
 date: 2013-01-22
 nav: thinking-functionally
