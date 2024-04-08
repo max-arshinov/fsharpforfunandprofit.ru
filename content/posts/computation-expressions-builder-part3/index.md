@@ -26,7 +26,6 @@ seriesOrder: 8
 Пост по "паттерне строитель" доступен [здесь](../builder-pattern).
 {{</alertinfo>}}
 
-
 > ## The problem: avoiding unnecessary evaluations
 
 ## Проблема: избавляемся от ненужных вычислений
@@ -277,7 +276,7 @@ f() |> printfn "Результат Части 1 без Части 2: %A"
 
 > ## Introducing "Run"
 
-## Ввекдение в "Run"
+## Введение в "Run"
 
 > The `Run` method exists for exactly this reason.
 > It is called as the final step in the process of evaluating a computation expression, and can be used to undo the delay.
@@ -364,7 +363,7 @@ trace {
 
 Если мы посмотрим на трассирующий вывод из примера выше, мы можем увидеть в деталях, что произошло.
 Это может сбивать с толку, так что я добавил объяснения.
-Также, этот помогает помнить, что 
+Также, полезно помнить, что работа *вниз* по этой трассировке аналогична работе *вверх* из нижней части диаграммы выше, потому что внешние код выпоняется первым. <!-- движение по трассировке сверху вниз, соответствует движению по диаграмме снизу вверх  -->
 
 ```text
 // откладываем вычисление всего выражения (результат Combine)
@@ -430,11 +429,20 @@ trace {
 
 > The error is:
 
+Ошибка:
+
+> ```text
+> error FS0001: This expression was expected to have type
+>     int option
+> but here has type
+>     unit -> 'a
+> ```
+
 ```text
-error FS0001: This expression was expected to have type
-    int option
-but here has type
-    unit -> 'a
+Error FS0193 : Несоответствие ограничений типов. Тип 
+    "unit -> 'a option"    
+несовместим с типом
+    "int option"
 ```
 
 > In other words, the `Combine` is being passed a delayed function (`unit -> 'a`), which doesn't match our explicit signature.
@@ -538,6 +546,42 @@ Result for return then return: Some 3
 ```
 
 ```text
+// откладываем вычисление всего выражения
+<fun:Pipe #1 input at line 70@71> - отложена благодаря <fun:delayed@46>
+
+// вычисляем выражеие целиком
+<fun:delayed@46> - Run Начало.                                         
+
+// вызываем первую отложенную функцию
+<fun:Pipe #1 input at line 70@71> - Начало отложенной функции.         
+
+// первый возврат
+Return незавёрнутого 1 как Option                                         
+
+// откладываем вторую отложенную функцию
+<fun:Pipe #1 input at line 70@72-1> - отложена благодаря <fun:delayed@46> 
+
+// начинаем комбинирование
+Combine. Перед получением отложенного параметра <fun:delayed@46>          
+
+    // вызываем вторую отложенную функцию внутри Combine
+    <fun:Pipe #1 input at line 70@72-1> - Начало отложенной функции.          
+    Return незавёрнутого 2 как Option                                         
+    <fun:Pipe #1 input at line 70@72-1> - Конец отложенной функции. Результат Some 2
+    // получили второй результат
+
+Combine. После получения отложенного параметра <fun:delayed@46>. Результат Some 2
+комбинируем 1 с 2                                                             
+// комбинирование завершено
+
+<fun:Pipe #1 input at line 70@71> - Конец отложенной функции. Результат Some 3
+// комбинирование отложенного выражение завершено
+
+<fun:delayed@46> - Run Конец. Результат Some 3   
+// выполнение завершено
+
+// печатаем результат
+Результ return с последующим return: Some 3   
 ```
 
 > ## Understanding the type constraints
@@ -552,36 +596,53 @@ Result for return then return: Some 3
 > In fact, understanding exactly what the type constraints are in a computation expression can clarify how everything fits together.
 
 Но на самом деле мы можем использовать другие типы, если нам надо, с уётом определённых ограничений.
-На самом деле 
+На самом деле, точное понимание того, какие ограничения типов существуют в вычислительном выражении, может прояснить, как всё друг с другом согласуется.
 
 > For example, we have seen that:
+
+Например, мы видели, что
 
 > * The output of `Return` is passed into `Delay`, so they must have compatible types.
 > * The output of `Delay` is passed into the second parameter of `Combine`.
 > * The output of `Delay` is also passed into `Run`.
 
+* Вывод `Return` передаётся в `Delay`, поэтому они должны иметь совместимые типы.
+* Вывод `Delay` передаётся во второй параметр `Combine`.
+* Вывод `Delay` передаётся в `Run`.
+
 > But the output of `Return` does *not* have to be our "public" wrapped type.
 > It could be an internally defined type instead.
+
+Но вывод `Return` не должен быть нашим "публичным" типом-обёрткой.
+Вместо этого он может быть внутренним определённым типом.
 
 ![Delay](./ce_return.png)
 
 > Similarly, the delayed type does not have to be a simple function, it could be any type that satisfies the constraints.
 
+Похожим образом, отложенный тип не обязан быть простой функцией, он может быть любым типом, который удовлетворяет огранчениям.
+
 > So, given a simple set of return expressions, like this:
+
+Итак, возьмём простой набор возвращаемых выражений, как здесь:
 
 ```fsharp
     trace {
         return 1
         return 2
         return 3
-        } |> printfn "Result for return x 3: %A"
+        } |> printfn "Результат трёх операторов return: %A"
 ```
 
 > Then a diagram that represents the various types and their flow would look like this:
 
+В этом случае диаграмма, которая представляет различные типы и их взаимодействие, будет выглядеть так:
+
 ![Delay](./ce_types.png)
 
 > And to prove that this is valid, here is an implementation with distinct types for `Internal` and `Delayed`:
+
+И чтобы доказать, что это корректно, вот реализация с отдельными типами для `Internal` и `Delayed`:
 
 ```fsharp
 type Internal = Internal of int option
@@ -591,17 +652,17 @@ type TraceBuilder() =
     member this.Bind(m, f) =
         match m with
         | None ->
-            printfn "Binding with None. Exiting."
+            printfn "Bind с None. Выход."
         | Some a ->
-            printfn "Binding with Some(%A). Continuing" a
+            printfn "Bind с Some(%A). Продолжение" a
         Option.bind f m
 
     member this.Return(x) =
-        printfn "Returning a unwrapped %A as an option" x
+        printfn "Return развёрнутого %A как Option" x
         Internal (Some x)
 
     member this.ReturnFrom(m) =
-        printfn "Returning an option (%A) directly" m
+        printfn "Return завёрнутого (%A) напрямую" m
         Internal m
 
     member this.Zero() =
@@ -609,47 +670,49 @@ type TraceBuilder() =
         Internal None
 
     member this.Combine (Internal x, Delayed g) : Internal =
-        printfn "Combine. Starting %A" g
+        printfn "Combine. Начало %A" g
         let (Internal y) = g()
-        printfn "Combine. Finished %A. Result is %A" g y
+        printfn "Combine. Конец %A. Результат %A" g y
         let o =
             match x,y with
             | Some a, Some b ->
-                printfn "Combining %A and %A" a b
+                printfn "комбинируем %A и %A" a b
                 Some (a + b)
             | Some a, None ->
-                printfn "combining %A with None" a
+                printfn "комбинируем %A с None" a
                 Some a
             | None, Some b ->
-                printfn "combining None with %A" b
+                printfn "комбинируем None с %A" b
                 Some b
             | None, None ->
-                printfn "combining None with None"
+                printfn "комбинируем None с None"
                 None
-        // return the new value wrapped in a Internal
+        // возвращаем новое значение, завёрнутое в Internal
         Internal o
 
     member this.Delay(funcToDelay) =
         let delayed = fun () ->
-            printfn "%A - Starting Delayed Fn." funcToDelay
+            printfn "%A - Delay. Вызов отложенной функции." funcToDelay
             let delayedResult = funcToDelay()
-            printfn "%A - Finished Delayed Fn. Result is %A" funcToDelay delayedResult
-            delayedResult  // return the result
+            printfn "%A - Delay. Возврат из отложенной функции. Результат %A" funcToDelay delayedResult
+            delayedResult  // возвращаем результат
 
-        printfn "%A - Delaying using %A" funcToDelay delayed
-        Delayed delayed // return the new function wrapped in a Delay
+        printfn "%A - Откладываем используя %A" funcToDelay delayed
+        Delayed delayed // возвращаем новую функцию, завёрнутую в Delayed
 
     member this.Run(Delayed funcToRun) =
-        printfn "%A - Run Start." funcToRun
+        printfn "%A - Run Начало." funcToRun
         let (Internal runResult) = funcToRun()
-        printfn "%A - Run End. Result is %A" funcToRun runResult
-        runResult // return the result of running the delayed function
+        printfn "%A - Run Конец. Результат %A" funcToRun runResult
+        runResult // возвращаем результат запуска отложенной функции
 
-// make an instance of the workflow
+// создаём экземпляр процесса
 let trace = new TraceBuilder()
 ```
 
 > And the method signatures in the builder class methods look like this:
+
+И сигнатуры методов в классе-построителе выглядят так:
 
 ```fsharp
 type Internal = | Internal of int option
@@ -670,13 +733,26 @@ end
 
 > Creating this artificial builder is overkill of course, but the signatures clearly show how the various methods fit together.
 
+Создание такого искусственного построителя, конечно, слишком сложная задача, но сигнатуры ясно показывают как различные методы взаимодействуют друг с другом.
+
 > ## Summary
 
+## Заключение
+
 > In this post, we've seen that:
+
+В этом посте мы увидели. что
 
 > * You need to implement `Delay` and `Run` if you want to delay execution within a computation expression.
 > * Using `Delay` changes the signature of `Combine`.
 > * `Delay` and `Combine` can use internal types that are not exposed to clients of the computation expression.
 
+* Вам надо реализовать `Delay` и `Run` если вы хотите отложить выполнение вычислительного выражения.
+* Использование `Delay` меняет сигнатуру `Combine`.
+* `Delay` и `Combine` могут использовать внутренние типы, которые не доступны клиентам вычислительного выражения.
+
 > The next logical step is wanting to delay execution *outside* a computation expression until you are ready, and that will be the topic on the next but one post.
 > But first, we'll take a little detour to discuss method overloads.
+
+Следующий логический шаг это желание отложить выполнение *снаружи* вычислительного выражения до тех пор пока вы не будете готовы, и этот вопрос будет рассмотрен в следующем посте.
+Но сначала мы немного отвлечёмся чтобы обсудить перегрузки методов.
