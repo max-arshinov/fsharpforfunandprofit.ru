@@ -12,6 +12,7 @@
 | browser                   | браузер                       |                           |                                                           |
 | composition               | композиция                    |                           | Имеется в виду операция >> в F#                           |
 | computation expressions   | вычислительные выражения      | вычисления выражения      | [Альтернатива в документации MS](https://docs.microsoft.com/ru-ru/dotnet/fsharp/language-reference/computation-expressions) |
+| computation type          | вычислительный тип            |                           |                                                           |
 | debug                     | отладка                       |                           |                                                           |
 | equality                  | проверка на равенство         | равнозначность            | Никоим образом не является "равенством" (equation)        |
 | exception                 | исключение                    |                           |                                                           |
@@ -41,6 +42,7 @@
 | records                   | записи                        |                           |                                                           |
 | script                    | скрипт                        |                           |                                                           |
 | shell                     | оболочка                      |                           |                                                           |
+| signature                 | сигнатура                     |                           | сигнатура функции/метода, не "подпись"                    |
 | solution                  | решение                       |                           |                                                           |
 | state machine             | конечный автомат              |                           |                                                           |
 | third party               | сторонний                     | сторонним/сторонние       |                                                           |
@@ -55,3 +57,4 @@
 | unit type                 | единичный тип                 | тип `unit`                | Так в переводе _Типов в языках программирования_          |
 | unit test                 | модульный тест                |                           |                                                           |
 | unit of measure           | единица измерения             |                           |                                                           |
+| workflow                  | процесс                       | вычислительный процесс    | В контексте computation expressions                       |
