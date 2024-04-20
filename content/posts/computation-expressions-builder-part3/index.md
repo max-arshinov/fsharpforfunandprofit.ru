@@ -534,9 +534,6 @@ end
 * Использование `Delay` меняет сигнатуру `Combine`.
 * `Delay` и `Combine` могут использовать внутренние типы, которые не доступны снаружи вычислительного выражения.
 
-> The next logical step is wanting to delay execution *outside* a computation expression until you are ready, and that will be the topic on the next but one post.
-> But first, we'll take a little detour to discuss method overloads.
-
 Следующий логический шаг — откралыдывание всего вычислительного выражения.
 Это будет темой следующего поста.
 Но сначала мы немного отвлечёмся чтобы обсудить перегрузки методов.
