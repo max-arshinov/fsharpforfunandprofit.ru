@@ -189,8 +189,6 @@ trace {
 Конструкция данного элемента управления может использоваться только в том случае, если построитель вычислительного выражения определяет метод "Delay"
 ```
 
-> The `Delay` method is a hook that allows you to delay evaluation of a computation expression until needed -- we'll discuss this in detail very soon; but for now, let's create a default implementation:
-
 `Delay` — это особый метод, который позволяет отложить вычисление выражения до тех пор, пока оно не понадобится.
 Скоро мы обсудим его в деталях; но сейчас давайте просто создадим реализацию по-умолчанию:
 
@@ -227,8 +225,6 @@ Combine 1 с 2
 ```
 
 Результат всего процесса — это сумма всех конструкций yield, то есть `Some 3`.
-
-> If we have a "failure" in the workflow (e.g. a `None`), the second yield doesn't occur and the overall result is `Some 1` instead.
 
 Если на первом шаге нашего процесса, результатом окажется "неудача" (т.е. `None`), второй оператор `yield`` не сработает и весь результат окажется равным `Some 1`.
 
