@@ -86,7 +86,6 @@ type SuccessOrErrorBuilder() =
 
 // создаём экземпляр процесса
 let successOrError = new SuccessOrErrorBuilder()
-
 ```
 
 > And here it is in use:
@@ -275,6 +274,14 @@ trace {
 > The type 'int' does not match the type ''a list'
 > ```
 
+<!-- Кажется, изменился номер ошибки -->
+```text
+Error FS0193 : Несоответствие ограничений типов. Тип 
+    "int list option"    
+несовместим с типом
+    "int option"
+```
+
 > What is the problem?
 
 В чём проблема?
@@ -367,6 +374,10 @@ trace {
 > ```text
 > error FS0041: A unique overload for method 'Combine' could not be determined based on type information prior to this program point. A type annotation may be needed.
 > ```
+
+```text
+Невозможно определить уникальную перегрузку метода "Combine" на основе сведений о типе, заданных до данной точки программы. Возможно, требуется аннотация типа.
+```
 
 > But hold on, before you get too annoyed, try thinking like the compiler.
 > If you were the compiler, and you were given a `None`, which method would *you* call?
