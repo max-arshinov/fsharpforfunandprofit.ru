@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Реализуя вычислительные выражения: Delay и Run"
+title: "Реализуем вычислительные выражения: Delay и Run"
 description: "Управляем временем выполнения функции"
 date: 2013-01-27
 nav: thinking-functionally
