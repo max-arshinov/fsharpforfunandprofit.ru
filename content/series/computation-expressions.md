@@ -1,6 +1,6 @@
 ---
 layout: series_index
-title: "Серия 'Вычислительные выражения'"
+title: "Цикл 'Вычислительные выражения'"
 seriesIndexId: "Вычислительные выражения"
 seriesIndexOrder : 10
 aliases: [/series/computation-expressions.html]
