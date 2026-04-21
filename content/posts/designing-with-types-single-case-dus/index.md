@@ -9,8 +9,6 @@ seriesOrder: 2
 categories: [Types, DDD]
 ---
 
-> At the end of the previous post, we had values for email addresses, zip codes, etc., defined like this:
-
 Мы завершили предыдущую главу, описав набор полей для электронных адресов, почтовых индексов и прочих компонентов типа `Contact`. 
 
 ```fsharp
@@ -20,37 +18,20 @@ State: string;
 Zip: string;
 ```
 
-> These are all defined as simple strings.
-> But really, are they just strings?
-> Is an email address interchangeable with a zip code or a state abbreviation?
-
 Все они определены как обычные строки.
 Но на самом ли деле они — просто строки?
 Можно ли заменить электронный адрес почтовым индексом или названием штата?
 
-> In a domain driven design, they are indeed distinct things, not just strings.
-> So we would ideally like to have lots of separate types for them so that they cannot accidentally be mixed up.
-
 В предметно-ориентированном проектировании это не просто строки, а совершенно разные значения.
-Нам не помешали бы разные типы для этих значений, чтобы их нельзя было перепутать.
+Чтобы их не перепутать, нам бы не помешали бы разные типы для этих значений.
 
-> This has been [known as good practice](http://codemonkeyism.com/never-never-never-use-string-in-java-or-at-least-less-often/) for a long time, but in languages like C# and Java it can be painful to create hundred of tiny types like this, leading to the so called ["primitive obsession"](http://sourcemaking.com/refactoring/primitive-obsession) code smell.
+Эта практика давно считается [хорошей](http://codemonkeyism.com/never-never-never-use-string-in-java-or-at-least-less-often/), однако, в таких языках, как C# и Java, создание сотен крошечных типов — муторное дело.
+Ей следуют немногие программисты, что приводит к коду «с душком», известным как «одержимость примитивами».
 
-Такая практика довольно давно считается [хорошей](http://codemonkeyism.com/never-never-never-use-string-in-java-or-at-least-less-often/), однако в языках наподобие C# и Java, создание сотен крошечных типов — муторное занятие.
-Ей следуют немногие программисты и это приводит к коду «с душком», известным как «одержимость примитивами».
-
-> But F# there is no excuse!
-> It is trivial to create simple wrapper types.
-
-Но в F# для такого подхода нет оправданий!
+Но в F# для «одержимости примитивами» нет оправданий!
 Здесь создание простых типов-обёрток — тривиальное дело.
 
-> ## Wrapping primitive types
-
-## Заворачивая примитивные типы
-
-> The simplest way to create a separate type is to wrap the underlying string type inside another type.
-> We can do it using single case union types, like so:
+## Заворачиваем примитивные типы
 
 Простейший способ создать отдельный тип — поместить строку внутрь одновариантного объединения:
 
@@ -60,8 +41,6 @@ type ZipCode = ZipCode of string
 type StateCode = StateCode of string
 ```
 
-> or alternatively, we could use record types with one field, like this:
-
 Другой несложный способ — создать запись с одним строковым полем:
 
 ```fsharp
@@ -70,19 +49,12 @@ type ZipCode = { ZipCode: string }
 type StateCode = { StateCode: string}
 ```
 
-> Both approaches can be used to create wrapper types around a string or other primitive type, so which way is better?
+Оба подхода можно использовать для создания обёрток над примитивными типами.
+Возникает вопрос — какой из них лучше?
 
-Оба подхода можно использовать для создания типов-обёрток над примитивными типами, так что возникает вопрос — какой способ лучше?
-
-> The answer is generally the single case discriminated union.
-> It is much easier to "wrap" and "unwrap", as the "union case" is actually a proper constructor function in its own right.
-> Unwrapping can be done using inline pattern matching.
-
-Единственный правильный ответ: одновариантное размеченное объединение.
-Он гораздо проще для «заворачивания» и «разворачивания», так как единственный размеченный вариант является одновременно и заворачивающей функцией.
+Правильный ответ: одновариантное размеченное объединение.
+Он гораздо проще для «заворачивания» и «разворачивания», поскольку единственный размеченный вариант одновременно является и заворачивающей функцией.
 А разворачивание выполняется с помощью встраиваемого сопоставления с образцом.
-
-> Here's some examples of how an `EmailAddress` type might be constructed and deconstructed:
 
 Вот несколько примеров того, как завернуть строку в `EmailAddress`, а затем извлечь обратно:
 
@@ -95,7 +67,7 @@ type EmailAddress = EmailAddress of string
 
 // встраиваемое сопоставление с образцом
 let a' = "a" |> EmailAddress
-let (EmailAddress a'') = a''
+let (EmailAddress a'') = a' // в a'' теперь строка "a"
 
 let addresses =
     ["a"; "b"; "c"]
@@ -106,14 +78,9 @@ let addresses' =
     |> List.map (fun (EmailAddress e) -> e)
 ```
 
-> You can't do this as easily using record types.
-
 Сделать что-то подобное с помощью записей не выйдет.
 
-> So, let's refactor the code again to use these union types.
-> It now looks like this:
-
-Что ж, добавим типы-обёртки в наш код.
+Добавим типы-обёртки в наш код.
 Теперь он выглядит так:
 
 ```fsharp
@@ -158,16 +125,10 @@ type Contact =
     }
 ```
 
-> Another nice thing about the union type is that the implementation can be encapsulated with module signatures, as we'll discuss below.
-
 Приятное дополнение: реализация функций может быть инкапсулирована с помощью сигнатур модуля.
 Что это такое и как работает, обсудим чуть позже.
 
-> ## Naming the "case" of a single case union
-
 ## Наименование «варианта» одновариантного объединения
-
-> In the examples above we used the same name for the case as we did for the type:
 
 В примерах выше мы использовали одно и то же имя и для типа, и для его единственного варианта:
 
@@ -177,13 +138,8 @@ type ZipCode = ZipCode of string
 type StateCode = StateCode of string
 ```
 
-> This might seem confusing initially, but really they are in different scopes, so there is no naming collision.
-> One is a type, and one is a constructor function with the same name.
-
-Сначала это может ставить в тупик, но на самом деле эти имена находятся в разных областях видимости и не мешают друг другу.
+Это немного путает, но на самом деле эти имена находятся в разных зонах видимости и не мешают друг другу.
 Одно из них — это тип, а другое — функция-конструктор.
-
-> So if you see a function signature like this:
 
 Если вы видите сигнатуру функции наподобие этой:
 
@@ -191,11 +147,7 @@ type StateCode = StateCode of string
 val f: string -> EmailAddress
 ```
 
-> this refers to things in the world of types, so `EmailAddress` refers to the type.
-
 знайте, что она относится к миру типов, поскольку `EmailAddress` — это имя типа.
-
-> On the other hand, if you see some code like this:
 
 С другой стороны, если вы видите такой код:
 
@@ -203,30 +155,18 @@ val f: string -> EmailAddress
 let x = EmailAddress y
 ```
 
-> this refers to things in the world of values, so `EmailAddress` refers to the constructor function.
-
 знайте, что он относится к миру значений, поскольку `EmailAddress` — имя функции-конструктора.
 
-> ## Constructing single case unions
+## Конструируем одновариантные объединения
 
-## Конструирование одновариантных объединений
-
-> For values that have special meaning, such as email addresses and zip codes, generally only certain values are allowed.
-> Not every string is an acceptable email or zip code.
-
-Обычно для величин, имеющих особый смысл, таких как электронные адреса и почтовые индексы, доступны далеко не все значения.
+Часто для величин, имеющих особый смысл — электронных адресов, почтовых индексов — доступны далеко не все значения.
 Не всякая строка может быть электронным адресом или почтовым индексом.
-
-> This implies that we will need to do validation at some point, and what better point than at construction time?
-> After all, once the value is constructed, it is immutable, so there is no worry that someone might modify it later.
 
 Это значит, что в какой-то момент нам потребуется валидация.
 А какой момент может быть лучше, чем время создания переменной?
-Помимо прочего, нельзя изменить переменную после создания, так что можно не беспокоиться, что кто-то модифицирует её в будущем.
+Помимо прочего, после создания переменную нельзя изменить, значит можно не опасаться, что кто-то модифицирует её в будущем.
 
-> Here's how we might extend the above module with some constructor functions:
-
-Вот как мы можем расширить наш модуль, добавив несколько функций-конструкторов:
+Вот как расширить наш модуль с помщью валидирующих функций-конструкторов:
 
 ```fsharp
 ... типы как выше ...
@@ -244,8 +184,6 @@ let CreateStateCode (s:string) =
         else None
 ```
 
-> We can test the constructors now:
-
 Протестируем конструкторы:
 
 ```fsharp
@@ -256,42 +194,24 @@ CreateEmailAddress "a@example.com"
 CreateEmailAddress "example.com"
 ```
 
-> ## Handling invalid input in a constructor ###
+## Обрабатываем недопустимые входные данные в конструкторе
 
-## Обработка недопустимых входных данных в конструкторе
-
-> With these kinds of constructor functions, one immediate challenge is the question of how to handle invalid input.
-> For example, what should happen if I pass in "abc" to the email address constructor?
-
-Теперь, имея функции-конструкторы с проверкой, мы можем обрабатывать недопустимые входные данные.
+Когда у нас есть валидирующие функции-конструкторы, мы можем обрабатывать недопустимые входные данные.
 Но как?
-Например, как быть, если в конструктор электронного адреса я передам `"abc"`?
+Например, как быть, если я вызову конструктор электронного адреса с параметром `"abc"`?
 
-> There are a number of ways to deal with it.
-
-Есть несколько способов ответить на этот вопрос.
-
-> First, you could throw an exception.
-> I find this ugly and unimaginative, so I'm rejecting this one out of hand!
+На этот вопрос есть несколько ответов.
 
 Во-первых, можно выбросить исключение.
-В функциональном коде так не делают, так что мы не будем его рассматривать.
+В функциональном мире так не делают и мы не будем.
 
-> Next, you could return an option type, with `None` meaning that the input wasn't valid.
-> This is what the constructor functions above do.
+Во-вторых, можно вернуть опциональное значение, где `None` означает, что входные данные не прошли валидацию.
+Это именно то, что делают функции-конструкторы в примере, который мы только что привели.
 
-Во-вторых, мы можем вернуть значение опционального типа, где `None` означает, что входные данные недопустимы.
-Это то, что делают функции-конструкторы в примере выше.
+Как правило, это простейший способ.
+Он обладает преимуществом — вызывающая сторона должна явно обработать недопустимое значение.
 
-> This is generally the easiest approach.
-> It has the advantage that the caller has to explicitly handle the case when the value is not valid.
-
-Обычно это простейший способ.
-У него есть преимущество — вызывающая сторона должна явно обработать недопустимое значение.
-
-> For example, the caller's code for the example above might look like:
-
-Скажем, вызывающий код для примера выше может выглядеть так:
+Скажем, вызывающий код может выглядеть так:
 
 ```fsharp
 match (CreateEmailAddress "a@example.com") with
@@ -299,21 +219,13 @@ match (CreateEmailAddress "a@example.com") with
 | None -> ... // игнорируем?
 ```
 
-> The disadvantage is that with complex validations, it might not be obvious what went wrong.
-> Was the email too long, or missing a '@' sign, or an invalid domain?
-> We can't tell.
+Недостаток способа в том, что при сложных проверках непонятно, что пошло не так.
+Был ли электронный адрес слишком длинным, или мы забыли символ `'@'`, или дело в неправильном домене?
+Этого узнать нельзя.
 
-Недостаток способа в том, что при сложных проверках неочевидно, что пошло не так.
-Был ли электронный адрес слишком длинным, или забыли символ `'@'`, или дело в неправильном домене?
-Узнать нельзя.
+Если вам нужны подробности, возвращайте тип с детальным объяснением ошибки.
 
-> If you do need more detail, you might want to return a type which contains a more detailed explanation in the error case.
-
-Если вам нужно больше подробностей, возвращайте тип с детальным объяснением ошибки.
-
-> The following example uses a `CreationResult` type to indicate the error in the failure case.
-
-Следующий пример использует тип `CreationResult`, чтобы сигнализировать об ошибке.
+Следующий пример возвращает тип `CreationResult`, чтобы сигнализировать об ошибке.
 
 ```fsharp
 type EmailAddress = EmailAddress of string
@@ -328,11 +240,8 @@ let CreateEmailAddress2 (s:string) =
 CreateEmailAddress2 "example.com"
 ```
 
-> Finally, the most general approach uses continuations.
-> That is, you pass in two functions, one for the success case (that takes the newly constructed email as parameter), and another for the failure case (that takes the error string as parameter).
-
-Наконец, самый общий подход использует функции-продолжения.
-Вы передаёте две функции, одна из которых вызывается в случае успеха (получая, как параметр, сконструированный электронный адрес), а другая — в случае неудачи (получая, как параметр, описание ошибки).
+Вы передаёте в конструктор две функции.
+Одна из них вызывается в случае успеха (получая, как параметр, сконструированный электронный адрес), а другая — в случае неудачи (получая, как параметр, описание ошибки).
 
 ```fsharp
 type EmailAddress = EmailAddress of string
@@ -343,15 +252,11 @@ let CreateEmailAddressWithContinuations success failure (s:string) =
         else failure "Электронный адрес должен содержать символ @"
 ```
 
-> The success function takes the email as a parameter and the error function takes a string.
-> Both functions must return the same type, but the type is up to you.
-
 Успешная функция принимает на вход электронный адрес, а ошибочная — строку с ошибкой.
-Обе функции должны вернуть один и тот же тип, но выбор типа остаётся за вами.
+Обе функции должны вернуть один и тот же тип.
+Его выбор остаётся за вами.
 
-> Here is a simple example -- both functions do a printf, and return nothing (i.e. unit).
-
-Простой пример — обе функции вызывают `printf` и не возвращают ничего (т.е., значение типа `unit`).
+Простой пример — обе функции вызывают `printf` и не возвращают ничего (т.е. возвращают значение типа `unit`):
 
 ```fsharp
 let success (EmailAddress s) = printfn "успешное создание электронного адреса %s" s
@@ -360,12 +265,9 @@ CreateEmailAddressWithContinuations success failure "example.com"
 CreateEmailAddressWithContinuations success failure "x@example.com"
 ```
 
-> With continuations, you can easily reproduce any of the other approaches.
-> Here's the way to create options, for example.
-> In this case both functions return an `EmailAddress option`.
-
-С помощью функций-продолжений вы можете имитировать другие способы.
-Можно вернуть опциональное значение (обе функции возвращают значение типа `EmailAddress option`):
+С помощью функций-продолжений можно имитировать другие способы.
+Например, можно получить опциональное значение.
+В этом случае обе функции должны вернуть значение типа `EmailAddress option`:
 
 ```fsharp
 let success e = Some e
@@ -374,9 +276,7 @@ CreateEmailAddressWithContinuations success failure "example.com"
 CreateEmailAddressWithContinuations success failure "x@example.com"
 ```
 
-> And here is the way to throw exceptions in the error case:
-
-Или бросить исключение в случае ошибки.
+Можно выбросить исключение в случае ошибки:
 
 ```fsharp
 let success e = e
@@ -385,10 +285,9 @@ CreateEmailAddressWithContinuations success failure "example.com"
 CreateEmailAddressWithContinuations success failure "x@example.com"
 ```
 
-> This code seems quite cumbersome, but in practice you would probably create a local partially applied function that you use instead of the long-winded one.
-
 Этот код кажется несколько громоздким.
-На практике вместо длинной функции создают локальную функцию без последнего параметра, то есть частично-применённую.
+На практике вместо длинной функции создают локальную функцию без последнего параметра.
+Такие функции называют частично-применёнными.
 
 ```fsharp
 // создаём частично-применённую функцию
@@ -403,15 +302,10 @@ createEmail "example.com"
 
 {{< book_page_ddd >}}
 
-> ## Creating modules for wrapper types ###
-
 ## Создаём модули для типов-обёрток
 
-> These simple wrapper types are starting to get more complicated now that we are adding validations, and we will probably discover other functions that we want to associate with the type.
-
-Наши простые типы-обёртки стали сложнее, как только мы добавили валидацию, и, возможно, это не единственное усложнение, которое нам потребуется.
-
-> So it is probably a good idea to create a module for each wrapper type, and put the type and its associated functions there.
+Наши простые типы-обёртки стали сложнее, как только мы добавили валидацию.
+Возможно, это не единственное усложнение, которое нам потребуется.
 
 Тип и обслуживающие его функции, можно инкапсулировать внутри модуля:
 
@@ -430,10 +324,7 @@ module EmailAddress =
     let value (EmailAddress e) = e
 ```
 
-> The users of the type would then use the module functions to create and unwrap the type.
-> For example:
-
-Теперь пользователи вызывают функции модуля, чтобы завернуть или развернуть занчение:
+Теперь пользователи вызывают функции модуля, чтобы завернуть или развернуть значение:
 
 ```fsharp
 // создаём электронные адреса
@@ -446,24 +337,14 @@ match address1 with
 | None -> ()
 ```
 
-> ## Forcing use of the constructor ###
+## Заставляем вызывать конструктор
 
-## Принудительное использование конструктора
-
-> One issue is that you cannot force callers to use the constructor.
-> Someone could just bypass the validation and create the type directly.
-
-Остаётся одна проблема: мы не можем заставить пользователя вызывать функцию-конструктор.
+Осталась одна проблема: мы не можем заставить пользователя вызывать функцию-конструктор.
 Если захочет, он может пропустить валидацию и создать тип напрямую.
 
-> In practice, that tends not to be a problem.
-> One simple techinique is to use naming conventions to indicate a "private" type, and provide "wrap" and "unwrap" functions so that the clients never need to interact with the type directly.
-
-На практике это не проблема.
-Можно использовать соглашение об именовании, чтобы «сделать» тип закрытым, предоставив функции для «заворачивания» и «разворачивания».
+На практике, это не так страшно.
+Можно использовать соглашение об именовании, обозначив тип «якобы закрытым» и предоставив функции для «заворачивания» и «разворачивания».
 Клиентам никогда не придётся взаимодействовать с типом напрямую.
-
-> Here's an example:
 
 Пример:
 
@@ -483,16 +364,10 @@ module EmailAddress =
     let value (EmailAddress e) = e
 ```
 
-> Of course the type is not really private in this case, but you are encouraging the callers to always use the "published" functions.
-
-Конечно, тип в модуле не становится по настоящему закрытым.
-Скорее, вы обозначаете вызывающей стороне своё намерение.
-
-> If you really want to encapsulate the internals of the type and force callers to use a constructor function, you can use module signatures.
+Конечно, тип в модуле не закрыт по настоящему.
+Но вы обозначаете вызывающей стороне своё намерение.
 
 Если вы действительно хотите инкапсулировать тип и заставить вызывающую сторону использовать функции доступа, используйте сигнатуры модуля.
-
-> Here's a signature file for the email address example:
 
 Пример файла сигнатур для электронного адреса:
 
@@ -511,12 +386,8 @@ val create : string -> T option
 val value : T -> string
 ```
 
-> (Note that module signatures only work in compiled projects, not in interactive scripts, so to test this, you will need to create three files in an F# project, with the filenames as shown here.)
-
 (Обратите внимание, что сигнатура модуля работают только в компилируемых проектах, а не в интерактивных скриптах.
 Для тестирования вам понадобиться создать три файла в проекте F# с именами, показанными здесь.)
-
-> Here's the implementation file:
 
 Файл реализации:
 
@@ -539,8 +410,6 @@ let create (s:string) =
 let value (EmailAddress e) = e
 ```
 
-> And here's a client:
-
 Клиентский код:
 
 ```fsharp
@@ -559,45 +428,26 @@ let address3 = T.EmailAddress "bad email"
 
 ```
 
-> The type `EmailAddress.T` exported by the module signature is opaque, so clients cannot access the internals.
-
-Тип `EmailAddress.T`, экспортируемый модулем сигнатур, не раскрывает детали реализации, поэтому клиенты не имеют доступа к внутренностям.
-
-> As you can see, this approach enforces the use of the constructor.
-> Trying to create the type directly (`T.EmailAddress "bad email"`) causes a compile error.
+Тип `EmailAddress.T`, экспортируемый модулем сигнатур, не раскрывает детали реализации, поэтому клиенты не имеют доступа к его внутренностям.
 
 Как видите, этот способ заставляет использовать конструктор.
 Попытка создать тип напрямую (`T.EmailAddress "bad email"`) приведёт к ошибке компиляции.
 
-> ## When to "wrap" single case unions ###
-
 ## Когда следует «заворачивать» одновариантные объединения
-
-> Now that we have the wrapper type, when should we construct them?
 
 Разобравшись с типами-обёртками, перейдём к следующему вопросу.
 Когда заворачивать значения?
 
-> Generally you only need to at service boundaries (for example, boundaries in a [hexagonal architecture](http://alistair.cockburn.us/Hexagonal+architecture))
-
-Обычно это делают на границах сервиса (например, на границах в [гексагональной архитектуре](http://alistair.cockburn.us/Hexagonal+architecture)).
-
-> In this approach, wrapping is done in the UI layer, or when loading from a persistence layer, and once the wrapped type is created, it is passed in to the domain layer and manipulated "whole", as an opaque type.
-> It is surprisingly uncommon that you actually need the wrapped contents directly when working in the domain itself.
+Обычно это делают на границах сервиса (например, на границах [гексагональной архитектуры](http://alistair.cockburn.us/Hexagonal+architecture)).
 
 При таком подходе заворачивание выполняется на уровне UI или при загрузке данных из хранилища.
 Созданный тип-обёртка передаётся на уровень предметной области, где обрабатывается как единое целое.
-На удивление редко приходится извлекать завёрнутые значения, обрабатывать и заворачивать обратно в рамках предметной области.
+В рамках предметной области на удивление редко приходится извлекать завёрнутые значения, обрабатывать и заворачивать обратно.
 
-> As part of the construction, it is critical that the caller uses the provided constructor rather than doing its own validation logic.
-> This ensures that "bad" values can never enter the domain.
+В рамках конструирования критически важно, чтобы вызывающая сторона использовала функцию-конструктор, а не собственную логику проверки.
+Это гарантирует, что «плохие» значения не проникнут в предметную область.
 
-В рамках конструирования критически важно, чтобы вызывающая сторона использовала функцию-конструктор, а не использовала собственную логику проверки.
-Это гарантирует, что «плохие» значения никогда не попадут в предметную область.
-
-> For example, here is some code that shows the UI doing its own validation:
-
-Например, вот код, где UI делает свою собственную проверку:
+Вот, например, код, где UI выполняет собственную проверку:
 
 ```fsharp
 let processFormSubmit () =
@@ -606,8 +456,6 @@ let processFormSubmit () =
         then // присвоить электронный адрес объекту предметной области
         else // показать сообщение об ошибке
 ```
-
-> A better way is to let the constructor do it, as shown earlier.
 
 Гораздо лучше, если проверку сделает конструктор:
 
@@ -619,24 +467,14 @@ let processFormSubmit () =
     | None -> // показать сообщение об ошибке
 ```
 
-> ## When to "unwrap" single case unions ###
-
 ## Когда следует «разворачивать» одновариантные объединения
 
-> And when is unwrapping needed?
-> Again, generally only at service boundaries.
-> For example, when you are persisting an email to a database, or binding to a UI element or view model.
-
-Хорошо, а когда требуется развернуть значение?
+Хорошо, а когда требуется разворачивать значения?
 И снова — в целом — на границах сервиса.
 
-Например, когда вы сохраняете электронный адрес в базе данных, или связываете его с элементом UI или моделью представления.
+Например, когда вы сохраняете электронный адрес в базу данных, или связываете его с элементом UI или моделью представления.
 
-> One tip to avoid explicit unwrapping is to use the continuation approach again, passing in a function that will be applied to the wrapped value.
-
-Чтобы избежать явного разворачивания, можно использовать подход с продолжением, передавая функцию, которая будет вызывана с развёрнутым значением.
-
-> That is, rather than calling the "unwrap" function explicitly:
+Чтобы избежать явного разворачивания, можно использовать продолжения, передавая функцию, которая будет вызывана с развёрнутым значением.
 
 Вместо явного вызова функции «разворачивания»:
 
@@ -644,15 +482,11 @@ let processFormSubmit () =
 address |> EmailAddress.value |> printfn "значение %s"
 ```
 
-> You would pass in a function which gets applied to the inner value, like this:
-
-Можно передать функцию, которая применяется к завёрнутому значению:
+передаём функцию, которая применяется к завёрнутому значению:
 
 ```fsharp
 address |> EmailAddress.apply (printfn "значение %s")
 ```
-
-> Putting this together, we now have the complete `EmailAddress` module.
 
 Теперь модуль `EmailAddress` выглядит так:
 
@@ -681,15 +515,9 @@ module EmailAddress =
 
 ```
 
-> The `create` and `value` functions are not strictly necessary, but are added for the convenience of callers.
-
 Функции `create` и `value` не являются обязательными, они добавлены для удобства вызывающей стороны.
 
-> ## The code so far ###
-
-## Код «целиком»
-
-> Let's refactor the `Contact` code now, with the new wrapper types and modules added.
+## Код «в целом»
 
 Проведём рефакторинг кода `Contract`, добавив типы-обёртки и модули.
 
@@ -799,17 +627,10 @@ type Contact =
 
 ```
 
-> By the way, notice that we now have quite a lot of duplicate code in the three wrapper type modules.
-> What would be a good way of getting rid of it, or at least making it cleaner?
-
 Обратите внимание, что в нашем примере много похожего кода в модулях с типами-обёртками.
-Есть ли хороший способ избавиться от дублей или, по крайней мере, сделать код чище?
-
-> ## Summary ###
+Как думаете, можно ли избавиться от дублей или, по крайней мере, сделать код чище?
 
 ## Заключение
-
-> To sum up the use of discriminated unions, here are some guidelines:
 
 Подведём итоги:
 
@@ -823,29 +644,21 @@ type Contact =
 
 * Используйте одновариантные размеченные объединения для создания типов,
   точно описывающих предметную область.
-* Если обёрнутое значение требует проверки, предоставьте конструкторы с
-  проверкой и заставьте пользоваться ими.
+* Если завёрнутое значение требует проверки, предоставьте валидируцющие
+  конструкторы и заставьте их вызывать.
 * Ясно показывайте, что будет, если проверка завершится неудачей.
   В простых случаях возвращайте опциональные типы.
-  В сложных случаях, используйте функции-продолжения.
-* Если у завёрнутого значения много связанных функций, поместить их
+  В сложных случаях используйте функции-продолжения.
+* Если у завёрнутого значения много связанных функций, поместите их
   в отдельный модуль.
 * Если вам нужна инкапсуляция, используйте файлы сигнатур.
 
-> We're still not done with refactoring.
-> We can alter the design of types to enforce business rules at compile time -- making illegal states unrepresentable.
-
 Однако, мы не закончили с рефакторингом.
-В следующей части сделаем недопустимые состояния непредставимыми.
+В следующей части займёмся тем, чтобы сделать недопустимые состояния непредставимыми.
 
 {{< linktarget "update" >}}
 
-> ## Update ##
-
 ## Обновление
 
-> Many people have asked for more information on how to ensure that constrained types such as `EmailAddress` are only created through a special constructor that does the validation.
-> So I have created a [gist here](https://gist.github.com/swlaschin/54cfff886669ccab895a) that has some detailed examples of other ways of doing it.
-
-Многие просят подробнее рассказать о том, как гарантировать создание типов навроде `EmailAddress`, только через конструктор с проверкой.
-Я создал небольшой [фрагмент](https://gist.github.com/swlaschin/54cfff886669ccab895a) с несколькими примерами, как добиться нужного результата.
+Многие читатели просят подробнее рассказать о том, как гарантировать создание типов навроде `EmailAddress`, только через конструктор с проверкой.
+Для них я сделал небольшой [git-фрагмент](https://gist.github.com/swlaschin/54cfff886669ccab895a) с несколькими примерами.
