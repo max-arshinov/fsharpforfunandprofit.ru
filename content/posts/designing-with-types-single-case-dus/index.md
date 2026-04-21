@@ -9,7 +9,7 @@ seriesOrder: 2
 categories: [Types, DDD]
 ---
 
-Мы завершили предыдущую главу, описав набор полей для электронных адресов, почтовых индексов и прочих компонентов типа `Contact`. 
+Мы завершили предыдущий пост, описав набор полей для электронных адресов, почтовых индексов и прочих компонентов типа `Contact`. 
 
 ```fsharp
 
@@ -633,14 +633,6 @@ type Contact =
 ## Заключение
 
 Подведём итоги:
-
-> * Do use single case discriminated unions to create types that represent the domain accurately.
-> * If the wrapped value needs validation, then provide constructors that do the validation and enforce their use.
-> * Be clear what happens when validation fails.
->   In simple cases, return option types.
->   In more complex cases, let the caller pass in handlers for success and failure.
-> * If the wrapped value has many associated functions, consider moving it into its own module.
-> * If you need to enforce encapsulation, use signature files.
 
 * Используйте одновариантные размеченные объединения для создания типов,
   точно описывающих предметную область.
