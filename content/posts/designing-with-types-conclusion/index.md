@@ -1,46 +1,29 @@
 ---
 layout: post
-# title: "Designing with types: Conclusion"
 title: "Проектирование с помощью типов: Заключение"
-# description: "A before and after comparison"
 description: "Сравнение кода до и после"
 date: 2013-01-19
 nav: thinking-functionally
-# seriesId: "Designing with types"
 seriesId: "Проектирование с помощью типов"
 seriesOrder: 8
 categories: [Types, DDD]
 ---
 
-> In this series, we've looked at some of the ways we can use types as part of the design process, including:
-
-В этом цикле мы познакомились с некоторыми способами, с помощью которых мы можем использовать типы, как часть процесса проектирования, включая:
-
-> * Breaking large structures down into small "atomic" components.
-> * Using single case unions to add semantic meaning and validation to key domain types such `EmailAddress` and `ZipCode`.
-> * Ensuring that the type system can only represent valid data ("making illegal states unrepresentable").
-> * Using types as an analysis tool to uncover hidden requirements
-> * Replacing flags and enums with simple state machines
-> * Replacing primitive strings with types that guarantee various constraints
+В этом цикле мы узнали несколько способов использовать типы, как часть процесса проектирования.
+В частности:
 
 * Разбиение больших структур на маленькие «атомарные» компоненты.
-* Использование одновариантных объединений для добавления семантического значения и валидации к ключевым типам предметной области, таким как `EmailAddress` и `ZipCode`.
-* Гарантия, что система типов может представлять только корректные данные («делаем недопустимые состояния непредставимыми»).
+* Использование одновариантных объединений для добавления семантического значения и валидации к типам предметной области, наподобие `EmailAddress` и `ZipCode`.
+* Понимание, что система типов может представлять только корректные данные («делаем недопустимые состояния не представимыми»).
 * Использование типов как инструмента анализа для выявления скрытых требований.
 * Замена флагов и перечислений простыми конечными автоматами.
 * Замена примитивных строк типами, которые гарантируют соответствие различным ограничениям.
 
-> For this final post, let's see them all applied together.
-
-В этом последнем посте давайте рассмотрим их все вместе.
-
-> ## The "before" code ##
+В последнем посте цикла, давайте рассмотрим их вместе.
 
 ## Код «до»
 
-> Here's the original example we started off with in the [first post](/posts/designing-with-types-intro/) in the series:
-
-Вот оригинальный пример, с которого мы начали в [первом посте](../designing-with-types-intro/) цикла^
+Оригинальный пример, с которого мы начали в [первом посте](../designing-with-types-intro/) цикла:
 
 ```fsharp
 type Contact =
@@ -50,8 +33,7 @@ type Contact =
     LastName: string;
 
     EmailAddress: string;
-    //true if ownership of email address is confirmed
-    //true, если приналдежность электронного адреса подтверждена
+    //true, если электронный адрес подтверждён
     IsEmailVerified: bool;
 
     Address1: string;
@@ -59,49 +41,34 @@ type Contact =
     City: string;
     State: string;
     Zip: string;
-    //true if validated against address service
     //true, если проверен с помощью сервиса проверки адресов
     IsAddressValid: bool;
     }
 ```
 
-> And how does that compare to the final result after applying all the techniques above?
-
-И как это выглядит по сравнению с конечным результатом, полученным после применения всех техник, описанных выше?
-
-> ## The "after" code ##
+Как он выглядит по сравнению с конечным результатом, полученным после применения всех техник, описанных выше?
 
 ## Код «после»
 
-> First, let's start with the types that are not application specific.
-> These types could probably be reused in many applications.
-
-Сначала давайте начнём с типов, которые не являются специфичными для приложения.
-Вероятно, жти типы можно было бы повторно использовать во многих приложениях.
+Во-первых, давайте начнём с типов, которые не являются специфичными для приложения.
+Эти типы можно использовать повторно в других приложениях.
 
 ```fsharp
 // ========================================
 // WrappedString
 // ========================================
 
-/// Common code for wrapped strings
 /// Общий код для обёрток над строками
 module WrappedString =
 
-    /// An interface that all wrapped strings support
     /// Интерфейс, который поддерживают все обёртки над строками
     type IWrappedString =
         abstract Value : string
 
-    /// Create a wrapped value option
-    /// 1) canonicalize the input first
-    /// 2) If the validation succeeds, return Some of the given constructor
-    /// 3) If the validation fails, return None
-    /// Null values are never valid.
-    /// Создать опциональное завёрнутое значение
-    /// 1) Привести входные данные к каноническому виду
-    /// 2) Если валидация прошла, вернуть Some от значения, которое вернул конструктор
-    /// 3) Если валидация не прошла, вернуть None
+    /// Создаёт опциональное завёрнутое значение
+    /// 1) Приводит входные данные к каноническому виду
+    /// 2) Если валидация прошла, возвращает Some результата конструктора
+    /// 3) Если валидация не прошла, возвращает None
     /// Значения null не считаются валидными.
     let create canonicalize isValid ctor (s:string) =
         if s = null
@@ -112,68 +79,53 @@ module WrappedString =
             then Some (ctor s')
             else None
 
-    /// Apply the given function to the wrapped value
-    /// Применить данную функцию к завёрнутому значению
+    /// Применяет функцию к завёрнутому значению
     let apply f (s:IWrappedString) =
         s.Value |> f
 
-    /// Get the wrapped value
-    /// Взять завёрнутое значение
+    /// Возвращает завёрнутое значение
     let value s = apply id s
 
-    /// Equality
     /// Равенство
     let equals left right =
         (value left) = (value right)
 
-    /// Comparison
     /// Сравнение
     let compareTo left right =
         (value left).CompareTo (value right)
 
-    /// Canonicalizes a string before construction
-    /// * converts all whitespace to a space char
-    /// * trims both ends
-    /// Приводим строку к каноническому виду перед вызовом конструктора
-    /// * конвертируем все пробельные символы в пробелы
-    /// * обрезаем слева и справа
+    /// Приводит строку к каноническому виду перед вызовом конструктора
+    /// * конвертирует все пробельные символы в пробелы
+    /// * обрезает слева и справа
     let singleLineTrimmed s =
         System.Text.RegularExpressions.Regex.Replace(s,"\s"," ").Trim()
 
-    /// A validation function based on length
     /// Функция валиадации на основе длины строки
     let lengthValidator len (s:string) =
         s.Length <= len
 
-    /// A string of length 100
     /// Строка длины 100
     type String100 = String100 of string with
         interface IWrappedString with
             member this.Value = let (String100 s) = this in s
 
-    /// A constructor for strings of length 100
     /// Конструктор строк длины 100
     let string100 = create singleLineTrimmed (lengthValidator 100) String100
 
-    /// Converts a wrapped string to a string of length 100
     /// Конвертирует обёртку над строками в строку длины 100
     let convertTo100 s = apply string100 s
 
-    /// A string of length 50
     /// Строка длины 50
     type String50 = String50 of string with
         interface IWrappedString with
             member this.Value = let (String50 s) = this in s
 
-    /// A constructor for strings of length 50
     /// Конструктор строк длины 50
     let string50 = create singleLineTrimmed (lengthValidator 50)  String50
 
-    /// Converts a wrapped string to a string of length 50
     /// Конвертирует обёртку над строками в строку длины 50
     let convertTo50 s = apply string50 s
 
-    /// map helpers
     /// Вспомогательные функции для словарей
     let mapAdd k v map =
         Map.add (value k) v map
@@ -185,7 +137,6 @@ module WrappedString =
         Map.tryFind (value k) map
 
 // ========================================
-// Email address (not application specific)
 // Электронные адреса (код, не специфичный для приложения)
 // ========================================
 
@@ -202,12 +153,10 @@ module EmailAddress =
             System.Text.RegularExpressions.Regex.IsMatch(s,@"^\S+@\S+\.\S+$")
         WrappedString.create canonicalize isValid EmailAddress
 
-    /// Converts any wrapped string to an EmailAddress
-    /// Конвертиуем любую обёртку над строками в EmailAddress
+    /// Конвертиует любую обёртку над строками в EmailAddress
     let convert s = WrappedString.apply create s
 
 // ========================================
-// ZipCode (not application specific)
 // Почтовый индекс (код, не специфичный для приложения)
 // ========================================
 
@@ -223,12 +172,10 @@ module ZipCode =
             System.Text.RegularExpressions.Regex.IsMatch(s,@"^\d{5}$")
         WrappedString.create canonicalize isValid ZipCode
 
-    /// Converts any wrapped string to a ZipCode
-    /// Конвертиуем любую обёртку над строками в ZipCode
+    /// Конвертиует любую обёртку над строками в ZipCode
     let convert s = WrappedString.apply create s
 
 // ========================================
-// StateCode (not application specific)
 // Код штата (код, не специфичный для приложения)
 // ========================================
 
@@ -246,12 +193,10 @@ module StateCode =
 
         WrappedString.create canonicalize isValid StateCode
 
-    /// Converts any wrapped string to a StateCode
-    /// Конвертиуем любую обёртку над строками в StateCode
+    /// Конвертиует любую обёртку над строками в StateCode
     let convert s = WrappedString.apply create s
 
 // ========================================
-// PostalAddress (not application specific)
 // Почтовый адрес (код, не специфичный для приложения)
 // ========================================
 
@@ -289,7 +234,6 @@ module PostalAddress =
         | GenericPostalAddress of GenericPostalAddress
 
 // ========================================
-// PersonalName (not application specific)
 // Личное имя (код, не специфичный для приложения)
 // ========================================
 
@@ -303,8 +247,7 @@ module PersonalName =
         LastName: String100;
         }
 
-    /// create a new value
-    /// создать новое значение
+    /// Создаёт новое значение
     let create first middle last =
         match (string50 first),(string100 last) with
         | Some f, Some l ->
@@ -316,10 +259,8 @@ module PersonalName =
         | _ ->
             None
 
-    /// concat the names together
-    /// and return a raw string
-    /// склеить вместе имя и фамилию
-    /// и вернуть простую строку
+    /// Склеивает вместе имя и фамилию
+    /// и возвращает простую строку
     let fullNameRaw personalName =
         let f = personalName.FirstName |> value
         let l = personalName.LastName |> value
@@ -329,19 +270,14 @@ module PersonalName =
             | Some middle -> [| f; (value middle); l |]
         System.String.Join(" ", names)
 
-    /// concat the names together
-    /// and return None if too long
-    /// склеить вместе имя и фамилию
-    /// и вернуть None, если слишком длинная строка
+    /// Склеивает вместе имя и фамилию
+    /// и возвращает None, если слишком длинная строка
 let fullNameOption personalName =
         personalName |> fullNameRaw |> string100
 
-    /// concat the names together
-    /// and truncate if too long
-    /// склеить вместе имя и фамилию
-    /// и усечь если слишком длинная строка
+    /// Склеивает вместе имя и фамилию
+    /// и обрезает слишком длинную строку
     let fullNameTruncated personalName =
-        // helper function
         // вспомогательная функция
         let left n (s:string) =
             if (s.Length > n)
@@ -349,82 +285,66 @@ let fullNameOption personalName =
             else s
 
         personalName
-        |> fullNameRaw  // склеиваем concat
-        |> left 100     // усекаем truncate
-        |> string100    // заворачиваем wrap
-        |> Option.get   // всё вместе даёт результат без ошибок this will always be ok
+        |> fullNameRaw  // склеиваем
+        |> left 100     // обрезаем
+        |> string100    // заворачиваем
+        |> Option.get   // всё вместе даёт результат без ошибок
 ```
 
-> And now the application specific types.
-
-А теперь типы специфичные для приложения.
+А теперь — типы, специфичные для приложения.
 
 ```fsharp
 
 // ========================================
-// EmailContactInfo -- state machine
 // EmailContactInfo -- конечный автомат
 // ========================================
 
 module EmailContactInfo =
     open System
 
-    // UnverifiedData = just the EmailAddress
     // UnverifiedData = просто EmailAddress
     type UnverifiedData = EmailAddress.T
 
-    // VerifiedData = EmailAddress plus the time it was verified
     // VerifiedData = EmailAddress плюс дата/время проверки
     type VerifiedData = EmailAddress.T * DateTime
 
-    // set of states
     // множество состояний
     type T =
         | UnverifiedState of UnverifiedData
         | VerifiedState of VerifiedData
 
     let create email =
-        // unverified on creation
         // непроверенный при создании
         UnverifiedState email
 
-    // handle the "verified" event
     // обработать событие "проверен"
     let verified emailContactInfo dateVerified =
         match emailContactInfo with
         | UnverifiedState email ->
-            // construct a new info in the verified state
             // конструируем новый объект в проверенном состоянии
             VerifiedState (email, dateVerified)
         | VerifiedState _ ->
-            // ignore
             // игнорируем
             emailContactInfo
 
     let sendVerificationEmail emailContactInfo =
         match emailContactInfo with
         | UnverifiedState email ->
-            // send email
             // отправляем письмо
             printfn "отправка письма"
         | VerifiedState _ ->
-            // do nothing
             // ничего не делаем
             ()
 
     let sendPasswordReset emailContactInfo =
         match emailContactInfo with
         | UnverifiedState email ->
-            // ignore
             // игнорируем
             ()
         | VerifiedState _ ->
-            // ignore
-            // игнорируем
             printfn "отправка запроса за сброс пароля"
 
 // ========================================
-// PostalContactInfo -- state machine
 // PostalContactInfo -- конечный автомат
 // ========================================
 
@@ -437,27 +357,22 @@ module PostalContactInfo =
     // ValidData = PostalAddress плюс дата/время валидации
     type ValidData = PostalAddress.T * DateTime
 
-    // set of states
     // множество состояний
     type T =
         | InvalidState of InvalidData
         | ValidState of ValidData
 
     let create address =
-        // invalid on creation
-        // неправильный при создании
+        // непроверенный при создании
         InvalidState address
 
-    // handle the "validated" event
     // обрабатываем событие "проверен"
     let validated postalContactInfo dateValidated =
         match postalContactInfo with
         | InvalidState address ->
-            // construct a new info in the valid state
             // конструируем новый объект в проверенном состоянии
             ValidState (address, dateValidated)
         | ValidState _ ->
-            // ignore
             // игнорируем
             postalContactInfo
 
@@ -467,15 +382,14 @@ module PostalContactInfo =
 
         match postalContactInfo with
         | InvalidState address ->
-            printfn "соединяемся с сервисом проверки адресов (contacting the address validation service)"
+            printfn "соединяемся с сервисом проверки адресов"
         | ValidState (address,date) when date |> dateIsTooLongAgo  ->
-            printfn "последняя проверка была слишком давно (last checked a long time ago)"
-            printfn "снова соединяемся с сервисом проверки адресов (contacting the address validation service again)"
+            printfn "последняя проверка была слишком давно"
+            printfn "снова соединяемся с сервисом проверки адресов"
         | ValidState  _ ->
-            printfn "недавно проверен, ничего не делаем (recently checked. Doing nothing)"
+            printfn "недавно проверен, ничего не делаем"
 
 // ========================================
-// ContactMethod and Contact
 // ContactMethod и Contact
 // ========================================
 
@@ -489,107 +403,54 @@ type Contact =
     PrimaryContactMethod: ContactMethod;
     SecondaryContactMethods: ContactMethod list;
     }
-
 ```
 
-{{< book_page_ddd_img >}}
-
-
-> ## Conclusion ##
-
-> Phew!
-> The new code is much, much longer than the original code.
-> Granted, it has a lot of supporting functions that were not needed in the original version, but even so it seems like a lot of extra work.
-> So was it worth it?
+## Заключение
 
 Уф!
-Новый код гораздо, гораздо длиннее, чем оригинальный код.
-Конечно, в нём много поддерживающих функций, которые не были нужны в оригинальной версии, но даже так кажется, что он потребовал много дополнительной работы.
-Так стоило ли оно того?
+Новый код гораздо, гораздо длиннее оригинального.
+Да, в нём много вспомогательных функций, которых не было в оригинальном коде, но всё равно кажется, что мы потратили на него слишком много сил.
+Стоила ли овчинка выделки?
 
-> I think the answer is yes.
-> Here are some of the reasons why:
+Я думаю, ответ — да.
+И вот почему:
 
-Я думаю, что ответ: да.
-Вот несколько причин, почему:
+**Новый код явно выражает намерения разработчика**
 
-> **The new code is more explicit**
+Структура данных была «тупой», а бизнес-правила — неявными.
+Все шансы получить множество коварных ошибок, которые даже не проявятся в модульных тестах.
+(*Вы уверены, что приложение сбрасывает флаг `IsEmailVerified` везде, где меняется электронный адрес?*)
 
-**Новый код более явный**
-
-> If we look at the original example, there was no atomicity between fields, no validation rules, no length constraints, nothing to stop you updating flags in the wrong order, and so on.
-
-Если мы посмотрим на оригинальный пример, там не было ни атомарности полей, ни правил валидации, ни ограничений длины, ничего, что помешало бы вам обновить флаги в неправильном порядке, и т. д.
-
-> The data structure was "dumb" and all the business rules were implicit in the application code.
-> Chances are that the application would have lots of subtle bugs that might not even show up in unit tests.
-> (*Are you sure the application reset the `IsEmailVerified` flag to false in every place the email address was updated?*)
-
-Структура данных была «тупая» и все бизнес-правила в коде приложения были неявными.
-Все шансы, что в приложении будет множество коварных ошибок, которые могут даже не проявиться в модульных тестах.
-(*Вы уверены, что приложение сбрасывает флаг `IsEmailVerified` во всех местах, где электронный адрес изменяется?*)
-
-> On the other hand, the new code is extremely explicit about every little detail.
-> If I stripped away everything but the types themselves, you would have a very good idea of what the business rules and domain constraints were.
-
-С другой стороны, новый код предельно ясен в отношении каждой мельчайшей детали.
-Если бы я удалил всё, кроме непосредственно типов, вы бы <!-- всё равно --> получили хорошее представление о бизнес-правилах и ограничениях предметной области.
-
-> **The new code won't let you postpone error handling**
+С другой стороны, новый код предельно ясен в отношении деталей.
+Если бы я удалил всё, кроме типов, вы бы всё равно получили чёткое представление о бизнес-правилах и ограничениях предметной области.
 
 **Новый код не разрешает откладывать обработку ошибок**
 
-> Writing code that works with the new types means that you are forced to handle every possible thing that could go wrong, from dealing with a name that is too long, to failing to supply a contact method.
-> And you have to do this up front at construction time.
-> You can't postpone it till later.
+Написание кода в новом стиле, означает, что вам приходится учитывать всё, что может пойти не так: от слишком длинного имени до отсутствия способа связи.
+И это надо делать заранее, при создании объектов.
+Вы не можете отложить проверку на потом.
 
-Написание кода, который работает с новыми типами, означает, что вам придётся учесть всё, что могло пойти не так, от слишком длинного имени до отсутствия способа связи.
-И это нужно сделать заранее, во время конструирования.
-Вы не можете отложить это на потом.
-
-> Writing such error handling code can be annoying and tedious, but on the other hand, it pretty much writes itself.
-> There is really only one way to write code that actually compiles with these types.
-
-Написание этого кода обработки ошибок может быть раздражающим и скучным, но, с другой стороны, он почти что пишет сам себя.
-На самом деле, есть только один способ написать код, который действительно будет компилироваться с этими типами.
-
-> **The new code is more likely to be correct**
+Обработка ошибок может быть скучной и раздражающей, но, с другой стороны, код почти что пишет сам себя.
+Потому что есть единственный способ написать код, который действительно будет компилироваться с вашими типами.
 
 **Новый код, скорее всего, будет правильным**
 
-> The *huge* benefit of the new code is that it is probably bug free.
-> Without even writing any unit tests, I can be quite confident that a first name will never be truncated when written to a `varchar(50)` in a database, and that I can never accidentally send out a verification email twice.
+*Огромное* преимущество нового кода в том, что в нём гораздо меньше ошибок.
+Даже без написания модульных тестов я уверен, что имя при записи в базу не будет усечено до `varchar(50)`, и что я — даже случайно — не отправлю два раза письмо для проверки адреса.
 
-*Огромное* преимущество нового кода в том, что в нём, вероятно, нет ошибок.
-Даже без написания модульных тестов, я могу быть достаточно уверен, что имя никогда не будет усечено до `varchar(50)` при записи в базу, и что я никогда случайно не отправлю письмо для проверки адреса дважды.
+Что касается самого кода, в нём нет многого из того, что вам, как разработчику, приходится помнить.
+Ни проверок на `null`, ни приведения типов, ни беспокойства о том, что должно быть в ветке `default` оператора `switch`.
+И если вам нравиться использовать цикломатическую сложность, как метрику качества кода, обратите внимание, что в новом коде всего три оператора `if` на 350 с лишним строк.
 
-> And in terms of the code itself, many of the things that you as a developer have to remember to deal with (or forget to deal with) are completely absent.
-> No null checks, no casting, no worrying about what the default should be in a `switch` statement.
-> And if you like to use cyclomatic complexity as a code quality metric, you might note that there are only three `if` statements in the entire 350 odd lines.
+**Слова предостережения...**
 
-А что касается самого кода, многие из вещей, которые вам, как разработчику приходится помнить (или забыть), полностью отсутствуют.
-Ни проверок на `null`, ни приведения типов, ни беспокоства о том, что доложно быть в ветке `default` оператора `switch`.
-И если вам нравиться использовать цикломатическую сложность, как метрику качества кода, вы можете заметить, что здесь всего три оператора `if` на 350 с хвостиком строк.
-
-> **A word of warning...**
-
-**Слово предостережения...** <!-- это немного высокопаный стиль, поэтому предостережения, а не предупреждения -->
-
-> Finally, beware!
-> Getting comfortable with this style of type-based design will have an insidious effect on you.
-> You will start to develop paranoia whenever you see code that isn't typed strictly enough.
-> (*How long should an email address be, exactly?*) and you will be unable to write the simplest python script without getting anxious.
-> When this happens, you will have been fully inducted into the cult.
-> Welcome!
-
-В заключение, будьте осторожны!
-Освоение этого стиля проектирования, основанного на типах, окажет на вас коварное воздействие.
-У вас насчнёт разиваться паранойя, всякий раз, когда вы встретите код, который не достаточно строго типизирован
-(*Какой точно длины должен быть электронный адрес?*), и вы не сможете написать простейший скрипт на Python, не испытывая при этом беспокойства.
-Когда это произойдёт, вы станете полноправным членом культа.
+Будьте осторожны!
+Стиль проектирования, основанный на типах, окажет на вас коварное воздействие.
+Всякий раз, когда вы встретите недостаточно типизированный код, у вас будет возникать паранойя.
+(*Какой точно длины должен быть электронный адрес?*)
+Вы не сможете написать простейший скрипт на Python, не испытывая беспокойства.
+После этого вы станете полноправным членом культа.
 Добро пожаловать!
-
-> *If you liked this series, here is a slide deck that covers many of the same topics. There is [a video as well (here)](/ddd/)*
 
 *Если вам понравился этот цикл, взгляните на слайды, где затронуты многие из этих тем. Есть [также видео (здесь)](/ddd/)*
 
